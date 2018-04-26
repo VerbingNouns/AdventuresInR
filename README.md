@@ -9,6 +9,8 @@ This repository will serve as the base for designing and sharing materials for t
 
 ## Schedule:
 
+Before the workshop, please make sure you have downloaded R and RStudio. [This](docs/Setting_Up.nb.html) brief tutorial may help.
+
 ### Day 1:
 
 **Morning:** Introduction to R and RStudio  
