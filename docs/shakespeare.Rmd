@@ -7,7 +7,7 @@ output:
     toc_float: yes
 ---
 
-```{r}
+```{r,message=FALSE}
 # install.packages("ggplot2","dplyr")
 library(ggplot2)
 library(dplyr)
@@ -16,16 +16,19 @@ library(dplyr)
 
 # Reading in corpus
 
-Adapted from [this Kaggle notebook](https://www.kaggle.com/sindhuee/love-in-shakespeare?scriptVersionId=1121270).
-
 ```{r}
 # R must be at least 3.3.1 for `tm` and `slam` to work.
 # install.packages("tm")
 # install.packages("SnowballC")
 library(tm)
 #system("ls ../input") # do we need this?
+```
 
-shak<-read.csv("text_processing/Shakespeare_data.csv")
+
+Adapted from [this Kaggle notebook](https://www.kaggle.com/sindhuee/love-in-shakespeare?scriptVersionId=1121270).
+
+```{r}
+shak<-read.csv("../data/Shakespeare_data.csv")
 shak<-na.omit(shak)
 head(shak)
 ```
@@ -87,13 +90,70 @@ head(lPlayer)
 # Visualising corpus
 
 ```{r}
-
 shak %>%
-  group_by(Play,Player) %>%
-  summarise(n = n())
-
+  group_by(Play) %>%
+  summarise(n = n()) %>%
+  ggplot(., aes(x=reorder(Play, n),y=n)) +
+    geom_bar(stat="identity") +
+    coord_flip() +
+    ggtitle("Length of Shakespeare's plays") +
+    theme(legend.position="none") +
+    xlab("Play") +
+    ylab("Number of lines")
 ```
 
+```{r}
+shak %>%
+  filter(Play == "Hamlet") %>%
+  group_by(Player) %>%
+  summarise(n = n()) %>%
+  ggplot(., aes(x=reorder(Player, n),y=n)) +
+    geom_bar(stat="identity") +
+    coord_flip() +
+    ggtitle("Speech in Hamlet") +
+    theme(legend.position="none") +
+    xlab("Player") +
+    ylab("Number of lines")
+```
+
+```{r}
+shak %>%
+  group_by(Play,Player) %>%
+  summarise(n = n()) %>%
+  filter(n > 700) %>%
+  ggplot(., aes(x=reorder(Player, n),y=n)) +
+    geom_bar(aes(fill=Play),stat="identity") +
+    coord_flip() +
+    ggtitle("Amount of lines by character") +
+#    theme(legend.position="none") +
+    xlab("Player") +
+    ylab("Number of lines")
+```
+
+```{r}
+lPlay %>%
+  ggplot(., aes(x=reorder(plays, loveFreq),y=loveFreq)) +
+    geom_bar(aes(fill=plays),stat="identity") +
+    coord_flip() +
+    ggtitle("Love in each play") +
+#    theme(legend.position="none") +
+    xlab("Play") +
+    ylab("frequency of the word 'love'") +
+    theme(legend.position = "none")
+```
+
+```{r}
+lPlayer %>%
+  filter(loveFreq > 20) %>%
+  ggplot(., aes(x=reorder(players, loveFreq),y=loveFreq)) +
+    geom_bar(aes(fill=players),stat="identity") +
+    coord_flip() +
+    ggtitle("Love in each play") +
+#    theme(legend.position="none") +
+    xlab("Play") +
+    ylab("frequency of the word 'love'") +
+    theme(legend.position = "none")
+```
 
 # Extra stuff
 
