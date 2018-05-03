@@ -1,0 +1,107 @@
+---
+title: "Processing Shakespeare"
+output:
+  html_notebook:
+    toc: yes
+    toc_depth: 2
+    toc_float: yes
+---
+
+```{r}
+# install.packages("ggplot2","dplyr")
+library(ggplot2)
+library(dplyr)
+```
+
+
+# Reading in corpus
+
+Adapted from [this Kaggle notebook](https://www.kaggle.com/sindhuee/love-in-shakespeare?scriptVersionId=1121270).
+
+```{r}
+# R must be at least 3.3.1 for `tm` and `slam` to work.
+# install.packages("tm")
+# install.packages("SnowballC")
+library(tm)
+#system("ls ../input") # do we need this?
+
+shak<-read.csv("text_processing/Shakespeare_data.csv")
+shak<-na.omit(shak)
+head(shak)
+```
+
+
+# Word frequency
+
+```{r}
+# play level word frequency
+plays <- unique(shak$Play)
+loveFreq<-numeric()
+
+for (i in 1:length(plays)){
+    text <- Corpus(VectorSource(paste(shak[shak$Play==plays[i],]$PlayerLine,collapse=" ")))
+    text <- tm_map(text, removePunctuation)
+    text <- tm_map(text, PlainTextDocument)
+    text <- tm_map(text, removeWords, stopwords('english'))
+    
+    # stemming to merge all "loved", "loving" into one   
+    text <- tm_map(text, stemDocument)
+    tdm  <- TermDocumentMatrix(text)
+    
+    loveFreq[i]<-as.numeric(slam::row_sums(tdm)["love"])
+  }
+
+lPlay <- data.frame(plays,loveFreq)
+lPlay <- na.omit(lPlay)
+
+# order the plays based on the occurence of love
+lPlay<-lPlay[order(-lPlay$loveFreq),]
+head(lPlay)
+```
+
+```{r}
+# player level word frequency
+players <- unique(shak$Player)
+loveFreq <- numeric()
+
+for (i in 1:length(players)){
+    text <- Corpus(VectorSource(paste(shak[shak$Player==players[i],]$PlayerLine,collapse=" ")))
+    text <- tm_map(text, removePunctuation)
+    text <- tm_map(text, PlainTextDocument)
+    text <- tm_map(text, removeWords, stopwords('english'))
+    text <- tm_map(text,stemDocument)
+    
+    tdm  <- TermDocumentMatrix(text)
+    
+    loveFreq[i] <- as.numeric(slam::row_sums(tdm)["love"])
+  }
+
+lPlayer <- data.frame(players,loveFreq)
+lPlayer <- na.omit(lPlayer)
+#order
+lPlayer <- lPlayer[order(-lPlayer$loveFreq),]
+
+head(lPlayer)
+```
+
+# Visualising corpus
+
+```{r}
+
+shak %>%
+  group_by(Play,Player) %>%
+  summarise(n = n())
+
+```
+
+
+# Extra stuff
+
+
+```{r}
+data("crude")
+meta(crude[[2]])
+meta(crude[], tag = "author")
+```
+
+Not entirely sure what to do with this, but it's probably dealing with XML?
