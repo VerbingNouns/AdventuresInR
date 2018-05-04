@@ -11,6 +11,7 @@ output:
 # install.packages("ggplot2","dplyr")
 library(ggplot2)
 library(dplyr)
+library(tidyr)
 ```
 
 
@@ -224,5 +225,110 @@ shak[,c(2,5,6)] %>%
 ```
 
 Is there a way to break it down to see who is saying what?
+
+## What about n-grams
+
+```{r fig.width=5, fig.asp=.5}
+
+shak %>%
+  as_tibble() %>%
+  unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
+  #anti_join(stop_words) %>%
+  filter(bigram=="my lord" | bigram =="my lady" | bigram=="my mother" | bigram=="my father" | bigram=="my wife" | bigram=="my husband") %>%
+  mutate(gender = bigram) %>%
+  mutate(gender = recode_factor(gender,
+                `my lord`="masc",
+                `my father`="masc",
+                `my husband`="masc",
+                `my lady`="fem",
+                `my mother`="fem",
+                `my wife`="fem")) %>%
+  group_by(Player,Play,bigram,gender) %>%
+  summarise(n=n()) %>%
+  mutate(bigramFac = factor(bigram, levels=c("my lord", "my husband", "my father", "my lady", "my wife", "my mother"))) %>%
+  # too boring
+  filter(  Play != "Henry VI Part 1" &
+           Play != "Henry VI Part 2" &
+           Play != "Henry VI Part 3" &
+           Play != "Pericles" & 
+           Play != "Timon of Athens" & 
+           Play != "The Tempest") %>%
+  # too skewed
+  filter(  Play != "Hamlet" &
+           Play != "Troilus and Cressida" &
+           Play != "Richard III" &
+           Play != "Titus Andronicus" & 
+           Play != "Henry VIII" & 
+           Play != "Much Ado about nothing") %>%
+  arrange(desc(n)) %>%
+  ggplot(., aes(x=bigramFac,y=n)) +
+    geom_bar(aes(fill=gender),stat="identity")+#,position="dodge") +
+    scale_y_log10() +
+    coord_flip() +
+    facet_wrap(~Play,nrow=3)
+```
+
+```{r}
+shak %>%
+  as_tibble() %>%
+  unnest_tokens(input = PlayerLine, output = ngram, token = "ngrams", n = 2) %>%
+  mutate(bigram = ngram) %>%
+  unnest_tokens(input = ngram, output = word) %>%
+  #anti_join(stop_words) %>%
+  filter(word=="king" | word=="queen") %>%
+  group_by(Play,bigram,word) %>%
+  summarise(n=n()) %>%
+  arrange(desc(n)) %>%
+  ggplot(aes(x=reorder(Play,n))) +
+    geom_bar(aes(fill=word),stat="count",position="dodge") +
+    #scale_y_log10() +
+    coord_flip()
+```
+
+
+```{r}
+word <- c("thou","thee","thy","thine","dost","shalt","wilt","hast","scene","tis",NA)
+lexicon <- rep("shakespeare",length(word))
+new_stop <- cbind(word,lexicon)
+shak_stop <- rbind(new_stop,stop_words)
+```
+
+
+
+```{r}
+shak %>%
+  as_tibble() %>%
+  unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
+  separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
+  filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
+  filter(!word2 %in% shak_stop$word) %>% # filters stop words from second column
+  count(word1, word2, sort = TRUE)
+```
+
+```{r}
+#install.packages("igraph")
+#install.packages("ggraph")
+library(igraph)
+library(ggraph)
+```
+
+```{r}
+set.seed(814)
+shak %>%
+  as_tibble() %>%
+  unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
+  separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
+  filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
+  filter(!word2 %in% shak_stop$word) %>% # filters stop words from second column
+  count(word1, word2, sort = TRUE) %>%
+  filter(n > 20) %>%
+  graph_from_data_frame() %>%
+  ggraph(layout = "fr") +
+    geom_edge_link(aes(edge_alpha = n), show.legend = FALSE, end_cap = circle(.07, 'inches')) +
+    geom_node_point(color = "lightblue", size = 5) +
+    geom_node_text(aes(label = name), vjust = 1, hjust = 0) +
+    theme_void()
+```
+
 
 
