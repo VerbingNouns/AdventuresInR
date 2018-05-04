@@ -28,8 +28,8 @@ library(tm)
 Adapted from [this Kaggle notebook](https://www.kaggle.com/sindhuee/love-in-shakespeare?scriptVersionId=1121270).
 
 ```{r}
-shak<-read.csv("../data/Shakespeare_data.csv")
-shak<-na.omit(shak)
+shak<-read.csv("../data/Shakespeare_data.csv",header = TRUE, as.is = TRUE)
+#shak<-na.omit(shak)
 head(shak)
 ```
 
@@ -155,13 +155,74 @@ lPlayer %>%
     theme(legend.position = "none")
 ```
 
-# Extra stuff
+# Attempting n-grams
+
+```{r}
+library(dplyr)
+#install.packages("tidytext")
+library(tidytext)
+```
 
 
 ```{r}
-data("crude")
-meta(crude[[2]])
-meta(crude[], tag = "author")
+shak %>%
+  as_tibble(.) %>%
+  unnest_tokens(tbl=., input = PlayerLine, output = word)
 ```
 
-Not entirely sure what to do with this, but it's probably dealing with XML?
+```{r}
+shak %>%
+  as_tibble(.) %>%
+  unnest_tokens(tbl=., input = PlayerLine, output = word) %>%
+  count(word, sort = TRUE)
+```
+
+```{r}
+shak %>%
+  as_tibble(.) %>%
+  unnest_tokens(tbl=., input = PlayerLine, output = word) %>%
+  anti_join(stop_words) %>%
+  count(word, sort = TRUE)
+```
+
+```{r}
+shak %>%
+  as_tibble(.) %>%
+  unnest_tokens(tbl=., input = PlayerLine, output = word) %>%
+  anti_join(stop_words) %>%
+  count(word, sort = TRUE) %>%
+  filter(n>800) %>%
+  ggplot(., aes(x=reorder(word,n),y=n)) +
+    geom_bar(stat="identity") +
+    coord_flip()
+```
+
+## Using tibbles
+
+How can we organise this so that we can compare across plays?
+
+```{r}
+shak[,c(2,5,6)] %>%
+  as_tibble() %>%
+  unnest_tokens(tbl=., input = PlayerLine, output = word) %>%
+  filter(word=="love" | word =="king" | word=="death" | word=="sweet") %>%
+  #add_count(Player) %>%
+  group_by(Player,Play,word) %>%
+  summarise(n=n()) %>%
+  #anti_join(stop_words) %>%
+  filter(  Play == "Hamlet" | 
+           Play == "King Lear" | 
+           Play == "A Midsummer nights dream" | 
+           Play == "Othello" | 
+           Play == "Henry V" | 
+           Play == "Romeo and Juliet") %>%
+  arrange(desc(n)) %>%
+  ggplot(., aes(x=word,y=n)) +
+    geom_bar(aes(fill=word),stat="identity") +
+#    coord_flip() +
+    facet_wrap(~Play)
+```
+
+Is there a way to break it down to see who is saying what?
+
+
