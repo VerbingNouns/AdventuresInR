@@ -287,7 +287,7 @@ shak %>%
 
 
 ```{r}
-word <- c("thou","thee","thy","thine","dost","shalt","wilt","hast","scene","tis",NA)
+word <- c(NA,"thou","thee","thy","thine","dost","shalt","wilt","hast","hath","scene","tis","ii","iii","iv","v","vi","vii")
 lexicon <- rep("shakespeare",length(word))
 new_stop <- cbind(word,lexicon)
 shak_stop <- rbind(new_stop,stop_words)
@@ -305,15 +305,19 @@ shak %>%
   count(word1, word2, sort = TRUE)
 ```
 
+## Networks
+
 ```{r}
 #install.packages("igraph")
 #install.packages("ggraph")
 library(igraph)
 library(ggraph)
+library(grid)
 ```
 
 ```{r}
 set.seed(814)
+a <- grid::arrow(type = "closed", angle=22.5, length = unit(.1, "inches"))
 shak %>%
   as_tibble() %>%
   unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
@@ -321,12 +325,13 @@ shak %>%
   filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
   filter(!word2 %in% shak_stop$word) %>% # filters stop words from second column
   count(word1, word2, sort = TRUE) %>%
-  filter(n > 20) %>%
+  filter(n > 22) %>%
   graph_from_data_frame() %>%
   ggraph(layout = "fr") +
-    geom_edge_link(aes(edge_alpha = n), show.legend = FALSE, end_cap = circle(.07, 'inches')) +
+    geom_edge_link(aes(edge_alpha = n), edge_colour="darkblue", show.legend = FALSE,
+                 arrow = a, end_cap = circle(.07, 'inches')) +
     geom_node_point(color = "lightblue", size = 5) +
-    geom_node_text(aes(label = name), vjust = 1, hjust = 0) +
+    geom_node_text(aes(label = name), repel=TRUE) + # , vjust = 1, hjust = 1) +
     theme_void()
 ```
 
