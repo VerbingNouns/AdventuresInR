@@ -599,12 +599,11 @@ shak %>%
 ```
 
 
+What happens if we treat the first pair and second pair of trigrams as separate bigrams and graph them as before?
 
-TO DO: figure out how to deal with trigrams
-
-```{r}
+```{r fig.width=5, fig.asp=.75}
 set.seed(814)
-a <- grid::arrow(type = "closed", angle=22.5, length = unit(.1, "inches"))
+a <- grid::arrow(type = "closed", angle=22.5, length = unit(.075, "inches"))
 w1w2 <- shak %>%
   as_tibble() %>%
   filter(ActSceneLine != "") %>%
@@ -614,7 +613,6 @@ w1w2 <- shak %>%
   filter(!word2 %in% shak_stop$word) %>% # filters stop words from second column
   filter(!word3 %in% shak_stop$word) %>% # filters stop words from third column
   count(word1, word2, word3, sort = TRUE) %>%
-  filter(n>2) %>%
   mutate(set = 1) %>%
   transmute(word1=word1,word2=word2,n=n,set=set)
 w2w3 <- shak %>%
@@ -626,25 +624,125 @@ w2w3 <- shak %>%
   filter(!word2 %in% shak_stop$word) %>% # filters stop words from second column
   filter(!word3 %in% shak_stop$word) %>% # filters stop words from third column
   count(word1, word2, word3, sort = TRUE) %>%
-  filter(n>2) %>%
   mutate(set = 2) %>%
   transmute(word1=word2,word2=word3,n=n,set=set)
 wXwY <- bind_rows(w1w2,w2w3)
 
 wXwY %>%
-  filter(n>3) %>%
+  filter(n>=3) %>%
   graph_from_data_frame() %>%
   ggraph(layout = "fr") +
-    geom_edge_link(aes(edge_alpha = n), edge_colour="darkblue", show.legend = FALSE,
-                 arrow = a, end_cap = circle(.07, 'inches')) +
     geom_node_point(color = "lightblue", size = 5) +
-    geom_node_text(aes(label = name), repel=TRUE) + # , vjust = 1, hjust = 1) +
+    geom_edge_link(aes(edge_alpha = n), edge_colour="darkblue", show.legend = TRUE,
+                 arrow = a, end_cap = circle(.07, 'inches')) +
+    geom_node_text(aes(label = name), alpha=.75, repel=TRUE) + # , vjust = 1, hjust = 1) +
     theme_void()
 ```
 
+# Heatmaps
+
+```{r}
+shak %>%
+  as_tibble() %>%
+  #filter(Play == "Hamlet" | Play == "Loves Labours Lost" | Play == "A Winters Tale") %>%
+  filter(ActSceneLine != "") %>%
+  mutate(ActSceneLine2 = ActSceneLine) %>%
+  separate(ActSceneLine2, c("act", "scene", "line")) %>%
+  count(Play,act,scene, sort=TRUE) %>%
+  transmute(play=Play, act=as.numeric(act), scene=as.numeric(scene), n=n)
+```
 
 
+```{r}
+shak %>%
+  as_tibble() %>%
+  filter(Play == "Hamlet" | Play == "King John" | Play == "The Tempest" | 
+           Play == "Cymbeline" | Play == "Measure for measure" | Play == "Timon of Athens" | 
+           Play == "Richard III" | Play == "Loves Labours Lost" | Play == "A Winters Tale" | 
+           Play == "Othello" | Play == "Romeo and Juliet" | Play == "Henry V") %>% 
+  filter(ActSceneLine != "") %>%
+  mutate(ActSceneLine2 = ActSceneLine) %>%
+  separate(ActSceneLine2, c("act", "scene", "line")) %>%
+  count(Play,act, sort=TRUE) %>%
+  transmute(play=Play, act=as.integer(act), n=n) %>%
+  ggplot(aes(x=act,y=reorder(play, n))) + 
+    geom_tile(aes(fill = n), colour = "white") + scale_fill_gradient(low = "white", high = "steelblue")
+```
+
+```{r}
+shak %>%
+  as_tibble() %>%
+  filter(Play == "Hamlet" | Play == "King John" | Play == "The Tempest" | 
+           Play == "Cymbeline" | Play == "Measure for measure" | Play == "Timon of Athens" | 
+           Play == "Richard III" | Play == "Loves Labours Lost" | Play == "A Winters Tale" | 
+           Play == "Othello" | Play == "Romeo and Juliet" | Play == "Henry V") %>% 
+  filter(ActSceneLine != "") %>%
+  mutate(ActSceneLine2 = ActSceneLine) %>%
+  separate(ActSceneLine2, c("act", "scene", "line")) %>%
+  count(Play,scene, sort=TRUE) %>%
+  transmute(play=Play, scene=as.integer(scene), n=n) %>%
+  ggplot(aes(x=scene,y=reorder(play, n))) + 
+    geom_tile(aes(fill = n), colour = "white") + scale_fill_gradient(low = "white", high = "steelblue") +
+    scale_x_continuous(breaks=c(0:8))
+```
+
+```{r fig.width=5, fig.asp=.35}
+shak %>%
+  as_tibble() %>%
+  filter(Play == "Hamlet" | Play == "King John" | Play == "The Tempest" | 
+           Play == "Cymbeline" | Play == "Measure for measure" | Play == "Timon of Athens" | 
+           Play == "Richard III" | Play == "Loves Labours Lost" | Play == "A Winters Tale" | 
+           Play == "Othello" | Play == "Romeo and Juliet") %>% 
+  filter(ActSceneLine != "") %>%
+  mutate(ActSceneLine2 = ActSceneLine) %>%
+  separate(ActSceneLine2, c("act", "scene", "line")) %>%
+  count(Play,act,scene, sort=TRUE) %>%
+  transmute(play=Play, act=as.integer(act), scene=as.integer(scene), n=n) %>%
+  ggplot(aes(x=scene,y=play)) + 
+    geom_tile(aes(fill = n), colour = "white") + 
+    scale_fill_gradient(low = "white", high = "red2") +
+    scale_x_continuous(breaks=c(0:8)) +
+    theme_dark() + 
+    facet_wrap(~act, ncol = 5)
+```
 
 
+```{r fig.width=5, fig.asp=.5}
+shak %>%
+  as_tibble() %>%
+  filter(Play == "Hamlet") %>% 
+  #filter(Player != "HAMLET" & Player != "LORD POLONIUS" & Player != "KING CLAUDIUS") %>% 
+  filter(ActSceneLine != "") %>%
+  mutate(ActSceneLine2 = ActSceneLine) %>%
+  separate(ActSceneLine2, c("act", "scene", "line")) %>%
+  count(Player,act,scene, sort=TRUE) %>%
+  transmute(player=Player, act=as.integer(act), scene=as.integer(scene), n=n) %>%
+  ggplot(aes(x=scene,y=reorder(player,n))) + 
+    geom_tile(aes(fill = n), colour = "white") + 
+    scale_fill_gradient(low = "white", high = "red2") +
+    scale_x_continuous(breaks=c(0:8)) +
+    theme_dark() + 
+    facet_wrap(~act, ncol = 5)
+```
 
+```{r fig.width=5, fig.asp=.5}
+shak %>%
+  as_tibble() %>%
+  filter(Play == "Twelfth Night") %>% 
+  #filter(Player != "HAMLET" & Player != "LORD POLONIUS" & Player != "KING CLAUDIUS") %>% 
+  filter(ActSceneLine != "") %>%
+  mutate(ActSceneLine2 = ActSceneLine) %>%
+  separate(ActSceneLine2, c("act", "scene", "line")) %>%
+  count(Player,act,scene, sort=TRUE) %>%
+  transmute(player=Player, act=as.integer(act), scene=as.integer(scene), n=n) %>%
+  ggplot(aes(x=scene,y=player)) + 
+    geom_tile(aes(fill = n), colour = "white") + 
+    scale_fill_gradient(low = "white", high = "red2") +
+    scale_x_continuous(breaks=c(0:8)) +
+    theme_dark() + 
+    facet_wrap(~act, ncol = 5)
+```
 
+## Wrap up
+
+What this all seems to tell us is that we can visualise the structure of the play, separate from their content. Is this useful to you?
