@@ -232,6 +232,10 @@ lPlay %>%
 
 ## Comparing across subsets
 
+```{r echo=FALSE,message=FALSE,results='hide'}
+scales::show_col(scales::hue_pal()(4))
+```
+
 One thing that graphs can do very easily is give you a way to identify trends when you sort events (e.g., plays) into multiple different categories. For instance, the frequency graph above is interesting, but there are so many plays and as a non-expert, I can't tell you what each is about, what style it is written in, or whether I'd expect it to be about "love" or not. So, we can add another dimension of information. In the following graph, each color represents a different category (as determined by Wikipedia's [First Folio](https://en.wikipedia.org/wiki/First_Folio) page, plus information about the "late romances"). Now, we can see if there are trends for different categories to mention "love" more or less than the others.
 
 ```{r}
@@ -286,7 +290,7 @@ lPlayCat %>%
     ylab("frequency of the word 'love'")
 ```
 
-It seems to me that **comedies** and **tragedies** discuss "love" the most, whereas **histories** and the late **romances** discuss it the least. Is this intuitive? Maybe. But there's a problem. *A Comedy of Errors* has the fewest mentions of "love", but it's also the shortest play, so it has the fewest words overall. What we really want to see is the proportion of "love"-frequency per play, not the raw counts. To do that, we have to add in the total length of each play to the data frame.
+It seems to me that <span style="color:#F8766D">**comedies**</span> and <span style="color:#C77CFF">**tragedies**</span> discuss "love" the most, whereas <span style="color:#7CAE00">**histories**</span> and the late <span style="color:#00BFC4">**romances**</span> discuss it the least. Is this intuitive? Maybe. But there's a problem. *A Comedy of Errors* has the fewest mentions of "love", but it's also the shortest play, so it has the fewest words overall. What we really want to see is the proportion of "love"-frequency per play, not the raw counts. To do that, we have to add in the total length of each play to the data frame.
 
 ```{r}
 playLength <- shak %>%
@@ -310,9 +314,9 @@ lPlayCat %>%
 
 ```
 
-Not a whole lot has changed, but I think the distribution of **comedies** and **tragedies** is even more pronounced. And, we have more information about *A Comedy of Errors*, which is still very close to the bottom of the graph. Not every comedy is about love, it seems.
+Not a whole lot has changed, but I think the distribution of <span style="color:#F8766D">**comedies**</span> and <span style="color:#C77CFF">**tragedies**</span> is even more pronounced. And, we have more information about *A Comedy of Errors*, which is still very close to the bottom of the graph. Not every comedy is about love, it seems.
 
-```{r}
+```{r echo=FALSE}
 #lPlayer %>%
 #  filter(loveFreq > 20) %>%
 #  ggplot(., aes(x=reorder(players, loveFreq),y=loveFreq)) +
@@ -365,7 +369,7 @@ shak$category[shak$Play == "Titus Andronicus" |
                     shak$Play == "Timon of Athens"] <- "tragedy"
 ```
 
-Finally, we can generate these same types of graphs for different subgroups, too. Here's one example, where we look at the number of lines each player has, focusing only on players who have greater than 700 lines. We can also see if there are any trends in these top speakers by play category. It seems to me that the **histories** dominate, but Hamlet and Iago dominate the scene (so to speak).
+Finally, we can generate these same types of graphs for different subgroups, too. Here's one example, where we look at the number of lines each player has, focusing only on players who have greater than 700 lines. We can also see if there are any trends in these top speakers by play category. It seems to me that the <span style="color:#7CAE00">**histories**</span> dominate, but Hamlet and Iago dominate the scene (so to speak).
 
 ```{r}
 shak %>%
@@ -381,7 +385,8 @@ shak %>%
     ylab("Number of lines")
 ```
 
-Is this because **histories** and **tragedies** tend to be longer plays, overall? Quite possibly:
+Is this because <span style="color:#7CAE00">**histories**</span> and <span style="color:#C77CFF">**tragedies**</span> tend to be longer plays, overall? Quite possibly:
+
 
 ```{r}
 shak %>%
@@ -400,7 +405,7 @@ shak %>%
 
 # Attempting n-grams
 
-```{r}
+```{r, echo=FALSE,message=FALSE}
 library(dplyr)
 #install.packages("tidytext")
 library(tidytext)
