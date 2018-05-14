@@ -5,9 +5,10 @@ output:
     toc: yes
     toc_depth: 2
     toc_float: yes
+    code_folding: hide
 ---
 
-```{r echo=FALSE,message=FALSE}
+```{r echo=FALSE}
 # Multiple plot function
 #
 # ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
@@ -64,9 +65,13 @@ library(tidyr)
 ```
 
 
+The purpose of this notebook is to demonstrate some of what is possible for visualisation of a text. Quantitative analysis is a tool that can help to answer some questions, but it is not always useful and there are many questions it cannot address. I hope to demonstrate below some of the things that can be done, and hopefully it will be more inspiring that intimidating. 
+
 # Reading in corpus
 
-```{r}
+First, there must be a corpus or digitized text that can be analysed computationally. For this demonstration, I've used a corpus of Shakespeare's plays and adapted some code from [a Kaggle notebook](https://www.kaggle.com/sindhuee/love-in-shakespeare?scriptVersionId=1121270).
+
+```{r,message=FALSE,collapse=TRUE}
 # R must be at least 3.3.1 for `tm` and `slam` to work.
 # install.packages("tm")
 # install.packages("SnowballC")
@@ -74,8 +79,7 @@ library(tm)
 #system("ls ../input") # do we need this?
 ```
 
-
-Adapted from [this Kaggle notebook](https://www.kaggle.com/sindhuee/love-in-shakespeare?scriptVersionId=1121270).
+Before we get into anything fun, we have to see what the corpus looks like; that is, how the data frame is structured. These are the first six lines of the corpus. **NB: there is currently a small bug in the software that prevents the data from being shown neatly. It should be fixed soon.**
 
 ```{r}
 shak<-read.csv("../data/Shakespeare_data.csv",header = TRUE, as.is = TRUE)
@@ -83,8 +87,13 @@ shak<-read.csv("../data/Shakespeare_data.csv",header = TRUE, as.is = TRUE)
 head(shak)
 ```
 
+Each column is labeled and the content of the column is consistent for each row (all 111396 of them!). Some of the rows may not be useful. Some contain empty cells (labeled `NA`). Some contain a lot of information and we might need to do some processing on them before we can use the information quantitatively.
 
 # Word frequency
+
+The first thing we'll look at is word frequency, or how often a string (in this case "love") occurs in the data frame. To do this, we must identify every time the word "love" appears and highlight it in a way so that it can be counted based on different properties of its environment (e.g., by play, by player, by scene, etc).
+
+Here are the first 10 rows of a data frame that contains the number of times "love" appears in each play. It's been sorted in descending order, but doesn't contain any other information about where and when the word occurs.
 
 ```{r}
 # play level word frequency
@@ -109,8 +118,10 @@ lPlay <- na.omit(lPlay)
 
 # order the plays based on the occurence of love
 lPlay<-lPlay[order(-lPlay$loveFreq),]
-head(lPlay)
+head(lPlay,10)
 ```
+
+We can also look at which players say "love" the most over the course of their appearences. These are only the top 10 players who use the word "love" most. 
 
 ```{r}
 # player level word frequency
@@ -134,10 +145,22 @@ lPlayer <- na.omit(lPlayer)
 #order
 lPlayer <- lPlayer[order(-lPlayer$loveFreq),]
 
-head(lPlayer)
+head(lPlayer,10)
 ```
 
-# Visualising corpus
+We can also look at the bottom of the list. These are 10 players who only say "love" once, although there are likely many others who are also tied for last.
+
+```{r}
+tail(lPlayer,10)
+```
+
+Is this useful to you? Can word frequency by character/player, scene, act, play, or author help to answer any of your research questions?
+
+# Visualising a corpus
+
+I think the main way quantitative analysis can be of use to the humanities is by visualising properties of the text that might not be immediately apparent from reading. Word frequency is one of these properties, since we (as humans) don't typically keep track of how often each characters says any given word. If you're interested in how different characters or different authors make use of certain words or phrases, visualising the distribution of those strings might uncover patterns that are otherwise difficult to find.
+
+For instance, maybe you are curious how the longer and shorter plays compare. Instead of hand-counting each, we can graph and order them. Based on this graph, you don't need to know exactly how long each is, but you can see that *Othello* is much longer than *Loves Labours Lost*, which can inform how you approach the comparison.
 
 ```{r}
 shak %>%
@@ -152,6 +175,8 @@ shak %>%
     ylab("Number of lines")
 ```
 
+Within a single play, maybe we want to know which characters are the chattiest. We can visualise the number of lines of text per character to get a sense of who is dominating the stage.
+
 ```{r}
 shak %>%
   filter(Play == "Hamlet") %>%
@@ -164,6 +189,23 @@ shak %>%
     theme(legend.position="none") +
     xlab("Player") +
     ylab("Number of lines")
+```
+
+Obviously, it's Hamlet.
+
+```{r}
+shak %>%
+  filter(Play == "Hamlet") %>%
+  group_by(Player) %>%
+  summarise(n = n()) %>%
+  ggplot(., aes(x=reorder(Player, n),y=n)) +
+    geom_bar(stat="identity") +
+    coord_flip() +
+    ggtitle("Speech in Hamlet") +
+    theme(legend.position="none") +
+    xlab("Player") +
+    ylab("Number of lines (logarithmic scale)") +
+    scale_y_log10()
 ```
 
 ```{r}
