@@ -175,7 +175,11 @@ shak %>%
     ylab("Number of lines")
 ```
 
+## Perception of frequency
+
 Within a single play, maybe we want to know which characters are the chattiest. We can visualise the number of lines of text per character to get a sense of who is dominating the stage.
+
+**Obviously, it's Hamlet.**
 
 ```{r}
 shak %>%
@@ -191,7 +195,11 @@ shak %>%
     ylab("Number of lines")
 ```
 
-Obviously, it's Hamlet.
+One property of much real-life, natural language data (and many other phenomena in human behaviour) is that frequency of different events or items tend to follow a [Zipf distribution](https://en.wikipedia.org/wiki/Zipf%27s_law). This just means that there are a very small number of incredibly frequent things, and a very large number of very infrequent things. One property of this distribution is that it can look like a very steep curve when plotted normally, but when plotted logarithmically, it looks more like a straight line.
+
+Since it appears that the number of lines per player in Hamlet follow a Zipf curve, we can easily change the scale of the x-axis (the bottom of the chart) to a logarithmic scale. This means that each unit of distance from the lower left is 10 times the value of the previous unit. The distance from 0 to 1 will appear the same as between 1 and 10, which will appear the same as between 10 and 100, and then again between 100 and 1000. This kind of scale will deemphasize the absolute differences in frequency among the most frequent things and help resolve nuanced differences among the least frequent things.
+
+When we make this change to the from above visualisation, suddenly we see a lot of nuance in the "long tail" of the data. The players with the fewest lines don't all still have the same number, and this might be useful information about who speaks when.
 
 ```{r}
 shak %>%
@@ -208,44 +216,187 @@ shak %>%
     scale_y_log10()
 ```
 
+We can also look across plays for frequency. By comparing which plays have the word "love" the most often, we might be able to group them (perceptually) into plays *about love* and those that are not. Maybe?
+
+```{r}
+lPlay %>%
+  ggplot(., aes(x=reorder(plays, loveFreq),y=loveFreq)) +
+    geom_bar(aes(),stat="identity") +
+    coord_flip() +
+    ggtitle("Love in each play") +
+#    theme(legend.position="none") +
+    xlab("Play") +
+    ylab("frequency of the word 'love'") +
+    theme(legend.position = "none")
+```
+
+## Comparing across subsets
+
+One thing that graphs can do very easily is give you a way to identify trends when you sort events (e.g., plays) into multiple different categories. For instance, the frequency graph above is interesting, but there are so many plays and as a non-expert, I can't tell you what each is about, what style it is written in, or whether I'd expect it to be about "love" or not. So, we can add another dimension of information. In the following graph, each color represents a different category (as determined by Wikipedia's [First Folio](https://en.wikipedia.org/wiki/First_Folio) page, plus information about the "late romances"). Now, we can see if there are trends for different categories to mention "love" more or less than the others.
+
+```{r}
+lPlayCat <- lPlay
+lPlayCat$category <- NA
+lPlayCat$category[lPlayCat$plays == "A Comedy of Errors" | 
+                    lPlayCat$plays == "As you like it" | 
+                    lPlayCat$plays == "Alls well that ends well" | 
+                    lPlayCat$plays == "Loves Labours Lost" | 
+                    lPlayCat$plays == "Measure for measure" | 
+                    lPlayCat$plays == "Merchant of Venice" | 
+                    lPlayCat$plays == "Merry Wives of Windsor" | 
+                    lPlayCat$plays == "A Midsummer nights dream" | 
+                    lPlayCat$plays == "Much Ado about nothing" | 
+                    lPlayCat$plays == "Taming of the Shrew" | 
+                    lPlayCat$plays == "Twelfth Night" | 
+                    lPlayCat$plays == "Two Gentlemen of Verona"] <- "comedy"
+lPlayCat$category[lPlayCat$plays == "Pericles" | 
+                    lPlayCat$plays == "Cymbeline" | 
+                    lPlayCat$plays == "A Winters Tale" | 
+                    lPlayCat$plays == "The Tempest"] <- "romance"
+lPlayCat$category[lPlayCat$plays == "King John" | 
+                    lPlayCat$plays == "Richard II" | 
+                    lPlayCat$plays == "Richard III" | 
+                    lPlayCat$plays == "Henry IV" | 
+                    lPlayCat$plays == "Henry V" | 
+                    lPlayCat$plays == "Henry VI Part 1" | 
+                    lPlayCat$plays == "Henry VI Part 2" | 
+                    lPlayCat$plays == "Henry VI Part 3" | 
+                    lPlayCat$plays == "Henry VIII" | 
+                    lPlayCat$plays == "Coriolanus" | 
+                    lPlayCat$plays == "Julius Caesar" | 
+                    lPlayCat$plays == "Antony and Cleopatra" | 
+                    lPlayCat$plays == "King Lear" | 
+                    lPlayCat$plays == "macbeth"] <- "history"
+lPlayCat$category[lPlayCat$plays == "Titus Andronicus" | 
+                    lPlayCat$plays == "Romeo and Juliet" |  
+                    lPlayCat$plays == "Hamlet" |  
+                    lPlayCat$plays == "Troilus and Cressida" |  
+                    lPlayCat$plays == "Othello" |  
+                    lPlayCat$plays == "Timon of Athens"] <- "tragedy"
+
+# sort(unique(lPlay$plays))
+
+lPlayCat %>%
+  ggplot(., aes(x=reorder(plays, loveFreq),y=loveFreq)) +
+    geom_bar(aes(fill=category),stat="identity") +
+    coord_flip() +
+    ggtitle("Love in each play") +
+#    theme(legend.position="none") +
+    xlab("Play") +
+    ylab("frequency of the word 'love'")
+```
+
+It seems to me that **comedies** and **tragedies** discuss "love" the most, whereas **histories** and the late **romances** discuss it the least. Is this intuitive? Maybe. But there's a problem. *A Comedy of Errors* has the fewest mentions of "love", but it's also the shortest play, so it has the fewest words overall. What we really want to see is the proportion of "love"-frequency per play, not the raw counts. To do that, we have to add in the total length of each play to the data frame.
+
+```{r}
+playLength <- shak %>%
+  group_by(Play) %>%
+  summarise(n = n())
+lPlayCat$length <- NA
+
+for (i in 1:length(playLength$n)) {
+  lPlayCat$length[lPlayCat$plays==playLength$Play[i]] <- playLength$n[playLength$Play==playLength$Play[i]]
+}
+
+lPlayCat %>%
+  mutate(proportion = loveFreq/length) %>%
+  ggplot(., aes(x=reorder(plays, proportion),y=proportion)) +
+    geom_bar(aes(fill=category),stat="identity") +
+    coord_flip() +
+    ggtitle("Love in each play") +
+#    theme(legend.position="none") +
+    xlab("Play") +
+    ylab("proportional frequency of the word 'love'")
+
+```
+
+Not a whole lot has changed, but I think the distribution of **comedies** and **tragedies** is even more pronounced. And, we have more information about *A Comedy of Errors*, which is still very close to the bottom of the graph. Not every comedy is about love, it seems.
+
+```{r}
+#lPlayer %>%
+#  filter(loveFreq > 20) %>%
+#  ggplot(., aes(x=reorder(players, loveFreq),y=loveFreq)) +
+#    geom_bar(aes(fill=players),stat="identity") +
+#    coord_flip() +
+#    ggtitle("Love in each play") +
+##    theme(legend.position="none") +
+#    xlab("Play") +
+#    ylab("frequency of the word 'love'") +
+#    theme(legend.position = "none")
+```
+
+```{r echo=FALSE}
+shak$category <- NA
+shak$category[shak$Play == "A Comedy of Errors" | 
+                    shak$Play == "As you like it" | 
+                    shak$Play == "Alls well that ends well" | 
+                    shak$Play == "Loves Labours Lost" | 
+                    shak$Play == "Measure for measure" | 
+                    shak$Play == "Merchant of Venice" | 
+                    shak$Play == "Merry Wives of Windsor" | 
+                    shak$Play == "A Midsummer nights dream" | 
+                    shak$Play == "Much Ado about nothing" | 
+                    shak$Play == "Taming of the Shrew" | 
+                    shak$Play == "Twelfth Night" | 
+                    shak$Play == "Two Gentlemen of Verona"] <- "comedy"
+shak$category[shak$Play == "Pericles" | 
+                    shak$Play == "Cymbeline" | 
+                    shak$Play == "A Winters Tale" | 
+                    shak$Play == "The Tempest"] <- "romance"
+shak$category[shak$Play == "King John" | 
+                    shak$Play == "Richard II" | 
+                    shak$Play == "Richard III" | 
+                    shak$Play == "Henry IV" | 
+                    shak$Play == "Henry V" | 
+                    shak$Play == "Henry VI Part 1" | 
+                    shak$Play == "Henry VI Part 2" | 
+                    shak$Play == "Henry VI Part 3" | 
+                    shak$Play == "Henry VIII" | 
+                    shak$Play == "Coriolanus" | 
+                    shak$Play == "Julius Caesar" | 
+                    shak$Play == "Antony and Cleopatra" | 
+                    shak$Play == "King Lear" | 
+                    shak$Play == "macbeth"] <- "history"
+shak$category[shak$Play == "Titus Andronicus" | 
+                    shak$Play == "Romeo and Juliet" |  
+                    shak$Play == "Hamlet" |  
+                    shak$Play == "Troilus and Cressida" |  
+                    shak$Play == "Othello" |  
+                    shak$Play == "Timon of Athens"] <- "tragedy"
+```
+
+Finally, we can generate these same types of graphs for different subgroups, too. Here's one example, where we look at the number of lines each player has, focusing only on players who have greater than 700 lines. We can also see if there are any trends in these top speakers by play category. It seems to me that the **histories** dominate, but Hamlet and Iago dominate the scene (so to speak).
+
 ```{r}
 shak %>%
-  group_by(Play,Player) %>%
+  group_by(Play,Player,category) %>%
   summarise(n = n()) %>%
   filter(n > 700) %>%
   ggplot(., aes(x=reorder(Player, n),y=n)) +
-    geom_bar(aes(fill=Play),stat="identity") +
+    geom_bar(aes(fill=category),stat="identity") +
     coord_flip() +
-    ggtitle("Amount of lines by character") +
+    ggtitle("Number of lines by character") +
 #    theme(legend.position="none") +
     xlab("Player") +
     ylab("Number of lines")
 ```
 
-```{r}
-lPlay %>%
-  ggplot(., aes(x=reorder(plays, loveFreq),y=loveFreq)) +
-    geom_bar(aes(fill=plays),stat="identity") +
-    coord_flip() +
-    ggtitle("Love in each play") +
-#    theme(legend.position="none") +
-    xlab("Play") +
-    ylab("frequency of the word 'love'") +
-    theme(legend.position = "none")
-```
+Is this because **histories** and **tragedies** tend to be longer plays, overall? Quite possibly:
 
 ```{r}
-lPlayer %>%
-  filter(loveFreq > 20) %>%
-  ggplot(., aes(x=reorder(players, loveFreq),y=loveFreq)) +
-    geom_bar(aes(fill=players),stat="identity") +
+shak %>%
+  group_by(Play,category) %>%
+  summarise(n = n()) %>%
+  ggplot(., aes(x=reorder(Play, n),y=n)) +
+    geom_bar(aes(fill=category),stat="identity") +
     coord_flip() +
-    ggtitle("Love in each play") +
-#    theme(legend.position="none") +
+    ggtitle("Length of Shakespeare's plays") +
+    theme(legend.position="none") +
     xlab("Play") +
-    ylab("frequency of the word 'love'") +
-    theme(legend.position = "none")
+    ylab("Number of lines")
 ```
+
+
 
 # Attempting n-grams
 
