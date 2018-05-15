@@ -3,7 +3,7 @@ title: "Processing Shakespeare"
 output:
   html_notebook:
     toc: yes
-    toc_depth: 2
+    toc_depth: 3
     toc_float: yes
     code_folding: hide
 ---
@@ -234,6 +234,7 @@ lPlay %>%
 
 ```{r echo=FALSE,message=FALSE,results='hide'}
 scales::show_col(scales::hue_pal()(4))
+scales::show_col(scales::hue_pal()(2))
 ```
 
 One thing that graphs can do very easily is give you a way to identify trends when you sort events (e.g., plays) into multiple different categories. For instance, the frequency graph above is interesting, but there are so many plays and as a non-expert, I can't tell you what each is about, what style it is written in, or whether I'd expect it to be about "love" or not. So, we can add another dimension of information. In the following graph, each color represents a different category (as determined by Wikipedia's [First Folio](https://en.wikipedia.org/wiki/First_Folio) page, plus information about the "late romances"). Now, we can see if there are trends for different categories to mention "love" more or less than the others.
@@ -403,7 +404,7 @@ shak %>%
 
 
 
-# Attempting n-grams
+# N-grams
 
 ```{r, echo=FALSE,message=FALSE}
 library(dplyr)
@@ -411,30 +412,62 @@ library(dplyr)
 library(tidytext)
 ```
 
+Single words might not be able to tell us much about the texts, which is why examining collocations is such a popular technique. What's the difference between "the king", "kill the king", and "kiss the king"? A lot, but we won't know if we only look for instances of "king". There is where **n-grams** become useful. N-grams are sets of adjacent words, calculated by assigning a number to 'n'. That is, if we want sets of two words, we talk about **bigrams**. If we want sets of three words, we talk about **trigrams**. 
 
-```{r}
-shak %>%
-  as_tibble(.) %>%
-  unnest_tokens(tbl=., input = PlayerLine, output = word)
-```
+## Pre-processing the corpus
+
+First, we can look at the corpus as a list of words, rather than a list of lines (by act and scene).
 
 ```{r}
 shak %>%
   as_tibble(.) %>%
   unnest_tokens(tbl=., input = PlayerLine, output = word) %>%
-  count(word, sort = TRUE)
+  as.data.frame() %>% head(10)
 ```
 
+Now, we can automate the process of counting how often each word occurs. But, of course, certain words are going to be extremely common (see Zipf's Law), and those words are unlikely to be informative.
+
 ```{r}
+shak %>%
+  as_tibble(.) %>%
+  unnest_tokens(tbl=., input = PlayerLine, output = word) %>%
+  count(word, sort = TRUE) %>%
+  as.data.frame() %>% head(10)
+```
+
+Once we've filtered out our *stop-words*, the most frequent words look quite different.
+
+```{r, message=FALSE}
 shak %>%
   as_tibble(.) %>%
   unnest_tokens(tbl=., input = PlayerLine, output = word) %>%
   anti_join(stop_words) %>%
-  count(word, sort = TRUE)
+  count(word, sort = TRUE) %>%
+  as.data.frame() %>% head(10)
 ```
 
+However, Shakespeare uses a lot of words that aren't in our default stop-word list, so we can append our own custom list.
+
 ```{r}
-shak %>%
+word <- c(NA,"thou","thee","thy","thine","dost","shalt","wilt","hast","hath","scene","tis","ii","iii","iv","v","vi","vii")
+lexicon <- rep("shakespeare",length(word))
+new_stop <- cbind(word,lexicon)
+shak_stop <- rbind(new_stop,stop_words)
+```
+
+Here is a visualisation of how stop words affect the corpus.
+
+```{r fig.width=5, fig.asp=.5, message=FALSE}
+p1 <- shak %>%
+  as_tibble(.) %>%
+  unnest_tokens(tbl=., input = PlayerLine, output = word) %>%
+  count(word, sort = TRUE) %>%
+  filter(n>800) %>%
+  ggplot(., aes(x=reorder(word,n),y=n)) +
+    geom_bar(stat="identity") +
+    coord_flip() +
+    ggtitle("No stop words")
+p2 <- shak %>%
   as_tibble(.) %>%
   unnest_tokens(tbl=., input = PlayerLine, output = word) %>%
   anti_join(stop_words) %>%
@@ -442,12 +475,39 @@ shak %>%
   filter(n>800) %>%
   ggplot(., aes(x=reorder(word,n),y=n)) +
     geom_bar(stat="identity") +
-    coord_flip()
+    coord_flip() +
+    ggtitle("Default stop words")
+p3 <- shak %>%
+  as_tibble(.) %>%
+  unnest_tokens(tbl=., input = PlayerLine, output = word) %>%
+  anti_join(shak_stop) %>%
+  count(word, sort = TRUE) %>%
+  filter(n>800) %>%
+  ggplot(., aes(x=reorder(word,n),y=n)) +
+    geom_bar(stat="identity") +
+    coord_flip() +
+    ggtitle("Custom stop words")
+multiplot(p1,p2,p3,cols=3)
 ```
 
-## Using tibbles
+## Comparing across plays
 
-How can we organise this so that we can compare across plays?
+Before we try to compare across plays, let's see what the most common bigrams are overall (after being filtered by the custom stop words list).
+
+```{r}
+shak %>%
+  as_tibble() %>%
+  unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
+  separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
+  filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
+  filter(!word2 %in% shak_stop$word) %>% # filters stop words from second column
+  count(word1, word2, sort = TRUE) %>%
+  as.data.frame() %>% head(10)
+```
+
+### 1-grams (just regular token frequency)
+
+If we choose a subset of words, we can look at how they are distributed across different plays. In this case, we can compare <span style="color:#F8766D">**death**</span>, <span style="color:#7CAE00">**king**</span>, <span style="color:#00BFC4">**love**</span>, and <span style="color:#C77CFF">**sweet**</span> across six plays. Unsurprisingly, *Romeo and Juliet* uses the word <span style="color:#00BFC4">**love**</span> more than any other play, although *Midsummer Night's Dream* is close. <span style="color:#7CAE00">**King**</span> is also much more common in plays about kings (surprise, surprise).
 
 ```{r}
 shak[,c(2,5,6)] %>%
@@ -471,9 +531,21 @@ shak[,c(2,5,6)] %>%
     facet_wrap(~Play)
 ```
 
-Is there a way to break it down to see who is saying what?
+But there are more interesting words you could compare, certainly. These are just one example.
 
-## What about n-grams
+### Bigrams
+
+It's probably much more interesting to look at collocation than simple word frequency. After all, it gives more context. However, it also reduces the number of tokens substantially.
+
+Here, we can visualise three pairs of gendered noun phrases:
+
+Masculine | Feminine
+------- | -------
+<span style="color:#F8766D">**my lord**</span>    | <span style="color:#00BFC4">**my lady**</span>
+<span style="color:#F8766D">**my father**</span>  | <span style="color:#00BFC4">**my mother**</span>
+<span style="color:#F8766D">**my husband**</span> | <span style="color:#00BFC4">**my wife**</span>
+
+What kinds of information can we see in the graph?
 
 ```{r fig.width=5, fig.asp=.5}
 
@@ -515,46 +587,10 @@ shak %>%
     facet_wrap(~Play,nrow=3)
 ```
 
-```{r}
-shak %>%
-  as_tibble() %>%
-  unnest_tokens(input = PlayerLine, output = ngram, token = "ngrams", n = 2) %>%
-  mutate(bigram = ngram) %>%
-  unnest_tokens(input = ngram, output = word) %>%
-  #anti_join(stop_words) %>%
-  filter(word=="king" | word=="queen") %>%
-  group_by(Play,bigram,word) %>%
-  summarise(n=n()) %>%
-  arrange(desc(n)) %>%
-  ggplot(aes(x=reorder(Play,n))) +
-    geom_bar(aes(fill=word),stat="count",position="dodge") +
-    #scale_y_log10() +
-    coord_flip()
-```
-
-
-```{r}
-word <- c(NA,"thou","thee","thy","thine","dost","shalt","wilt","hast","hath","scene","tis","ii","iii","iv","v","vi","vii")
-lexicon <- rep("shakespeare",length(word))
-new_stop <- cbind(word,lexicon)
-shak_stop <- rbind(new_stop,stop_words)
-```
-
-
-
-```{r}
-shak %>%
-  as_tibble() %>%
-  unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
-  separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
-  filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
-  filter(!word2 %in% shak_stop$word) %>% # filters stop words from second column
-  count(word1, word2, sort = TRUE)
-```
 
 ## Networks
 
-```{r}
+```{r echo=FALSE,message=FALSE}
 #install.packages("igraph")
 #install.packages("ggraph")
 library(igraph)
@@ -562,7 +598,11 @@ library(ggraph)
 library(grid)
 ```
 
+I think the most exciting way to use n-grams is probably network graphs. These graphs show what words co-occur, and in what order. Moreover, they can encode a number of dimensions visually, which would be very difficult to calculate by hand or plot in a more standard quantitative method.
+
 ### Bigrams
+
+
 
 ```{r}
 set.seed(814)
