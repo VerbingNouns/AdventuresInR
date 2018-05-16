@@ -6,6 +6,7 @@ output:
     toc_depth: 3
     toc_float: yes
     code_folding: hide
+    df_print: paged
 ---
 
 ```{r echo=FALSE}
@@ -602,7 +603,7 @@ I think the most exciting way to use n-grams is probably network graphs. These g
 
 ### Bigrams
 
-
+From the list of bigrams we can generate from our corpus, we can plot a network graph in which the shade of the connection between nodes indicates the frequency of the bigram (darker means more frequent). Moreover, these connections ("edges") are directional, so we can see which order the words are occuring in.
 
 ```{r}
 set.seed(814)
@@ -624,7 +625,7 @@ shak %>%
     theme_void()
 ```
 
-
+We can also use these plots to compare across plays (although token frequency begins to drop precipitously). Here, we can see that <span style="color:salmon">**Twelfth Night**</span> has notable connections between items of clothing (yellow stockings, cross gartered), whereas <span style="color:lightblue">**Hamlet**</span> and <span style="color:green2">**Romeo and Juliet**</span> have more tokens referring to people and their stage directions. <span style="color:lightblue">**Hamlet**</span> additionally has a notable number of "father's death" bigrams, while <span style="color:green2">**Romeo and Juliet**</span> mentions "county Paris" frequently.
 
 ```{r}
 set.seed(814)
@@ -684,6 +685,8 @@ p3 <- shak %>%
 
 multiplot(p1,p2,p3,cols=3)
 ```
+
+If we exclude stage directions and compare across six plays, we start to see distinct themes appear. 
 
 ```{r fig.width=5, fig.asp=.5}
 set.seed(814)
@@ -810,9 +813,11 @@ p6 <- shak %>%
 multiplot(p1,p2,p3,p4,p5,p6,cols=3)
 ```
 
+All of these words are found directly adjacent. What about when words are slighting further apart? That is, language is not linear. How can we visualise relationships between topics that are somewhat less immediate?
+
 ### Trigrams
 
-This should give us a better idea of slightly looser connections
+One of the simplest ways to visualise more distant connections is the include more words in each network. Here is a graph of trigrams for the entire corpus, excluding stage directions. (Actually, I think this graph may be of only the first two elements of each trigram, but I will have to sort that out later.)
 
 ```{r fig.width=5, fig.asp=.5}
 set.seed(814)
@@ -838,6 +843,8 @@ shak %>%
 
 
 What happens if we treat the first pair and second pair of trigrams as separate bigrams and graph them as before?
+
+We should be able to visualise longer distance relations of these collocations. This is only a taste of what kinds of network graphs can be generated, since the type of graph and content will vary tremendously based on your unique research questions.
 
 ```{r fig.width=5, fig.asp=.75}
 set.seed(814)
@@ -879,6 +886,11 @@ wXwY %>%
 
 # Heatmaps
 
+Another visualisation tool that can be very helpful for showing distributions of events across a structure is the heatmap. A heatmap is a complex histogram, which allows multiple subsets of the data to be compared side-to-side.
+
+
+In this example, we can look at the variability of length of subsections (acts and scenes) as determined by number of words. First, let's take a look at the numbers. Since there are so many acts and scenes across all the plays, it is unweildy to look at such a table.
+
 ```{r}
 shak %>%
   as_tibble() %>%
@@ -887,9 +899,41 @@ shak %>%
   mutate(ActSceneLine2 = ActSceneLine) %>%
   separate(ActSceneLine2, c("act", "scene", "line")) %>%
   count(Play,act,scene, sort=TRUE) %>%
-  transmute(play=Play, act=as.numeric(act), scene=as.numeric(scene), n=n)
+  transmute(play=Play, act=as.numeric(act), scene=as.numeric(scene), n=n) %>%
+  as.data.frame() %>% head(10)
 ```
 
+We could look at a series of histograms to see how plays vary in their distribution…
+
+```{r, message=FALSE, results='hide'}
+shak %>%
+  as_tibble() %>%
+  #filter(Play == "Hamlet" | Play == "King John" | Play == "The Tempest") %>% 
+  filter(ActSceneLine != "") %>%
+  mutate(ActSceneLine2 = ActSceneLine) %>%
+  separate(ActSceneLine2, c("act", "scene", "line")) %>%
+  count(Play,act, sort=TRUE) %>%
+  transmute(play=Play, act=as.integer(act), n=n) %>%
+  ggplot(aes(x=act)) + 
+    geom_histogram(aes(y = n), stat="identity") + facet_wrap(~play)
+```
+
+
+However, it is much easier and quicker to extract this information from a heatmap (although the precise numbers are lost in this version).
+
+```{r fig.width=3, fig.asp=.75}
+shak %>%
+  as_tibble() %>%
+  filter(ActSceneLine != "") %>%
+  mutate(ActSceneLine2 = ActSceneLine) %>%
+  separate(ActSceneLine2, c("act", "scene", "line")) %>%
+  count(Play,act, sort=TRUE) %>%
+  transmute(play=Play, act=as.integer(act), n=n) %>%
+  ggplot(aes(x=act,y=reorder(play, n))) + 
+    geom_tile(aes(fill = n), colour = "white") + scale_fill_gradient(low = "white", high = "steelblue")
+```
+
+Let's focus in on a subset of plays in order to simplify the visualisation. From a simple visual inspection, it appears that **Act V** tends to be the lightest on words, with the very notable exception of *Love's Labour's Lost*. Otherwise, **Act I** is generally fairly heavy on words, and **Act II** tends to be a bit lighter. Armed with that (superficial) observation, we might be able to check whether our eyes deceive us or whether there's something to it. (But I'll leave that exploration for another time.)
 
 ```{r}
 shak %>%
@@ -907,22 +951,7 @@ shak %>%
     geom_tile(aes(fill = n), colour = "white") + scale_fill_gradient(low = "white", high = "steelblue")
 ```
 
-```{r}
-shak %>%
-  as_tibble() %>%
-  filter(Play == "Hamlet" | Play == "King John" | Play == "The Tempest" | 
-           Play == "Cymbeline" | Play == "Measure for measure" | Play == "Timon of Athens" | 
-           Play == "Richard III" | Play == "Loves Labours Lost" | Play == "A Winters Tale" | 
-           Play == "Othello" | Play == "Romeo and Juliet" | Play == "Henry V") %>% 
-  filter(ActSceneLine != "") %>%
-  mutate(ActSceneLine2 = ActSceneLine) %>%
-  separate(ActSceneLine2, c("act", "scene", "line")) %>%
-  count(Play,scene, sort=TRUE) %>%
-  transmute(play=Play, scene=as.integer(scene), n=n) %>%
-  ggplot(aes(x=scene,y=reorder(play, n))) + 
-    geom_tile(aes(fill = n), colour = "white") + scale_fill_gradient(low = "white", high = "steelblue") +
-    scale_x_continuous(breaks=c(0:8))
-```
+The number of scenes per act tends for vary, as does the number of words per scene. Maybe there is some pattern we can detect by plotting the number of words by scene, by act, and by play. This figure is able to communicate a tremendous amount of information in a very small space. Of course, one must still be walked through it to get the full gist of what is shown. The two wordiest scenes in this subset of the corpus are in *Love's Labour's Lost* **Act V, Scene II** (the very last scene in the play) and *A Winter's Tale* **Act IV, Scene IV**. I don't know what happens in these two scenes, but maybe someone who is familiar with the content could identify what makes these two scenes stand out.
 
 ```{r fig.width=5, fig.asp=.35}
 shak %>%
@@ -944,6 +973,7 @@ shak %>%
     facet_wrap(~act, ncol = 5)
 ```
 
+A similar style figure could also illustrate where each character has the bulk of their lines. Here, we can see Hamlet is positively verbose in **Scene II** in **Acts II, III, V**, but otherwise only marginally wordier than the other players. Moreover, there seems to be the most even distribution of lines (neither very dark nor entirely pale, as colour-coded) in **Act I**, whereas the other acts are quite skewed toward the few main players.
 
 ```{r fig.width=5, fig.asp=.5}
 shak %>%
@@ -963,6 +993,8 @@ shak %>%
     facet_wrap(~act, ncol = 5)
 ```
 
+The same type of plot can be used to examine *Twelfth Night*, which is shorter, more evenly distributed, and much less soliloquy-driven. 
+
 ```{r fig.width=5, fig.asp=.5}
 shak %>%
   as_tibble() %>%
@@ -973,7 +1005,7 @@ shak %>%
   separate(ActSceneLine2, c("act", "scene", "line")) %>%
   count(Player,act,scene, sort=TRUE) %>%
   transmute(player=Player, act=as.integer(act), scene=as.integer(scene), n=n) %>%
-  ggplot(aes(x=scene,y=player)) + 
+  ggplot(aes(x=scene,y=reorder(player,n))) + 
     geom_tile(aes(fill = n), colour = "white") + 
     scale_fill_gradient(low = "white", high = "red2") +
     scale_x_continuous(breaks=c(0:8)) +
@@ -981,6 +1013,30 @@ shak %>%
     facet_wrap(~act, ncol = 5)
 ```
 
-## Wrap up
+# Wrap up
 
-What this all seems to tell us is that we can visualise the structure of the play, separate from their content. Is this useful to you?
+What this all seems to tell us is that we can visualise the structure of the play, separate from their content. Is this useful to you? It will depend on what kinds of research questions you are interested in. However, if any of your questions involve counting things (words, lines, appearances, collocations, ngrams, etc), then it is possible and even likely that visualisations can help communicate that information in a succinct and easily read way.
+
+Of course, counting things is only going to be helpful for some possible questions. But, it's important to know that not everything that can be counted is a simple number. There are relative frequencies, collocations and n-grams, and changes over "time" (i.e., in different acts, scenes, chapters, by publication year, etc). We can use these relations between numbers to create elegant figures that might or might not communicate numbers specifically (i.e., network graphs). We can then use the figures to explore properties of the text that might not be immediately apparent from close reading.
+
+As a quick (visual) summary of what's been covered, here is a table of plot types and their (best) uses:
+
+Plot | Uses
+---|----------
+Bar plot | Frequency (relative or absolute)
+Histogram | Frequency distribution across a scale
+Heatmap | Frequency/attestation across multiple dimensions
+Network graph | Collocation (with or without directionality)
+
+
+Other Plots | Uses
+---|----------
+Flow chart | Temporal order/branching without regard to spacial orientation
+Chord diagram | Connect concepts by frequency but can be busy or confusing
+Choropleth map | Map or diagram that uses shading/color to indicate value
+Word cloud | *CAUTION:* Pretty but difficult to compare relative sizes  
+Pie chart | **DO NOT USE**: Difficult to compare relative size of slices
+
+
+If you have any questions about how to get started or how I generated these figures, please send me an email at:  
+`lauren [DOT] ackerman [AT] ncl.ac.uk`
