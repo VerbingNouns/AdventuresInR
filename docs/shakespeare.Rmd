@@ -3,10 +3,11 @@ title: "Processing Shakespeare"
 output:
   html_notebook:
     toc: yes
-    toc_depth: 3
-    toc_float: yes
+    toc_depth: 2
     code_folding: hide
     df_print: paged
+    toc_float:
+      collapsed: false
 ---
 
 ```{r echo=FALSE}
