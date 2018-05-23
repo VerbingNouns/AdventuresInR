@@ -1,0 +1,214 @@
+---
+title: "Session 1 - Introduction"
+output:
+  html_notebook:
+    toc: yes
+    toc_float: yes
+---
+
+## How to use an R Markdown file
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+## RStudio breakdown
+
+RStudio shows you four panes:
+
+1. The 'Source' pane: the file where you write your code
+2. The 'Console' where actual code is run
+3. The 'Environment' pane, which shows you variables / datasets
+3. The 'Viewer' pane, which shows you plots and help files
+
+![](panes.png)
+
+You can arrange these in any order using Tools > Global Options.
+
+![](console_etc.png)
+
+## Setting the 'working directory'
+
+At the very beginning of an R session you MUST set a 'working directory'. This tells R where to look for and save files. To do this type
+
+```setwd("path/to/directory")```
+
+Unfortunately, if you are on a windows machine you will need to change all backslashes ```\``` to forward slashes ```/```. This is because R follows UNIX conventions which are native to Linux and Mac computers.
+
+If you are not sure what your working directory is type
+
+```getwd()```
+
+## Using R as a calculator
+
+We can use the console for general arithmetic
+
+```{r}
+1 + 3 + 5
+
+(2 + 9) / 7
+```
+
+We can also create variables, e.g.
+
+```{r}
+x <- 10
+
+y <- 21
+
+x*y
+
+```
+
+##Comments
+
+If you'd like to comment on any code you write (i.e. you do not wish R to try to 'run' this code) just add a hash (```#```) or series of hashes in front of it, e
+g
+
+```{r}
+
+df <- read.csv("csv_file.csv") # This reads in the main file for the experiment
+
+```
+
+##Functions
+
+Most work in R is done using _Functions_. These take the following form: _function(argument(s))_. Here are some mathematical functions
+
+```{r}
+
+sqrt(10)
+
+```
+
+Have a look at the following argument called ```gsub```. What does it do? If you're not sure how to use the function, type ```?``` and the name of the function in the console, e.g. ```?gsub```.
+
+```{r}
+
+gsub("R-studio", "Rstudio", "R-studio is a greate piece of software")
+
+grepl("chocolate", "Mary likes chocolate cookies")
+
+```
+
+##Objects
+
+A variable is a type of 'object' which R stores in memory. R is capable of creating and storing a wide range of objects. To see what type of object we have created, we use the function ```class()```, e.g.
+
+```{r}
+
+class(x)
+
+z <- "hello"
+
+class(z)
+
+```
+
+*class* is one of the most useful functions in R as errors are often due to misassignment of class, e.g.
+
+```{r, error = TRUE}
+
+x + z
+
+```
+
+Here we have tried to add a number to a string which is clearly impossible. It's possible to change the class of an object using commands such as ```as.character```, ```as.integer```, ```as.numeric```, ```as.factor```, e.g.
+
+```{r, error = TRUE}
+one <- "1"
+
+x + one
+
+one <- as.numeric(one)
+
+x + one
+```
+
+Here is a list of the main objects in R:
+
+1. Numeric - a number with decimal places
+2. Integer - a number without decimal places
+3. Character - a string of letters/numbers
+4. Vector - an ordered list of numbers or characters
+5. Dataframe - a 2 x 2 array in which each column has a name
+
+In order to create a vector we need to use the ```c``` function. (c = 'combine'), e.g.
+
+```{r}
+list.of.numbers <- c(1,4,54,22,43,9,0,0,21)
+
+mean(list.of.numbers)
+
+sd(list.of.numbers)
+```
+
+## Packages
+
+To enhance the basic capabilities of R, we need to load packages. Most of the time, we download these from 'CRAN' ```Tools > Install packages```. Once the package is installed, we then need to _load_ it using the ```library()``` function. One of the most useful packages is called 'tidyverse'.
+
+![](tidyverse.png)
+
+It contains a number of useful commands for plots, and data manipulation. Install the 'tidyverse' package, and then load it with the following function:
+
+```{r}
+
+library(tidyverse)
+
+```
+
+## Working with indices
+
+Whenever you wish to access the contents of an object with multiple values you use indexes. These are placed inside square brackets. Have a look at the following example:
+
+```{r}
+
+list.of.movies <- c("independence day", "pretty woman", "the godfather part two", "planet of the apes")
+
+# The function c is used to create a list, or "vector"
+
+list.of.movies[2]
+
+```
+
+Now let's make a dataframe from scratch
+
+```{r}
+
+
+rotten.tomatoes.variable <- c(62, 61, 97, 89)
+
+df <- as.data.frame(cbind(list.of.movies, rotten.tomatoes.variable)) # 'cbind' binds columns together
+
+```
+
+
+## Working with dataframes
+
+Now let's do some work with dataframes.
+
+R has a native function to read .csv files: ```read.csv```. To read a .csv file type: ```df <- read.csv("name_of_file.csv")```. The .csv format is an excellent format for storing data as it is readable in Excel, smll, simple, and not easily-corrupted.
+
+To read files in other format use the following packages:
+
+1. .sav files (SPSS) and .dta files (STATA): ```foreign```
+2. Excel files (.xls, .xlsx, xlsm): ```read_r``` (part of the tidyverse) or ```openxlsx```
+
+
+
+## Piping
+
+
+
+
+
+
+###Assigning values
