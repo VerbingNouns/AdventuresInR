@@ -37,6 +37,7 @@ Execute this code now, then save this file (`Cmd+s` on Mac, `CTRL+s` on Windows)
 ```{r}
 plot(cars)
 ```
+![](images/plot_cars.png)
 
 This graph was generated using some data that comes pre-loaded with the basic R software. However, to use R you will need to:
 
@@ -88,11 +89,12 @@ Uh oh! Looks like *capitalisation* is important in R. That will be something to 
 
 ## 3. Running
 
-By this point, you have **installed** and **loaded** the three packages you will need for the first day of the workshop. Before you're done setting up RStudio, though, you should make sure that the packages are **running** properly. Let's produce that first graph again, but this time using code only available when 'ggplot2' is installed and loaded. Remember to save this RNotebook and then refresh the web browser page to see the formatted output.
+By this point, you have **installed** and **loaded** the three packages you will need for the first day of the workshop. Before you're done setting up RStudio, though, you should make sure that the packages are **running** properly. Let's produce that first graph again, but this time using code only available when 'ggplot2' is installed and loaded.
 
 ```{r}
 ggplot(cars, aes(x=speed, y=dist)) + geom_point(size=3, shape=1) + theme_bw()
 ```
+![](images/ggplot_cars.png)
 
 If everything has gone to plan, you should now see a second graph that looks very much like the first graph. Don't worry about how we made it yet! That will be something we explain during the workshop. Right now, we just want to make sure that you are ready to hit the ground running on the first day.
 
