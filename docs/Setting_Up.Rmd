@@ -62,7 +62,6 @@ install.packages("SnowballC")
 install.packages("psycho")
 install.packages("reshape2")
 install.packages("Hmisc")
-install.packages("psycholing")
 ````
 
 If you get an error or if nothing seems to be happening, you may need to respond to the program like below (type `yes` and hit `Enter`).
