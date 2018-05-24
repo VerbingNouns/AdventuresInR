@@ -29,11 +29,11 @@ RStudio shows you four panes:
 3. The 'Environment' pane, which shows you variables / datasets
 3. The 'Viewer' pane, which shows you plots and help files
 
-![](panes.png)
+![](images/panes.png)
 
 You can arrange these in any order using Tools > Global Options.
 
-![](console_etc.png)
+![](images/console_etc.png)
 
 ## Setting the 'working directory'
 
@@ -155,7 +155,7 @@ sd(list.of.numbers)
 
 To enhance the basic capabilities of R, we need to load packages. Most of the time, we download these from 'CRAN' ```Tools > Install packages```. Once the package is installed, we then need to _load_ it using the ```library()``` function. One of the most useful packages is called 'tidyverse'.
 
-![](tidyverse.png)
+![](images/tidyverse.png)
 
 It contains a number of useful commands for plots, and data manipulation. Install the 'tidyverse' package, and then load it with the following function:
 
