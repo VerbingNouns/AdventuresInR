@@ -53,9 +53,17 @@ packages that do not automatically come with the basic R software. These package
 
 First, make sure you are connected to the internet. Install the following packages now, by executing the code below as you did in the previous cell.
 
-```{r}
-install.packages("tidyverse","lme4","tm","ordinal","SnowballC")
-```
+````{r}
+install.packages("tidyverse")
+install.packages("lme4")
+install.packages("tm")
+install.packages("ordinal")
+install.packages("SnowballC")
+install.packages("psycho")
+install.packages("reshape2")
+install.packages("Hmisc")
+install.packages("psycholing")
+````
 
 If you get an error or if nothing seems to be happening, you may need to respond to the program like below (type `yes` and hit `Enter`).
 ````
