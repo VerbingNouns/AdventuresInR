@@ -12,7 +12,7 @@ output:
 
 Congratulations! You have downloaded [R](https://www.stats.bris.ac.uk/R/) and [RStudio](https://www.rstudio.com/products/rstudio/download/#download).
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. If you are reading this on the workshop website, you are looking at the HTML (web) version. Make sure you have the `.Rmd` file as well, which you can download by right-clicking [here](https://github.com/VerbingNouns/AdventuresInR/blob/master/docs/Setting_Up.Rmd) and saving the file to the computer you will be using during the workshop.
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. If you are reading this on the workshop website, you are looking at the HTML (web) version. Make sure you have the `.Rmd` file as well, which you should have received via email.
 
 The HTML version can serve as an easy-to-read copy, but you can only run the code if you open the `.Rmd` file using RStudio.
 
