@@ -85,9 +85,7 @@ Before we get into anything fun, we have to see what the corpus looks like; that
 ```{r}
 shak<-read.csv("../data/Shakespeare_data.csv",header = TRUE, as.is = TRUE)
 #shak<-na.omit(shak)
-shak %>%
-  group_by(Dataline) %>%
-  as_tibble()
+shak %>% group_by(Dataline)
 ```
 
 Each column is labeled and the content of the column is consistent for each row (all 111396 of them!). Some of the rows may not be useful. Some contain empty cells (labeled `NA`). Some contain a lot of information and we might need to do some processing on them before we can use the information quantitatively.
@@ -121,7 +119,8 @@ lPlay <- na.omit(lPlay)
 
 # order the plays based on the occurence of love
 lPlay<-lPlay[order(-lPlay$loveFreq),]
-head(lPlay,10)
+
+lPlay %>% group_by(plays)
 ```
 
 We can also look at which players say "love" the most over the course of their appearences. These are only the top 10 players who use the word "love" most. 
@@ -148,13 +147,14 @@ lPlayer <- na.omit(lPlayer)
 #order
 lPlayer <- lPlayer[order(-lPlayer$loveFreq),]
 
-head(lPlayer,10)
+lPlayer %>% group_by(players)
 ```
 
 We can also look at the bottom of the list. These are 10 players who only say "love" once, although there are likely many others who are also tied for last.
 
 ```{r}
-tail(lPlayer,10)
+lPlayer %>%
+tail(10) %>% group_by(players)
 ```
 
 Is this useful to you? Can word frequency by character/player, scene, act, play, or author help to answer any of your research questions?
@@ -423,30 +423,27 @@ First, we can look at the corpus as a list of words, rather than a list of lines
 
 ```{r}
 shak %>%
-  as_tibble(.) %>%
-  unnest_tokens(tbl=., input = PlayerLine, output = word) %>%
-  as.data.frame() %>% head(10)
+  unnest_tokens(input = PlayerLine, output = word) %>%
+  group_by(Dataline)
 ```
 
 Now, we can automate the process of counting how often each word occurs. But, of course, certain words are going to be extremely common (see Zipf's Law), and those words are unlikely to be informative.
 
 ```{r}
 shak %>%
-  as_tibble(.) %>%
-  unnest_tokens(tbl=., input = PlayerLine, output = word) %>%
+  unnest_tokens(input = PlayerLine, output = word) %>%
   count(word, sort = TRUE) %>%
-  as.data.frame() %>% head(10)
+  group_by(word)
 ```
 
 Once we've filtered out our *stop-words*, the most frequent words look quite different.
 
 ```{r, message=FALSE}
 shak %>%
-  as_tibble(.) %>%
-  unnest_tokens(tbl=., input = PlayerLine, output = word) %>%
+  unnest_tokens(input = PlayerLine, output = word) %>%
   anti_join(stop_words) %>%
   count(word, sort = TRUE) %>%
-  as.data.frame() %>% head(10)
+  group_by(word)
 ```
 
 However, Shakespeare uses a lot of words that aren't in our default stop-word list, so we can append our own custom list.
@@ -499,13 +496,12 @@ Before we try to compare across plays, let's see what the most common bigrams ar
 
 ```{r}
 shak %>%
-  as_tibble() %>%
   unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
   separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
   filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
   filter(!word2 %in% shak_stop$word) %>% # filters stop words from second column
   count(word1, word2, sort = TRUE) %>%
-  as.data.frame() %>% head(10)
+  group_by(word1)
 ```
 
 ### 1-grams (just regular token frequency)
@@ -611,7 +607,6 @@ From the list of bigrams we can generate from our corpus, we can plot a network 
 set.seed(814)
 a <- grid::arrow(type = "closed", angle=22.5, length = unit(.1, "inches"))
 shak %>%
-  as_tibble() %>%
   unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
   separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
   filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
@@ -634,7 +629,6 @@ set.seed(814)
 a <- grid::arrow(type = "closed", angle=22.5, length = unit(.1, "inches"))
 p1 <- shak %>%
   filter(Play=="Hamlet") %>%
-  as_tibble() %>%
   unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
   separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
   filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
@@ -652,7 +646,6 @@ p1 <- shak %>%
 set.seed(814)
 p2 <- shak %>%
   filter(Play == "Twelfth Night") %>%
-  as_tibble() %>%
   unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
   separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
   filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
@@ -670,7 +663,6 @@ p2 <- shak %>%
 set.seed(814)
 p3 <- shak %>%
   filter(Play == "Romeo and Juliet") %>%
-  as_tibble() %>%
   unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
   separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
   filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
@@ -696,7 +688,6 @@ a <- grid::arrow(type = "closed", angle=22.5, length = unit(.1, "inches"))
 p1 <- shak %>%
   filter(ActSceneLine != "") %>%
   filter(Play=="Hamlet") %>%
-  as_tibble() %>%
   unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
   separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
   filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
@@ -716,7 +707,6 @@ set.seed(814)
 p2 <- shak %>%
   filter(ActSceneLine != "") %>%
   filter(Play == "Twelfth Night") %>%
-  as_tibble() %>%
   unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
   separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
   filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
@@ -736,7 +726,6 @@ set.seed(814)
 p3 <- shak %>%
   filter(ActSceneLine != "") %>%
   filter(Play == "Romeo and Juliet") %>%
-  as_tibble() %>%
   unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
   separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
   filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
@@ -756,7 +745,6 @@ set.seed(814)
 p4 <- shak %>%
   filter(ActSceneLine != "") %>%
   filter(Play == "Othello") %>%
-  as_tibble() %>%
   unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
   separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
   filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
@@ -776,7 +764,6 @@ set.seed(814)
 p5 <- shak %>%
   filter(ActSceneLine != "") %>%
   filter(Play == "Henry IV") %>%
-  as_tibble() %>%
   unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
   separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
   filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
@@ -796,7 +783,6 @@ set.seed(814)
 p6 <- shak %>%
   filter(ActSceneLine != "") %>%
   filter(Play == "The Tempest") %>%
-  as_tibble() %>%
   unnest_tokens(input = PlayerLine, output = bigram, token = "ngrams", n = 2) %>%
   separate(bigram, c("word1", "word2"), sep = " ") %>% # separates bigram into two columns, one for each word
   filter(!word1 %in% shak_stop$word) %>% # filters stop words from first column
@@ -823,9 +809,7 @@ One of the simplest ways to visualise more distant connections is the include mo
 
 ```{r fig.width=5, fig.asp=.5}
 set.seed(814)
-a <- grid::arrow(type = "closed", angle=22.5, length = unit(.1, "inches"))
 shak %>%
-  as_tibble() %>%
   filter(ActSceneLine != "") %>%
   unnest_tokens(input = PlayerLine, output = trigram, token = "ngrams", n = 3) %>%
   separate(trigram, c("word1", "word2", "word3"), sep = " ") %>% # separates bigram into two columns, one for each word
@@ -850,9 +834,7 @@ We should be able to visualise longer distance relations of these collocations. 
 
 ```{r fig.width=5, fig.asp=.75}
 set.seed(814)
-a <- grid::arrow(type = "closed", angle=22.5, length = unit(.075, "inches"))
 w1w2 <- shak %>%
-  as_tibble() %>%
   filter(ActSceneLine != "") %>%
   unnest_tokens(input = PlayerLine, output = trigram, token = "ngrams", n = 3) %>%
   separate(trigram, c("word1", "word2", "word3"), sep = " ") %>% # separates bigram into two columns, one for each word
@@ -863,7 +845,6 @@ w1w2 <- shak %>%
   mutate(set = 1) %>%
   transmute(word1=word1,word2=word2,n=n,set=set)
 w2w3 <- shak %>%
-  as_tibble() %>%
   filter(ActSceneLine != "") %>%
   unnest_tokens(input = PlayerLine, output = trigram, token = "ngrams", n = 3) %>%
   separate(trigram, c("word1", "word2", "word3"), sep = " ") %>% # separates bigram into two columns, one for each word
@@ -895,21 +876,19 @@ In this example, we can look at the variability of length of subsections (acts a
 
 ```{r}
 shak %>%
-  as_tibble() %>%
   #filter(Play == "Hamlet" | Play == "Loves Labours Lost" | Play == "A Winters Tale") %>%
   filter(ActSceneLine != "") %>%
   mutate(ActSceneLine2 = ActSceneLine) %>%
   separate(ActSceneLine2, c("act", "scene", "line")) %>%
   count(Play,act,scene, sort=TRUE) %>%
   transmute(play=Play, act=as.numeric(act), scene=as.numeric(scene), n=n) %>%
-  as.data.frame() %>% head(10)
+  group_by(play)
 ```
 
 We could look at a series of histograms to see how plays vary in their distribution…
 
 ```{r, message=FALSE, results='hide'}
 shak %>%
-  as_tibble() %>%
   #filter(Play == "Hamlet" | Play == "King John" | Play == "The Tempest") %>% 
   filter(ActSceneLine != "") %>%
   mutate(ActSceneLine2 = ActSceneLine) %>%
@@ -925,7 +904,6 @@ However, it is much easier and quicker to extract this information from a heatma
 
 ```{r fig.width=3, fig.asp=.75}
 shak %>%
-  as_tibble() %>%
   filter(ActSceneLine != "") %>%
   mutate(ActSceneLine2 = ActSceneLine) %>%
   separate(ActSceneLine2, c("act", "scene", "line")) %>%
@@ -939,7 +917,6 @@ Let's focus in on a subset of plays in order to simplify the visualisation. From
 
 ```{r}
 shak %>%
-  as_tibble() %>%
   filter(Play == "Hamlet" | Play == "King John" | Play == "The Tempest" | 
            Play == "Cymbeline" | Play == "Measure for measure" | Play == "Timon of Athens" | 
            Play == "Richard III" | Play == "Loves Labours Lost" | Play == "A Winters Tale" | 
@@ -957,7 +934,6 @@ The number of scenes per act tends for vary, as does the number of words per sce
 
 ```{r fig.width=5, fig.asp=.35}
 shak %>%
-  as_tibble() %>%
   filter(Play == "Hamlet" | Play == "King John" | Play == "The Tempest" | 
            Play == "Cymbeline" | Play == "Measure for measure" | Play == "Timon of Athens" | 
            Play == "Richard III" | Play == "Loves Labours Lost" | Play == "A Winters Tale" | 
@@ -979,7 +955,6 @@ A similar style figure could also illustrate where each character has the bulk o
 
 ```{r fig.width=5, fig.asp=.5}
 shak %>%
-  as_tibble() %>%
   filter(Play == "Hamlet") %>% 
   #filter(Player != "HAMLET" & Player != "LORD POLONIUS" & Player != "KING CLAUDIUS") %>% 
   filter(ActSceneLine != "") %>%
@@ -999,7 +974,6 @@ The same type of plot can be used to examine *Twelfth Night*, which is shorter, 
 
 ```{r fig.width=5, fig.asp=.5}
 shak %>%
-  as_tibble() %>%
   filter(Play == "Twelfth Night") %>% 
   #filter(Player != "HAMLET" & Player != "LORD POLONIUS" & Player != "KING CLAUDIUS") %>% 
   filter(ActSceneLine != "") %>%
