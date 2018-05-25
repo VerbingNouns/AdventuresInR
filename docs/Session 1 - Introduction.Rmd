@@ -2,12 +2,13 @@
 title: "Session 1 - Introduction.Rmd"
 output: 
   html_notebook:
+    number_sections: true
     toc: true
     toc_float:
       collapsed: false
 ---
 
-## How to use an R Markdown file
+# How to use an R Markdown file
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 code within the notebook, the results appear beneath the code.
@@ -24,7 +25,9 @@ When you save the notebook, an HTML file containing the code and output will be
 saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to
 preview the HTML file).
 
-## RStudio breakdown
+# RStudio breakdown
+
+## Panes
 
 RStudio shows you four panes:
 
@@ -34,10 +37,16 @@ datasets 3. The 'Viewer' pane, which shows you plots and help files
 
 ![](images/console_etc.png)
 
+
 You can arrange these in any order using Tools > Global Options.
 
 ![](images/panes.png)
 
+## Autocomplete
+
+RStudio has fantastic autocomplete capabilites. To autocomplete just press TAB. This is especially useful when loading files as using autocomplete will help you to identify relevant ones.
+
+# R basics
 
 ## Setting the 'working directory'
 
@@ -73,15 +82,15 @@ x*y
 
 
 
-##Comments
+## Comments
 
 If you'd like to comment on any code you write (i.e. you do not wish R to try to
 'run' this code) just add a hash (```#```) or series of hashes in front of it, e.
 g.
 
-```{df <- read.csv("csv_file.csv") # This reads in the main file for the experiment}```
+```df <- read.csv("csv_file.csv") # This reads in the main file for the experiment```
 
-##Functions
+## Functions
 
 Most work in R is done using _Functions_. These take the following form:
 _function(argument(s))_. Here are some functions
@@ -101,18 +110,64 @@ function in the console, e.g. ```?gsub```.
 
 ```{r}
 
-gsub("R-studio", "Rstudio", "R-studio is a greate piece of software")
+gsub("R-studio", "Rstudio", "R-studio is a great piece of software")
 
 grepl("chocolate", "Mary likes chocolate cookies")
 
 ```
 
+## DIY functions
 
-##Getting help
+It's possible to **create your own functions**. This makes R extremely powerful and extendible. We're not going to cover making your own functions in this course, but it's important to be aware of this capability. There are plenty of good resources online for learning how to do this, including [this one](https://www.statmethods.net/management/userfunctions.html)
+
+## Getting help
 
 As we have seen above, to find out about a particular function just type ```?``` and the name of the function into the console, e.g. ```?grepl```. This accesses the help files on your computer. If you'd like to search more broadly type ```??grepl``` and your computer will look online for relevant materials on CRAN (the main R website)
 
-##Objects
+Help files in R are quite densely written and not particularly aimed at beginners. Fortunately there are loads of excellent resources on the internet. Here are some really good sites:
+
+(a) [https://www.statmethods.net/index.html](https://www.statmethods.net/index.html)
+(b) [https://stats.idre.ucla.edu/r/modules/](https://stats.idre.ucla.edu/r/modules/)
+(c) [https://rseek.org/](https://rseek.org/) - a search engine for all things related to R (because the word 'R' brings up a whole load of irrelevant stuff in Google)
+
+
+# Packages
+
+## Installation
+
+To enhance the basic capabilities of R, we need to load packages. Most of the
+time, we download these from 'CRAN' ```Tools > Install packages```. Once the
+package is installed, we then need to _load_ it using the ```library()```
+function. One of the most useful packages is called 'tidyverse'.
+
+![](images/tidyverse.png)
+
+It contains a number of useful commands for plots, and data manipulation.
+Install the 'tidyverse' package, and then load it with the following function:
+
+```{r}
+library(tidyverse)
+```
+
+## Obtaining help
+
+To find out more about a package type ```?package_name``` in the console. Alternatively you can look for the package documntation on [CRAN](https://cran.r-project.org/).
+
+## Using functions from packages
+
+Most of the functions loaded in a package should work 'out of the box'. However occastionally you need to refer to the package first, and then the function using the format ```package_name::function_from_that_package```. This is useful for a variety of reasons:
+
+1. It allows you to use a function from a package without loading the library
+2. It helps in cases where you load two packages which contain two different functions which happent to have the same name.
+3. Sometimes, even when a package is loaded, you need to precede a function by the package name. However, most of the time this is not necessary.
+
+## Simplifying installation / loading
+
+The **pacman** package is really useful as in a single line you can check whether a package is installed, install it (if not installed), and load the library. We won't be using this in class, but you can explore it at your leisure.
+
+# Objects, data frames and indices
+
+## Objects
 
 A variable is a type of 'object' which R stores in memory. R is capable of
 creating and storing a wide range of objects. To see what type of object we have
@@ -167,47 +222,12 @@ mean(list.of.numbers)
 sd(list.of.numbers)
 ```
 
-## Packages
 
-###1. Installation
-
-To enhance the basic capabilities of R, we need to load packages. Most of the
-time, we download these from 'CRAN' ```Tools > Install packages```. Once the
-package is installed, we then need to _load_ it using the ```library()```
-function. One of the most useful packages is called 'tidyverse'.
-
-![](images/tidyverse.png)
-
-It contains a number of useful commands for plots, and data manipulation.
-Install the 'tidyverse' package, and then load it with the following function:
-
-```{r}
-library(tidyverse)
-```
-
-###2. Obtaining help
-
-To find out more about a package type ```?package_name``` in the console. Alternatively you can look for the package documntation on [CRAN](https://cran.r-project.org/).
-
-###3. Using functions from packages
-
-Most of the functions loaded in a package should work 'out of the box'. However occastionally you need to refer to the package first, and then the function using the format ```package_name::function_from_that_package```. This is useful for a variety of reasons:
-
-1. It allows you to use a function from a package without loading the library
-2. It helps in cases where you load two packages which contain two different functions which happent to have the same name.
-3. Sometimes, even when a package is loaded, you need to precede a function by the package name. However, most of the time this is not necessary.
-
-###4. Simplifying installation / loading
-
-The **pacman** package is really useful as in a single line you can check whether a package is installed, install it (if not installed), and load the library. We won't be using this in class, but you can explore it at your leisure.
-
-## Data frames and indices
-
-### 1. Creating a data frame from scratch
+## Creating a data frame from scratch
 
 A data frame is a two-dimensional object containing variables and row numbers. It's basically a spreadsheet.
 
-The following code creates a data frame programmatically. It creates two variables, and combines them together to make a data frame. Not that to do this we need to use the functions ```as.data.frame``` and ```cbind```
+The following code creates a data frame programmatically. It creates two variables, and combines them together to make a data frame. Note that to do this we need to use the functions ```as.data.frame``` and ```cbind```.
 
 ```{r}
 list.of.movies <- c("Independence Day", "Pretty Woman", "The Godfather Part
@@ -218,7 +238,7 @@ rotten.tomatoes.variable <- c(62, 61, 97, 89)
 df <- as.data.frame(cbind(list.of.movies, rotten.tomatoes.variable)) # 'cbind' binds columns together
 ```
 
-### 2. Viewing the contents of a data frame
+## Viewing the contents of a data frame
 
 To glimpse the top few rows type ```head(name_of_data_frame)``` in the console, e.g.
 
@@ -232,7 +252,7 @@ To view the data frame in the 'source' window, type ```view(name_of_data_frame)`
 View(df) #NB first letter is a capital letter.
 ```
 
-### 3. Referring to variables
+## Referring to variables
 
 To refer to variables, use the following syntax ```data_frame_name$variable_name```, e.g.
 
@@ -261,7 +281,7 @@ names(df)
 ```
 
 
-### 4. Indices
+## Indices
 
 Whenever you wish to access the contents of an object with multiple values (e.g. a data frame) you use indexes. These are placed inside square brackets, e.g. ```[1]```. Have a look at the following example:
 
@@ -272,26 +292,29 @@ df[1,2]
 
 The first value refers to the row number, while the second refers to the column number. So this gives the values for the first row and second column (i.e. the first row of the rotten.tomatoes.variable)
 
-
 To refer to a particular cell in this data frame we need to use indices. The first refers to the row
 
-### 5. Reading dataframes from files
+## Reading data frames from files using menus
 
-R is not the best piece of software for inputting data. You will probably be doing this in Excel. We're now going to practice reading in data in Excel and SPSS formats.
+We can use the menu in Rstudio: ```File > Import dataset```. You can do this to import Excel, SPSS, SAS and STATA files.
 
-The following lines take a native dataset (mtcars), and write this in a variety of different formats. This is purely to provide you with practice of reading the datasets. Once you've run this code you'll find that three new datasets are created in your directory.
+## Reading data frames from files using code
+
+However, rather than use the menu, it's much better to use actual code, as this will automate the process.
+
+To get set up, we're going to create some datasets in foreign formats. The following lines take a native dataset (mtcars), and write this in a variety of different formats. This is purely to provide you with practice of reading the datasets. Once you've run this code you'll find that three new datasets are created in your directory.
 
 ```{r}
 library(tidyverse)
 library(xlsx)
 write.csv(mtcars, "mtcars.csv")
 write.xlsx(mtcars, "mtcars.xlsx")
-haven::write_sav(mtcars, "mtcars.sav")
+haven::write_sav(mtcars, "mtcars.sav")  # NB 'haven' is loaded with "tidyverse" but for some reason when you call haven functions you have to also specify the package. I have no idea why
 ```
 
 Possibly the best data format to work in is the .csv data format. This is good because it is readable in Excel, small, simple, and not easily-corrupted.
 
-To read .csv files we use the ```read.csv()``` function, e.g. 
+To read .csv files we use the ```read.csv()``` function from base R, e.g. 
 
 ```{r}
 df <- read.csv("mtcars.csv")
@@ -300,22 +323,68 @@ df <- read.csv("mtcars.csv")
 
 To read files in other format use the following packages:
 
-1. .sav files (SPSS) and .dta files (STATA): ```foreign```
+1. .sav files (SPSS) and .dta files (STATA): ```foreign``` and ```haven```
 2. Excel files (.xls, .xlsx, xlsm): ```read_r``` (part of the tidyverse) or ```openxlsx```
 
-Let's read the excel files
+Let's read the SPSS file
 
 ```{r}
-df <- read_x
+df <- haven::read_sav("mtcars.sav")
 ```
 
+And the Excel files
 
+```{r}
+df <- read.xlsx("mtcars.xlsx", 1)
+# NB 1 means that we read from the first tab.
+```
+
+# Subsetting a data set using (a) base R and (d) dplyr
+
+## Subsetting with base R
+
+We're going to *subset* the mtcars dataset (i.e. choose only those cases which fulfil a specific criterion). To do this we're going to use the ```which()``` function. When you apply ```which``` to a variable in a dataset, it will produce indices of the rows which fulfil a certain criterio, e.g. ```which(df$var_name == 2)``` will give you the indices of all rows where the value of the variable is 2. Armed with this knowledge, your task is to subset the data frame so that it only contains cars with 4 cylinders.
+
+If you're stuck have a look at the answer below, but don't peek until you're 
+_____
+_____
+_____
+_____
+_____
+_____
+
+```{r}
+df.6cyl <- df[which(df$cyl == 6), ]
+```
 
 ## Piping
 
+Okay, the above code is pretty horrible to look at, so we're going to explore an alternative using the package ```dplyr``` which is from the ```tidyverse```. But before we can use ```dplyr``` we have to learn how to 'pipe'.
+
+![](images/MagrittePipe.jpg)
+
+Pipes are written in R as ```%>%``` (note you must use a percentage sign before and after the pipe). To demonstrate what pipes do, I have a look at the following pseudocode.
+
+![](images/piping.png)
+
+All pipes do is enable us to 'pass' a data frame (or another object) to a new function without having to keep on specifying the data frame. In addition, we can *chain* pipes together indefinitely.
+
+Here's how we would subset the data frame using piping:
+
+```{r}
+df %>% filter(cyl == 6) -> df.6cyl
+```
+
+And here is an example where we *chain* a series of pipes together:
+
+```{r}
+df %>% group_by(cyl) %>% summarise(mean.mpg = mean(mpg)) -> df.mean.mpg.by.cyl
+```
 
 
+There are a couple of important points to note.
 
+(1) We can refer to variables without specifying the data frame
+(2) If we wish to store the results we must output them using and arrow ```->```. If we don't output the results they will merely be displayed in the console.
 
-
-###Assigning values
+Piping is a key technique in R and once you've learnt it you will write much more powerful and readable code.
