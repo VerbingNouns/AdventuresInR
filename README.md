@@ -33,6 +33,10 @@ We anticipate that basic refreshments, including lunch, will be provided.
 The room does not contain any PCs and we would ask attendees to *bring laptops with copies of R and RStudio already installed*
 (please visit  https://www.r-project.org/ to download R, and https://www.rstudio.com/ to download RStudio). We believe that it’s preferable to work on laptops rather than university machines as it is much easier to update R to the latest version.
 
+If you already have R and RStudio installed, we recommend you update to the latest versions. The recent updates in R version 3.5.0 are substantial and will require the re-installation of any packages you have previously installed. Instructions and help for doing so can be found here: https://www.r-statistics.com/2018/04/r-3-5-0-is-released-major-release-with-many-new-features/
+
 ### Notes:
+
+25 May 2018: One aspect of the bug mentioned below for R version 3.5.0 interacting with RStudio version 1.1.447 can easily be fixed by piping data table displays to `group_by()`.
 
 16 May 2018: R version 3.5.0 has a known bug in its interface with RStudio version 1.1.447. This bug only seems to effect a small number of aspects of compiling R Notebooks (a tool that will be used throughout the workshop). We do not anticipate this becoming an issue during the workshop and will keep this page updated with any announcements regarding this bug. (It is currently being addressed by the RStudio development team as a high priority.)
