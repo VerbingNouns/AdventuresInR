@@ -62,8 +62,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 ```{r,message=FALSE}
 # install.packages("ggplot2","dplyr")
 library(ggplot2)
-library(dplyr)
-library(tidyr)
+library(tidyverse)
 ```
 
 
@@ -86,7 +85,9 @@ Before we get into anything fun, we have to see what the corpus looks like; that
 ```{r}
 shak<-read.csv("../data/Shakespeare_data.csv",header = TRUE, as.is = TRUE)
 #shak<-na.omit(shak)
-head(shak)
+shak %>%
+  group_by(Dataline) %>%
+  as_tibble()
 ```
 
 Each column is labeled and the content of the column is consistent for each row (all 111396 of them!). Some of the rows may not be useful. Some contain empty cells (labeled `NA`). Some contain a lot of information and we might need to do some processing on them before we can use the information quantitatively.
