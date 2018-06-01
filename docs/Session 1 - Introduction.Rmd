@@ -129,6 +129,7 @@ Help files in R are quite densely written and not particularly aimed at beginner
 (a) [https://www.statmethods.net/index.html](https://www.statmethods.net/index.html)
 (b) [https://stats.idre.ucla.edu/r/modules/](https://stats.idre.ucla.edu/r/modules/)
 (c) [https://rseek.org/](https://rseek.org/) - a search engine for all things related to R (because the word 'R' brings up a whole load of irrelevant stuff in Google)
+(d) [http://www.cookbook-r.com/](http://www.cookbook-r.com/)
 
 
 # Packages
@@ -246,7 +247,7 @@ To glimpse the top few rows type ```head(name_of_data_frame)``` in the console, 
 head(df)
 ```
 
-To view the data frame in the 'source' window, type ```view(name_of_data_frame)``` in the console, .e.g.
+To view the data frame in the 'source' window, type ```View(name_of_data_frame)``` in the console, .e.g.
 
 ```{r}
 View(df) #NB first letter is a capital letter.
@@ -255,16 +256,16 @@ View(df) #NB first letter is a capital letter.
 ## Referring to variables
 
 To refer to variables, use the following syntax ```data_frame_name$variable_name```, e.g.
-
 ```{r}
 df$list.of.movies
 ```
+When naming variables we can use dots and underscores, e.g. ```df$list.of.movies``` and ```df$list_of_movies```. We can use numbers as long as they don't come at the beginning, e.g. ```df$list_of_movies.v3```.
 
 If you use this convention, then the names for variables can get very long. However, it's generally useful, as in R you often have multiple data frames loaded into memory. By specifiying both the name of the data frame and the variable, this avoids confusion.
 
 There IS a way to specify a variable using just the variable name only:
 
-```{r}
+```{r, echo = TRUE}
 attach(df)
 list.of.movies
 detach(df)
@@ -288,7 +289,11 @@ Whenever you wish to access the contents of an object with multiple values (e.g.
 
 ```{r}
 df[1,2]
+df[1, ]
+df[ ,2]
 ```
+
+What does it mean when we leave a cell blank?
 
 The first value refers to the row number, while the second refers to the column number. So this gives the values for the first row and second column (i.e. the first row of the rotten.tomatoes.variable)
 
@@ -388,3 +393,58 @@ There are a couple of important points to note.
 (2) If we wish to store the results we must output them using and arrow ```->```. If we don't output the results they will merely be displayed in the console.
 
 Piping is a key technique in R and once you've learnt it you will write much more powerful and readable code.
+
+# Loops and if-then statements
+
+Loops and if-then statements are useful programming tools which have the same structure: ```FUNCTION (STATEMENT) {.....}```.
+
+## Loops
+
+To demonstrate a loop we're going to look at the mtcars data set. We're going to ask the question 'for cars of different different numbers of gears what is the relationship between the 'horsepower' and the number of cylinders. (I have no idea if this is a good question to ask!)
+
+Here's how we would do it
+
+```{r}
+list.of.num.gears <- unique(df$gear) # Unique shows unique values of a variable
+
+for (i in 1:length(list.of.num.gears)){ # We loop through the list
+  df %>% filter(df$gear == list.of.num.gears[i]) -> temp.df # we subset the data according to the number of gears
+  model <- cor.test(temp.df$hp, temp.df$cyl) # We do the analysis
+  print(paste("Number of gears", list.of.num.gears[i])) # We print the results
+  print(model)
+}
+
+```
+
+## If-then statements
+
+To demonstrate if-then statements, we are going to create a new variable which shows if the mpg is above the mean.
+
+```{r}
+df$mpg.above.mean <- 0 # Set variable to 0
+mean.mpg <- mean(df$mpg) # Calculate mean mpg
+for (i in 1:nrow(df)){
+  if(df$mpg[i] > mean.mpg){df$mpg.above.mean[i] <- 1}
+}
+```
+
+## Evaluating conditions
+
+Here is a much easier way to create the same variable
+```{r}
+df$mpg.above.mean2 <- as.numeric(df$mpg > mean.mpg)
+```
+So how does this work? The statement in brackets evaluates to TRUE / FALSE. We then turn this into a number using ```as.numeric```.
+
+It can be quite useful to chain statements. For example, if we wish to identify cars with both mpg and weight about the mean we could do the following:
+
+```{r}
+mean.weight <- mean(df$wt)
+df$weight.and.mpg.above.mean <- (df$wt > mean.weight) & (df$mpg > mean.mpg)
+# NB this doesn't work!!
+```
+
+
+
+
+# Stored results

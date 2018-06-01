@@ -1,16 +1,15 @@
 ---
-title: "Processing Shakespeare"
+title: "Session 3: Processing text and corpus data"
 output:
   html_notebook:
     toc: yes
     toc_depth: 2
-    code_folding: hide
     df_print: paged
     toc_float:
       collapsed: false
 ---
 
-```{r echo=FALSE}
+```{r}
 # Multiple plot function
 #
 # ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
@@ -59,7 +58,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 ```
 
 
-```{r,message=FALSE}
+```{r}
 # install.packages("ggplot2","dplyr")
 library(ggplot2)
 library(tidyverse)
@@ -72,12 +71,11 @@ The purpose of this notebook is to demonstrate some of what is possible for visu
 
 First, there must be a corpus or digitized text that can be analysed computationally. For this demonstration, I've used a corpus of Shakespeare's plays and adapted some code from [a Kaggle notebook](https://www.kaggle.com/sindhuee/love-in-shakespeare?scriptVersionId=1121270).
 
-```{r,message=FALSE,collapse=TRUE}
+```{r}
 # R must be at least 3.3.1 for `tm` and `slam` to work.
 # install.packages("tm")
 # install.packages("SnowballC")
 library(tm)
-#system("ls ../input") # do we need this?
 ```
 
 Before we get into anything fun, we have to see what the corpus looks like; that is, how the data frame is structured. These are the first six lines of the corpus. **NB: there is currently a small bug in the software that prevents the data from being shown neatly. It should be fixed soon.**
@@ -153,8 +151,7 @@ lPlayer %>% group_by(players)
 We can also look at the bottom of the list. These are 10 players who only say "love" once, although there are likely many others who are also tied for last.
 
 ```{r}
-lPlayer %>%
-tail(10) %>% group_by(players)
+tail(lPlayer,10)
 ```
 
 Is this useful to you? Can word frequency by character/player, scene, act, play, or author help to answer any of your research questions?
