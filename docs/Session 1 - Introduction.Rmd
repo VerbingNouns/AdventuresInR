@@ -1,7 +1,7 @@
 ---
 title: "Session 1 - Introduction.Rmd"
 output: 
-  html_notebook:
+  html_document:
     number_sections: true
     toc: true
     toc_float:
@@ -10,19 +10,19 @@ output:
 
 # How to use an R Markdown file
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
-code within the notebook, the results appear beneath the code.
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code.
 
 Try executing this chunk by clicking the *Run* button within the chunk or by
 placing your cursor inside it and pressing *Ctrl+Shift+Enter*.
 
-```{r} plot(cars) ```
+```{r}
+plot(cars)
+```
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by
 pressing *Ctrl+Alt+I*.
 
-When you save the notebook, an HTML file containing the code and output will be
-saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to
 preview the HTML file).
 
 # RStudio breakdown
@@ -31,9 +31,7 @@ preview the HTML file).
 
 RStudio shows you four panes:
 
-1. The 'Source' pane: the file where you write your code 2. The 'Console' where
-actual code is run 3. The 'Environment' pane, which shows you variables /
-datasets 3. The 'Viewer' pane, which shows you plots and help files
+1. The 'Source' pane: the file where you write your code 2. The 'Console' where actual code is run 3. The 'Environment' pane, which shows you variables / datasets 3. The 'Viewer' pane, which shows you plots and help files
 
 ![](images/console_etc.png)
 
@@ -50,14 +48,12 @@ RStudio has fantastic autocomplete capabilites. To autocomplete just press TAB. 
 
 ## Setting the 'working directory'
 
-At the very beginning of an R session you MUST set a 'working directory'. This
-tells R where to look for and save files. To do this type
+At the very beginning of an R session you MUST set a 'working directory'. This tells R where to look for and save files. To do this type
 
 ```setwd("path/to/directory")```
 
 Unfortunately, if you are on a windows machine you will need to change all
-backslashes ```\``` to forward slashes ```/```. This is because R follows UNIX
-conventions which are native to Linux and Mac computers.
+backslashes ```\``` to forward slashes ```/```. This is because R follows UNIX conventions which are native to Linux and Mac computers.
 
 If you are not sure what your working directory is type
 
@@ -84,9 +80,7 @@ x*y
 
 ## Comments
 
-If you'd like to comment on any code you write (i.e. you do not wish R to try to
-'run' this code) just add a hash (```#```) or series of hashes in front of it, e.
-g.
+If you'd like to comment on any code you write (i.e. you do not wish R to try to 'run' this code) just add a hash (```#```) or series of hashes in front of it, e.g.
 
 ```df <- read.csv("csv_file.csv") # This reads in the main file for the experiment```
 
@@ -103,11 +97,9 @@ seq(1,10,2)
 
 ```
 
-What do the arguments of ```seq``` do?
+EX1: What do the arguments of ```seq``` do? To find out more search for the relevant help file in the console by typing ```?seq```
 
-Have a look at the following arguments called ```gsub``` and ```grepl```. What do they do? If you're not sure how to use the function, type ```?``` and the name of the
-function in the console, e.g. ```?gsub```.
-
+EX2: Have a look at the following arguments called ```gsub``` and ```grepl```. What do they do? Clue: if you're stuck, search the help file using ```?```
 ```{r}
 
 gsub("R-studio", "Rstudio", "R-studio is a great piece of software")
@@ -131,15 +123,12 @@ Help files in R are quite densely written and not particularly aimed at beginner
 (c) [https://rseek.org/](https://rseek.org/) - a search engine for all things related to R (because the word 'R' brings up a whole load of irrelevant stuff in Google)
 (d) [http://www.cookbook-r.com/](http://www.cookbook-r.com/)
 
-
 # Packages
 
 ## Installation
 
 To enhance the basic capabilities of R, we need to load packages. Most of the
-time, we download these from 'CRAN' ```Tools > Install packages```. Once the
-package is installed, we then need to _load_ it using the ```library()```
-function. One of the most useful packages is called 'tidyverse'.
+time, we download these from 'CRAN' ```Tools > Install packages``` or ```install.packages()```. Once the package is installed, we then need to _load_ it using the ```library()```function. One of the most useful packages is called 'tidyverse'.
 
 ![](images/tidyverse.png)
 
@@ -171,8 +160,7 @@ The **pacman** package is really useful as in a single line you can check whethe
 ## Objects
 
 A variable is a type of 'object' which R stores in memory. R is capable of
-creating and storing a wide range of objects. To see what type of object we have
-created, we use the function ```class()```, e.g.
+creating and storing a wide range of objects. To see what type of object we have created, we use the function ```class()```, e.g.
 
 ```{r}
 
@@ -193,8 +181,7 @@ x + z
 
 ```
 
-Here we have tried to add a number to a string which is clearly impossible. It's
-possible to change the class of an object using commands such as
+Here we have tried to add a number to a string which is clearly impossible. It's possible to change the class of an object using commands such as
 ```as.character```, ```as.integer```, ```as.numeric```, ```as.factor```, e.g.
 
 ```{r, error = TRUE}
@@ -209,8 +196,7 @@ Here is a list of the main objects in R:
 1. Numeric - a number with decimal places
 2. Integer - a number without decimal places
 3. Character - a string of letters/numbers
-4. Vector - an ordered list of
-numbers or characters
+4. Vector - an ordered list of numbers or characters
 5. Dataframe - a 2 x 2 array in which each column has a name
 
 In order to create a vector we need to use the ```c``` function. (c = 'combine'), e.g.
@@ -289,15 +275,11 @@ Whenever you wish to access the contents of an object with multiple values (e.g.
 
 ```{r}
 df[1,2]
-df[1, ]
-df[ ,2]
+df[1, ] # here the second number is blank
+df[ ,2] # here the first number is blank
 ```
 
-What does it mean when we leave a cell blank?
-
-The first value refers to the row number, while the second refers to the column number. So this gives the values for the first row and second column (i.e. the first row of the rotten.tomatoes.variable)
-
-To refer to a particular cell in this data frame we need to use indices. The first refers to the row
+EX3: What does each number refer to? What happens when we leave a blank cell?
 
 ## Reading data frames from files using menus
 
@@ -309,7 +291,7 @@ However, rather than use the menu, it's much better to use actual code, as this 
 
 To get set up, we're going to create some datasets in foreign formats. The following lines take a native dataset (mtcars), and write this in a variety of different formats. This is purely to provide you with practice of reading the datasets. Once you've run this code you'll find that three new datasets are created in your directory.
 
-```{r}
+```{r, error = TRUE}
 library(tidyverse)
 library(xlsx)
 write.csv(mtcars, "mtcars.csv")
@@ -339,7 +321,7 @@ df <- haven::read_sav("mtcars.sav")
 
 And the Excel files
 
-```{r}
+```{r, error = TRUE}
 df <- read.xlsx("mtcars.xlsx", 1)
 # NB 1 means that we read from the first tab.
 ```
@@ -348,9 +330,11 @@ df <- read.xlsx("mtcars.xlsx", 1)
 
 ## Subsetting with base R
 
-We're going to *subset* the mtcars dataset (i.e. choose only those cases which fulfil a specific criterion). To do this we're going to use the ```which()``` function. When you apply ```which``` to a variable in a dataset, it will produce indices of the rows which fulfil a certain criterio, e.g. ```which(df$var_name == 2)``` will give you the indices of all rows where the value of the variable is 2. Armed with this knowledge, your task is to subset the data frame so that it only contains cars with 4 cylinders.
+We're going to *subset* the mtcars dataset (i.e. choose only those cases which fulfil a specific criterion). To do this we're going to use the ```which()``` function. When you apply ```which``` to a variable in a dataset, it will produce indices of the rows which fulfil a certain criterio, e.g. ```which(df$var_name == 2)``` will give you the indices of all rows where the value of the variable is 2.
 
-If you're stuck have a look at the answer below, but don't peek until you're 
+EX4: Armed with this knowledge, your task is to subset the data frame so that it only contains cars with 4 cylinders.
+
+If you're stuck have a look at the answer below. 
 _____
 _____
 _____
@@ -416,6 +400,13 @@ for (i in 1:length(list.of.num.gears)){ # We loop through the list
 
 ```
 
+EX5: The code below creates a sequence ranging from 0 to 30 going up in steps of 0.25. Try to achieve the same result using a loop
+
+```{r}
+seq(0,30,2.5)
+```
+
+
 ## If-then statements
 
 To demonstrate if-then statements, we are going to create a new variable which shows if the mpg is above the mean.
@@ -434,17 +425,34 @@ Here is a much easier way to create the same variable
 ```{r}
 df$mpg.above.mean2 <- as.numeric(df$mpg > mean.mpg)
 ```
-So how does this work? The statement in brackets evaluates to TRUE / FALSE. We then turn this into a number using ```as.numeric```.
+So how does this work? The statement in brackets evaluates to TRUE / FALSE. We then turn this into a number using ```as.numeric```. TRUE evaluates to 1, while FALSE evaluates to 0.
 
 It can be quite useful to chain statements. For example, if we wish to identify cars with both mpg and weight about the mean we could do the following:
 
 ```{r}
 mean.weight <- mean(df$wt)
 df$weight.and.mpg.above.mean <- (df$wt > mean.weight) & (df$mpg > mean.mpg)
-# NB this doesn't work!!
 ```
 
+We can see that there is no car in this category because there is an inverse relationship between weight and miles per gallon.
 
-
+EX6: Try to identify cars where both the ```disp``` and ```drat``` variables are above the mean.
 
 # Stored results
+
+Whenever you run an analysis in R and save that to an object, the object has an internal structure. To demonstrate this, let's do a simple regression suing the mtcars dataset:
+
+```{r}
+model <- lm(df$mpg ~ df$wt)
+```
+
+To see the results of this regression we type ```model``` or ```summary(model)```. Now let's have a look at the `structure` of this model. There are two ways to do this:
+
+1. Use the ```str``` function, e.g. ```str(model)```
+2. Type ```model$```, and then use autocomplete.
+
+We can see that the ```$``` symbol has a dual function in R: firstly, to specify variables within dataframes, and secondly to specify subcomponents of an object.
+
+It is useful to be able to refer to subcomponents of an object so that we can integrate into our report, e.g. the regression yielded a value of `r summary(model)$r.squared`
+
+
