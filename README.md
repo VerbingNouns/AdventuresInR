@@ -37,6 +37,8 @@ If you already have R and RStudio installed, we recommend you update to the late
 
 ### Notes:
 
+05 June 2018: The newest version of RStudio is 1.1.453. This fixes the bug described below for data frames and tibbles but not for certain other output.
+
 25 May 2018: One aspect of the bug mentioned below for R version 3.5.0 interacting with RStudio version 1.1.447 can easily be fixed by piping data table displays to `group_by()`.
 
 16 May 2018: R version 3.5.0 has a known bug in its interface with RStudio version 1.1.447. This bug only seems to effect a small number of aspects of compiling R Notebooks (a tool that will be used throughout the workshop). We do not anticipate this becoming an issue during the workshop and will keep this page updated with any announcements regarding this bug. (It is currently being addressed by the RStudio development team as a high priority.)
