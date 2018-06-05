@@ -14,6 +14,7 @@ In this session, we will look at basic functions in R that will help us in runni
 
 # Loading packages 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
+## Use the code below to check if you have all required packages installed. If some are not installed already, the code below will install these. If you have all packages installed, then you could load them with the second code.
 requiredPackages = c('ggplot2','tidyverse','psycho','lme4','ordinal','lmerTest')
 for(p in requiredPackages){
   if(!require(p,character.only = TRUE)) install.packages(p)
@@ -187,8 +188,15 @@ table(grammatical$grammaticality,grammatical$response)
 ## Accuracy and Signal Detection Theory
 We are generally interested in performance, i.e., whether the we have "accurately" categorised the outcome or not. Let's do some stats on this 
 
+|  | Yes | No | Total |
+|----------------------------|--------------------|------------------|------------------|
+| Grammatical (Yes Actual) | TP = 100 | FN = 5 | (Yes Actual) 105 |
+| Ungrammatical (No Actual)  | FP = 10 | TN = 50 | (No Actual) 60 |
+| Total | (Yes Response) 110 | (No Response) 55 | 165 |
+
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 ## TP = True Positive (Hit); FP = False Positive; FN = False Negative; TN = True Negative
+
 
 TP = 100
 FP = 10
@@ -248,7 +256,6 @@ If you want to talk about the percentage "accuracy" of our model, then we can tr
 plogis(coef(mdl.glm))
 ```
 
-If we had count data, we need to use another family "poisson". 
 
 ### Plotting
 
@@ -263,6 +270,24 @@ ggplot(grammatical, aes(x=as.numeric(grammaticality), y=prob)) +
     coord_cartesian(ylim=c(0,1))+
     scale_x_discrete(limits = c("Ungrammatical","Grammatical"))
 ```
+
+## GLM: Other distributions
+
+If your data does not fit a binomial distribution, and is a multinomial (i.e., three or more response categories) or poisson (count data), then you need to use the glm function with a specific family function. 
+
+```{r warning=FALSE, message=FALSE, error=FALSE, echo=FALSE}
+## For a multinomial (3 or more response categories), see below and use the following specification
+## https://stats.idre.ucla.edu/r/dae/multinomial-logistic-regression/
+## mdl.multi <- nnet::multinom(outcome~predictor, data=data)
+
+## For a poisson (count data), see below and use the following specification
+## https://stats.idre.ucla.edu/r/dae/poisson-regression/
+
+## mdl.poisson <- glm(outcome~predictor, data=data,family="poisson")
+
+
+```
+
 
 # Cumulative Link Models
 
@@ -487,4 +512,43 @@ ggplot.xreal.Original <- ggplot(xreal,aes(x=logFreq,y=dur))+
                 geom_smooth(method = lm, se=F)+coord_cartesian(ylim=c(200,450))
 ggplot.xreal.Original
 ```
+
+## GLMM and CLMM
+
+The code above was using a Linear Mixed Effects Modelling. The outcome was a numeric object. In some cases (as we have seen above), we may have: 
+
+1. Binary outcome (binomial)
+2. Count data (poisson), 
+3. Multi-category outcome (multinomial)
+4. Rating data (cumulative function)
+
+The code below gives you an idea of how to specificy these models
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+
+## Binomial family
+## lme4::glmer(outcome~predictor(s)+(1|subject)+(1|items)..., data=data, family=binomial)
+
+## Poisson family
+## lme4::glmer(outcome~predictor(s)+(1|subject)+(1|items)..., data=data, family=poisson)
+
+## Multinomial family
+## a bit complicated as tehre is a need to use Bayesian approaches, see e.g., 
+## glmmADMB
+## mixcat
+## MCMCglmm
+## see https://gist.github.com/casallas/8263818
+
+## Rating data, use following
+## ordinal::clmm(outcome~predictor(s)+(1|subject)+(1|items)..., data=data)
+
+
+## Remember to test for random effects and whether slopes are needed.
+
+```
+
+# Running your code and automatically drawing quality tables for publications
+
+See this website for how to run and automatically draw tables for your publications. I haven't tested this but it is in development:
+7)	https://www.r-bloggers.com/elegant-regression-results-tables-and-plots-in-r-the-finalfit-package/amp
 
