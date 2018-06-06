@@ -18,7 +18,8 @@ We anticipate that basic refreshments, including lunch, will be provided.
 
 ### Day 1:
 
-**Morning:** Introduction to R and RStudio  
+**Morning:** [Introduction to R and RStudio](/docs/Session 1 - Introduction.nb.html) (Download the [Rmarkdown file](/docs/Session 1 - Introduction.Rmd) for this session)
+
 **Afternoon:** Visualisation and data manipulation  
 
 ### Day 2:
@@ -43,3 +44,7 @@ If you already have R and RStudio installed, we recommend you update to the late
 25 May 2018: One aspect of the bug mentioned below for R version 3.5.0 interacting with RStudio version 1.1.447 can easily be fixed by piping data table displays to `group_by()`.
 
 16 May 2018: R version 3.5.0 has a known bug in its interface with RStudio version 1.1.447. This bug only seems to effect a small number of aspects of compiling R Notebooks (a tool that will be used throughout the workshop). We do not anticipate this becoming an issue during the workshop and will keep this page updated with any announcements regarding this bug. (It is currently being addressed by the RStudio development team as a high priority.)
+
+## Feedback
+
+Please leave anonymous feedback for us at the end of the course using our [feedback form](https://forms.ncl.ac.uk/view.php?id=2216008)
