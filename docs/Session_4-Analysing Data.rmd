@@ -15,7 +15,7 @@ In this session, we will look at basic functions in R that will help us in runni
 # Loading packages 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 ## Use the code below to check if you have all required packages installed. If some are not installed already, the code below will install these. If you have all packages installed, then you could load them with the second code.
-requiredPackages = c('ggplot2','tidyverse','psycho','lme4','ordinal','lmerTest')
+requiredPackages = c('ggplot2','tidyverse','psycho','lme4','ordinal','lmerTest','PresenceAbsence')
 for(p in requiredPackages){
   if(!require(p,character.only = TRUE)) install.packages(p)
   library(p,character.only = TRUE)
@@ -227,12 +227,17 @@ psycho::dprime(TP, FP, FN, TN)
 
 
 ## GLM
-Let's run a first GLM (Generalised Linear Model). A GLM uses a special family "binomial" as it assumes the outcome has a binomial distribution. To run the results, we will change the reference level for both response and grammaticality. 
+Let's run a first GLM (Generalised Linear Model). A GLM uses a special family "binomial" as it assumes the outcome has a binomial distribution. In general, results from a Logistic Regression are close to what we get from SDT (see above).
+
+To run the results, we will change the reference level for both response and grammaticality. 
 
 ### Results
 
 The results below show the logodds for our model. The results show that for one unit increase in the response (i.e., from no to yes), the logodds of being "grammatical" is increased by 4.61 (the intercept shows that when the response is "no", the logodds are -1.61).
 ```{r warning=FALSE, message=FALSE, error=FALSE}
+levels(grammatical$response)
+levels(grammatical$grammaticality)
+
 grammatical$response <- relevel(grammatical$response, ref="no")
 grammatical$grammaticality <- relevel(grammatical$grammaticality, ref="ungrammatical")
 
@@ -241,11 +246,28 @@ summary(mdl.glm)
 
 ```
 
+### Getting "true" coefficients from GLM
+Here we will run the same GLM model above but by supressing the "Intercept". The idea here is to get the "true" coefficient for a "grammatical" and a "yes" response.
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+# An intercept is always included in any regression, but you can specify it with "1"
+## glm(response~1+grammaticality,data=grammatical,family = binomial)
+
+mdl.glm2 <- glm(response~-1+grammaticality,data=grammatical,family = binomial)
+summary(mdl.glm2)
+
+
+```
+
+
 ### Logodds to Odd ratios
 
-Logodds can be modified to talk about the odds of an event. For our model above, the odds of "grammatical" receiving a "yes" response increase by 100; whereas receiving a "no" is a mere 0.2.
+Logodds can be modified to talk about the odds of an event. For our model above, the odds of "grammatical" receiving a "yes" response increase by 100; whereas receiving a "no" is a mere 0.2. Using the second model (i.e., without an Intercept) allows us to get the odd rations for each of responses to "Ungrammatical" and "Grammatical"
+
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 exp(coef(mdl.glm))
+exp(coef(mdl.glm2))
+
 ```
 
 ### LogOdds to proportions
@@ -254,8 +276,24 @@ If you want to talk about the percentage "accuracy" of our model, then we can tr
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 plogis(coef(mdl.glm))
+plogis(coef(mdl.glm2))
 ```
 
+### GLM as a classification tool
+
+The code below demosntrates the links between our GLM model and what we had obtained above from SDT. The predictions' table shows that our GLM was successful at obtaining prediction that are identical to our initial data setup. Look at the table here and the table above. Once we have created our table of outcome, we can compute percent correct, the specificity, the sensetivity, the Kappa score, etc.. this yields the actual value with the SD that is related to variations in responses
+
+```{r}
+## predict(mdl.glm)>0.5 is identical to 
+## predict(glm(response~grammaticality,data=grammatical,family = binomial),type="response")
+tbl.glm <- table(grammatical$response,predict(mdl.glm,type="response")>0.5)
+tbl.glm
+PresenceAbsence::pcc(tbl.glm)
+PresenceAbsence::specificity(tbl.glm)
+PresenceAbsence::sensitivity(tbl.glm)
+PresenceAbsence::Kappa(tbl.glm)
+###etc..
+```
 
 ### Plotting
 
