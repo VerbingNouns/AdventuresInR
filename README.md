@@ -24,7 +24,7 @@ We anticipate that basic refreshments, including lunch, will be provided.
 ### Day 2:
 
 **Morning:** [Processing text and corpus data](docs/Session_3.nb.html) (Download [the .Rmd file](docs/Session_3.Rmd) and [the data file](data/Shakespeare_data.csv) for this session)  
-**Afternoon:** [Techniques for analysing data](docs/Session_4-AnalysingData.nb.html) (Download [the .Rmd file](docs/Session_4-AnalysingData.rmd) and the data files [grammatical](data/grammatical.csv) and [rating](data/rating.csv) for this session
+**Afternoon:** [Techniques for analysing data](docs/Session_4-AnalysingData.nb.html) (Download [the .Rmd file](docs/Session_4-AnalysingData.rmd) and the data files [grammatical](data/grammatical.csv) and [rating](data/rating.csv) for this session)
 
 
 *We regret that due to the limited capacity of the room we may not be able to offer a place to all those who apply.*
@@ -32,9 +32,9 @@ We anticipate that basic refreshments, including lunch, will be provided.
 ## What to bring:
 
 The room does not contain any PCs and we would ask attendees to *bring laptops with copies of R and RStudio already installed*
-(please visit  https://www.r-project.org/ to download R, and https://www.rstudio.com/ to download RStudio). We believe that it’s preferable to work on laptops rather than university machines as it is much easier to update R to the latest version.
+(please visit  [https://www.r-project.org/] to download R, and [https://www.rstudio.com/] to download RStudio). We believe that it’s preferable to work on laptops rather than university machines as it is much easier to update R to the latest version.
 
-If you already have R and RStudio installed, we recommend you update to the latest versions. The recent updates in R version 3.5.0 are substantial and will require the re-installation of any packages you have previously installed. Instructions and help for doing so can be found here: https://www.r-statistics.com/2018/04/r-3-5-0-is-released-major-release-with-many-new-features/
+If you already have R and RStudio installed, we recommend you update to the latest versions. The recent updates in R version 3.5.0 are substantial and will require the re-installation of any packages you have previously installed. Instructions and help for doing so can be found here: [https://www.r-statistics.com/2018/04/r-3-5-0-is-released-major-release-with-many-new-features/]
 
 ### Notes:
 
