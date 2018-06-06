@@ -597,34 +597,6 @@ Go back and try saving some of your previous figures to folder in this way.
 
 
 
-### Scatter plots with `geom_point`
-If you have a continuous dependent and independent variable, you'll want to use a scatterplot, which you can do in ggplot with `geom_point`.
-
-We don't have a clear example of a continuous dependent and independent variables in this datasets we've used today. However, in the dialect dataset, we do have a few dependent variables which could be converted into continuous and we could compare these against age.  Although this may not be exactly ideal, we will use it here as proof of principle.
-
-The syntactic questions from columns 28 to 37 of `dialect_data` are judgement elicitations of English phrasing, where answers range from *a. I'd say this myself* to *e. No native speaker of English would say this.*.
-```{r}
-levels(dialect_data$give_it_me)
-```
-
-Feasibly, we could convert these to numbers, where 1 represents highly acceptable and 5 represents highly unacceptable.  Let's do this below by creating a new column called `give_it_me_num` for a numeric version.  This is easy to do with the `dplyr` package.  I'll create a new column called `give_it_me.num`:
-
-
-```{r}
-dialect_data = dialect_data %>%
-  mutate(give_it_me.num = as.numeric(factor(give_it_me, labels = c(1, 2, 3, 4, 5))))
-
-#This doesn't do anything other than show us the two columns side by side
-dialect_data %>%
-  select(give_it_me, give_it_me.num)
-```
-
-Let's try 
-
-```{r}
-ggplot(dialect_data, aes(age, give_it_me.num)) +geom_point() + stat_smooth()
-```
-
 
 
 
