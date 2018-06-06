@@ -1,12 +1,25 @@
 ---
 title: "Session 1 - Introduction.Rmd"
-output: 
-  html_document:
-    number_sections: true
-    toc: true
+output:
+  html_notebook:
+    number_sections: yes
+    toc: yes
     toc_float:
-      collapsed: false
+      collapsed: yes
 ---
+
+# The purpose of this course
+
+- An introduction to basic techniques in R
+![](images/crawl-walk-run-fly.png)
+- An interdisciplinary approach to R, e.g. regression modelling for psychologists, and text analysis for digital humanities
+
+# Why R?
+
+- *Open Source*
+  - means that analyses are (a) cutting edge and (b) accurate
+- *Strong emphasis on reproducible research*
+  - data are (a) accurately reported (b) shareable
 
 # How to use an R Markdown file
 
@@ -251,7 +264,7 @@ If you use this convention, then the names for variables can get very long. Howe
 
 There IS a way to specify a variable using just the variable name only:
 
-```{r, echo = TRUE}
+```{r, echo = TRUE, results='asis'}
 attach(df)
 list.of.movies
 detach(df)
@@ -275,8 +288,10 @@ Whenever you wish to access the contents of an object with multiple values (e.g.
 
 ```{r}
 df[1,2]
-df[1, ] # here the second number is blank
-df[ ,2] # here the first number is blank
+
+df[1,] # here the second number is blank
+
+df[,2] # here the first number is blank
 ```
 
 EX3: What does each number refer to? What happens when we leave a blank cell?
@@ -308,7 +323,7 @@ df <- read.csv("mtcars.csv")
 ```
 
 
-To read files in other format use the following packages:
+To read files in other formats use the following packages:
 
 1. .sav files (SPSS) and .dta files (STATA): ```foreign``` and ```haven```
 2. Excel files (.xls, .xlsx, xlsm): ```read_r``` (part of the tidyverse) or ```openxlsx```
@@ -335,12 +350,35 @@ We're going to *subset* the mtcars dataset (i.e. choose only those cases which f
 EX4: Armed with this knowledge, your task is to subset the data frame so that it only contains cars with 4 cylinders.
 
 If you're stuck have a look at the answer below. 
-_____
-_____
-_____
-_____
-_____
-_____
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
 
 ```{r}
 df.6cyl <- df[which(df$cyl == 6), ]
@@ -374,7 +412,7 @@ df %>% group_by(cyl) %>% summarise(mean.mpg = mean(mpg)) -> df.mean.mpg.by.cyl
 There are a couple of important points to note.
 
 (1) We can refer to variables without specifying the data frame
-(2) If we wish to store the results we must output them using and arrow ```->```. If we don't output the results they will merely be displayed in the console.
+(2) If we wish to store the results we must output them using and arrow ```->```. If we don't store the results they will merely be displayed in the console.
 
 Piping is a key technique in R and once you've learnt it you will write much more powerful and readable code.
 
@@ -440,7 +478,7 @@ EX6: Try to identify cars where both the ```disp``` and ```drat``` variables are
 
 # Stored results
 
-Whenever you run an analysis in R and save that to an object, the object has an internal structure. To demonstrate this, let's do a simple regression suing the mtcars dataset:
+Whenever you run an analysis in R and save that to an object, the object has an internal structure. To demonstrate this, let's do a simple regression using the mtcars dataset:
 
 ```{r}
 model <- lm(df$mpg ~ df$wt)
