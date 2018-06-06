@@ -23,7 +23,7 @@ We anticipate that basic refreshments, including lunch, will be provided.
 
 ### Day 2:
 
-**Morning:** [Processing text and corpus data](docs/Session_3.nb.html) (Right-click and save [this link to the .Rmd file](docs/Session_3.Rmd))  
+**Morning:** [Processing text and corpus data](https://verbingnouns.github.io/AdventuresInR/docs/Session_3.nb.html) (Right-click and save [this link to the .Rmd file](docs/Session_3.Rmd))  
 **Afternoon:** Techniques for analysing data  
 
 *We regret that due to the limited capacity of the room we may not be able to offer a place to all those who apply.*
