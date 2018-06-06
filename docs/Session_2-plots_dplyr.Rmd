@@ -39,7 +39,7 @@ The data itself is in the **data** folder, which is a folder within the current 
 
 ```{r}
 ## LOAD IN DATA ####
-dialect_data = read.csv("data/dialectdata.csv")
+dialect_data = read.csv("dialectdata.csv")
 ```
 We have called our dataset `dialect_data` and we should now be able to see it in the right corner panel under **Environment** as one of the things we have loaded in.
 
@@ -294,7 +294,7 @@ The data itself needs to be in the same folder R Notebook document. That means w
 
 ```{r}
 ## LOAD IN DATA ####
-rt_data = read.delim("data/reactiondata.txt")
+rt_data = read.delim("reactiondata.txt")
 ```
 
 Do you notice anything different here?  This dataset is a `.txt` file, not a `.csv` file.  Do you know the difference between these types of file?  It doesn't matter which one yours is, but you need to make sure the call is `read.delim()` for `.txt` files and `read.csv()` for `.csv` files
