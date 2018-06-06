@@ -397,7 +397,7 @@ tragedies <- c("Titus Andronicus",
 # create boolean vectors for four play categories
 comedy <- lPlayCat$plays %in% comedies
 romance <- lPlayCat$plays %in% romances
-histories <- lPlayCat$plays %in% histories
+history <- lPlayCat$plays %in% histories
 tragedy <- lPlayCat$plays %in% tragedies
 
 # create new column with these four categories
@@ -407,10 +407,11 @@ lPlayCat <- lPlay %>%
                               history == TRUE ~ "history",
                               tragedy == TRUE ~ "tragedy"))
 ```
+`r lPlayCat`
 
 In the following graph, each color represents a different category (as determined by Wikipedia's [First Folio](https://en.wikipedia.org/wiki/First_Folio) page, plus information about the "late romances"). Now, we can see if there are trends for different categories to mention "love" more or less than the others.
 
-````{r}
+```{r}
 lPlayCat %>%
   ggplot(., aes(x=reorder(plays, loveFreq),y=loveFreq)) +
     geom_bar(aes(fill=category),stat="identity") +
@@ -419,7 +420,7 @@ lPlayCat %>%
 #    theme(legend.position="none") +
     xlab("Play") +
     ylab("frequency of the word 'love'")
-````
+```
 
 It seems to me that <span style="background-color:#F8766D">comedies</span> and <span style="background-color:#C77CFF">tragedies</span> discuss "love" the most, whereas <span style="background-color:#7CAE00">histories</span> and the late <span style="background-color:#00BFC4">romances</span> discuss it the least. Is this intuitive? Maybe. But there's a problem. *A Comedy of Errors* has the fewest mentions of "love", but it's also the shortest play, so it has the fewest words overall. What we really want to see is the proportion of "love"-frequency per play, not the raw counts. To do that, we have to add in the total length of each play to the data frame, but we've lost that information in `lPlayCat` and `lPlay`. **How might you add that information in to the `lPlayCat` dataframe?**
 
@@ -985,10 +986,12 @@ Let's focus in on a subset of plays in order to simplify the visualisation. From
 
 ```{r}
 shak %>%
-  filter(Play == "Hamlet" | Play == "King John" | Play == "The Tempest" | 
-           Play == "Cymbeline" | Play == "Measure for measure" | Play == "Timon of Athens" | 
-           Play == "Richard III" | Play == "Loves Labours Lost" | Play == "A Winters Tale" | 
-           Play == "Othello" | Play == "Romeo and Juliet" | Play == "Henry V") %>% 
+  filter(Play == "Hamlet" | Play == "King John" | 
+           Play == "The Tempest" | Play == "Cymbeline" | 
+           Play == "Measure for measure" | Play == "Timon of Athens" | 
+           Play == "Richard III" | Play == "Loves Labours Lost" | 
+           Play == "A Winters Tale" | Play == "Othello" | 
+           Play == "Romeo and Juliet" | Play == "Henry V") %>% 
   filter(ActSceneLine != "") %>%
   mutate(ActSceneLine2 = ActSceneLine) %>%
   separate(ActSceneLine2, c("act", "scene", "line")) %>%
