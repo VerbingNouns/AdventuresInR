@@ -595,9 +595,55 @@ Go back and try saving some of your previous figures to folder in this way.
 
 
 
+## Plant animal reaction time data: cleaning and `geom_point`
 
+We will now use a third dataset to look at examples on how to nicely clean up data, and also to make a graph.  We have yet another reaction time toy dataset `plantanimalrt.csv`.  Let's load it in:
 
+```{r}
+## LOAD IN DATA ####
+plantanimal_data = read.csv("plantanimalrt.csv")
+```
 
+Subjects have been shown words and have to decide if it is a plant or animal.  Their reaction time is recorded as well as if they got the answer right.
+```{r}
+## look at data
+head(plantanimal_data)
+dim(plantanimal_data)
+```
+
+There are a few things I'd like to change about this data.  I'm going to do this by creating a new dataset `plantanimal_clean` based on the old one, and use `dplyr` commands to change things.
+
+I will use the `dplyr` verb `mutate` to:
+
+* change `rt` into seconds (currently in deci-seconds)
+* change `F` and `M` in the `sex` column to female and male
+
+```{r}
+## CLEAN DATA ####
+plantanimal_clean = plantanimal_data %>%
+  mutate(rt = rt/10, 
+         sex = recode(sex, "F" = "female", "M" = "male"))
+```
+When you get more advanced with R, see here for the `dplyr` cheatsheet:(https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
+
+Let's try making a plot to see if reaction times are quicker for more frequent words:
+```{r}
+ggplot(plantanimal_clean, aes(frequency, rt)) + geom_point()
+```
+Is there a trend?  It's difficult to tell, but we can add a smoothing line to help us:
+
+```{r}
+ggplot(plantanimal_clean, aes(frequency, rt)) + geom_point() +
+  stat_smooth()
+```
+
+Is there any difference between animals and plants?
+```{r}
+ggplot(plantanimal_clean, aes(frequency, rt, colour=class)) + geom_point() +
+  stat_smooth()
+```
+
+Try a density plot of reaction time, like we did before.
 
 
 # R markdown
