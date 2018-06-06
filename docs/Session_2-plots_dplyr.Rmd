@@ -1,6 +1,8 @@
 ---
-title: "Adventures in R: Session 2"
-output: html_notebook
+title: 'Adventures in R: Session 2'
+output:
+  html_document:
+    df_print: paged
 ---
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
@@ -77,7 +79,7 @@ levels(dialect_data$give_it_me)
 As discussed, the dollar sign is very important in R, as it references a specific column.  For the two columns we've referenced in the above example, R shows us the range of possible variants or **factor levels**.  For the factor `foot_strut` the possible answers, are therefore factor levels, are `rhyme` and `don't rhyme`.  For the factor `give_it_me`, there are five possible answers, as shown by the five factor levels.
 
 
-# Data summaries: Making tables
+### Data summaries: Making tables
 
 Let's say we want to see how many of our respondents have said that "foot" and "strut" rhyme, and how many say they don't.  We can do this easily using the table function in R.  Note that we use the dollar sign $ again to denote the specific `foot_strut` column within the `dialect_data` dataset.
 
@@ -143,7 +145,7 @@ Note that, if our original table call had put `age_group` before `foot_strut`, t
 
 Ideally, the table you'll present to your reader will have percentages in, but also a row below with the totals for each column.
 
-## Making summary tables with `dplyr`
+### Making summary tables with `dplyr`
 
 `dplyr` is an R package which makes it very easy to look at summaries of data.  Even though some people consider it more advanced, I think it's a good idea to introduce beginners to it from the start.  We're going to try to do the same using this package.  
 
@@ -173,9 +175,9 @@ Now let's try a different independent *and* dependent variable.  Insert a new ch
 
 We've seen in this section that there's always (at least!) a couple of ways to do things in R.  In the next section we'll look at making some plots, starting off with the R base graphics, and moving on to some more advanced packages which look more difficult at the beginning, but actually make life easier in the end, and produce much nicer looking plots.
 
-# Plots
+## Plots
 
-## Base R graphics
+### Base R graphics
 Let's try making a plot of the `foot_strut` variable.  We can use Base R's `barplot` function to do this, and it's useful that we've already made tables of the frequencies and proportions.  
 
 We could just plot the raw frequencies, but this isn't very helpful:
@@ -214,7 +216,7 @@ Try the plot again with the new order by creating a chunk below:
 
 
 
-## Plots in `ggplot2`
+### Plots in `ggplot2`
 
 Not only do `ggplot2` plots look prettier and are easier to customise, we can also combine them with `dplyr` code to make data changes efficiently.  Both packages are written by Hadley Wickham, whose R [style guide](http://adv-r.had.co.nz/Style.html) we discussed earlier in this course.
 
@@ -280,10 +282,7 @@ Try creating a plot from scratch using a different dependent variable.  Our phon
 
 Once you've done that, you could look at other things that you can play around with in the settings of `ggplot2`.  Here you can find the [ggplot cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf).
 
-## How to automatically save figures to pdf. 
-
-
-# Plotting continuous data
+# Continuous data
 So far, we've worked with categorical data.  But lots of us will be working with continuous data, where the dependent variable is a number, rather than a category. 
 
 The following (made up) dataset contains reaction time data from a word recognition task taken from [Page Piccinni's excellent online R course](https://pagepiccinini.com/r-course/) which comes highly recommended when you're a little more advanced.  Bilingual and monolingual speakers were given a task where they have to decide if a word is part of their language or not.  The reaction time measures how long it took them to decide.
@@ -370,7 +369,7 @@ summary(rt_data$rt)
 OK, so it looks like we have reaction time data, which is our continuous dependent variable, and we can look at this across two potential independent variables.  `group` tells us if someone is bilingual or monolingual, and `type` gives us extra details about the bilinguals, on their profiency in their second language.
 
 
-# Plots
+## Plots of continuous data
 We've already learnt how to make barplots.  However, these are for when we have a categorical dependent variable.  When we have a continuous dependent variable, and categorical independent variables, the best option is usually a boxplot.
 
 We can make boxplots very quickly and easily in Base R.  We have the dependent variable first, then the `~` tilde symbol, then the independent variable we're interested in.  Try running this for the reaction time across the `type` variable:
@@ -395,8 +394,8 @@ hist(rt_data$rt)
 ```
 I wouldn't always use histograms in my report, but they are very useful for showing you the distribution of the data.  For example, I can immediately see here that the data is not normally distributed but, in fact, seems to have a bimodal distribution. 
 
-###  ggplots
-As we learnt last week, the syntax of ggplots is slightly more complicated, but it is more customisable, and looks much nicer.  Let's try a boxplot in `ggplot2` using the `geom_boxplot()` call:
+##  ggplots
+The syntax of ggplots is slightly more complicated, but it is more customisable, and looks much nicer.  Let's try a boxplot in `ggplot2` using the `geom_boxplot()` call:
 
 ```{r}
 ggplot(rt_data, aes(x = group, y = rt)) +
@@ -422,8 +421,7 @@ ggplot(rt_data, aes(x=group, y=rt, fill=group)) + geom_boxplot() +
 ```
 Note, if we're setting the `fill` it needs to be `scale_fill_brewer` and if we're setting the `colour` it needs to be `scale_colour_brewer`.
 
-### Saving plots
-There is no way to save plots separately from an R Notebook.  Instead, drag up the console from the bottom of the screen and run your code in there.  Your plot should now show in the bottom right panel, and there is an option to export here.
+There is no way to save plots separately from an R Notebook (although we'll look at an automatic way in a bit).  Instead, drag up the console from the bottom of the screen and run your code in there.  Your plot should now show in the bottom right panel, and there is an option to export here.
 
 Try it yourself. Create your own plot of the `group` variable with different colours:
 ```{r}
@@ -441,12 +439,12 @@ What do you notice about this graph?  Are there any potential problems with it? 
 What are **NAs**?  NA stands for *not applicable* and means that there is data missing for that cell.  In this case, it is part of the experimental design.  in other cases, it might be an accident, and you may have to go back and check you don't have missing data.
 
 
-# Subsetting
+## Subsetting
 As you may have realised above, we only have `type` data for the bilinguals, which makes sense given this experiment.  Therefore, it doesn't really make sense to look at the monolinguals when we are considering if someone is high or low profiency.  This is where creating **subsets** comes in useful in R.  We can create a subset for just the bilinguals.
 
 As usual, there are always a few ways to do things in R.  We'll start with the basic way, and move on to the more advanced way using `dplyr` later.
 
-## Basic subsetting
+### Basic subsetting
 
 Here's how we can create a bilingual subset in base R:
 ```{r}
@@ -483,7 +481,7 @@ ggplot(bl_data, aes(x=type, y=rt, colour=type)) + geom_boxplot() +
 ```
 
 
-## Subsetting in `dplyr`
+### Subsetting in `dplyr`
 
 We can also subset in `dplyr`.  Not only can we do this in a similar way to above, by creating a new dataset, we can also *pipe* straight into a ggplot.  Let's look at both ways.
 
@@ -514,7 +512,7 @@ rt_data %>%
 ```
 This just pipes `rt_data` through, filters out anything that's not *bilingual*, and then plots it.  So you can see, there's no dataset in the usual place in the ggplot call, because that comes earlier.
 
-## More subsetting
+### More subsetting
 
 We can also put different conditions on subsets.  The `!=` operator means not equals to.  So this would give us the same thing as before:
 
@@ -571,7 +569,7 @@ Try playing around with the colours and axes etc.
 Above, I explained how to manually save a plot by running the relevant code in the R console window, hidden below this R Markdown window.
 
 Another way is to save a plot into the R environment, and then save it to folder from there.  Here's an example.  First I give my plot a name, so it's saved into R's brain.  
-```{r}
+```{r, eval = FALSE}
 bl.plot =
   ggplot(bl_data, aes(x=type, y=rt, colour=type)) + geom_boxplot() +
   ylab("reaction time (ms)") +
@@ -581,14 +579,14 @@ bl.plot =
 ```
 
 I've called it `bl.plot`.  So that means if I type that into R, it should show me my plot:
-```{r}
+```{r, eval = FALSE}
 bl.plot
 ```
 Note that it didn't show me the plot in the previous chunk - it just saved it.  I have to type the name in again for it to show me what it looks like.
 
 Now, I'm going to go into the main folder for this course and create a new folder called `figures`.  We are going to save your plots into that folder, so we are nice and organised.
 
-```{r}
+```{r, eval =FALSE}
 pdf("figures/bilingualplot.pdf")# this tells R where to store the plot
 bl.plot # which plot we want to store
 dev.off() # this finishes the plotting device
@@ -599,18 +597,33 @@ Go back and try saving some of your previous figures to folder in this way.
 
 
 
-#####
+### Scatter plots with `geom_point`
+If you have a continuous dependent and independent variable, you'll want to use a scatterplot, which you can do in ggplot with `geom_point`.
 
-We don't have a clear example of a continuous dependent variable in this dataset.  Usually, as a linguist, I might be plotting the pitch of someone's speech, or the duration or frequency of someone's vowels.  In the current dataset, we do have a few dependent variables which could be converted into continuous.  Although this may not be exactly ideal, we will use it here as proof of principle.
+We don't have a clear example of a continuous dependent and independent variables in this datasets we've used today. However, in the dialect dataset, we do have a few dependent variables which could be converted into continuous and we could compare these against age.  Although this may not be exactly ideal, we will use it here as proof of principle.
 
-The syntactic questions from columns 28 to 37 are judgement elicitations of English phrasing, where answers range from *a. I'd say this myself* to *e. No native speaker of English would say this.*.
+The syntactic questions from columns 28 to 37 of `dialect_data` are judgement elicitations of English phrasing, where answers range from *a. I'd say this myself* to *e. No native speaker of English would say this.*.
 ```{r}
 levels(dialect_data$give_it_me)
 ```
 
-Feasibly, we could convert these to numbers, where 1 represents highly acceptable and 5 represents highly unacceptable.  Let's do this below by creating a new column called `give_it_me_num` for a numeric version.
+Feasibly, we could convert these to numbers, where 1 represents highly acceptable and 5 represents highly unacceptable.  Let's do this below by creating a new column called `give_it_me_num` for a numeric version.  This is easy to do with the `dplyr` package.  I'll create a new column called `give_it_me.num`:
 
 
+```{r}
+dialect_data = dialect_data %>%
+  mutate(give_it_me.num = as.numeric(factor(give_it_me, labels = c(1, 2, 3, 4, 5))))
+
+#This doesn't do anything other than show us the two columns side by side
+dialect_data %>%
+  select(give_it_me, give_it_me.num)
+```
+
+Let's try 
+
+```{r}
+ggplot(dialect_data, aes(age, give_it_me.num)) +geom_point() + stat_smooth()
+```
 
 
 
