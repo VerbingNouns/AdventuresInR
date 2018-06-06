@@ -20,7 +20,7 @@ We anticipate that basic refreshments, including lunch, will be provided.
 
 **Morning:** [Introduction to R and RStudio](/docs/Session 1 - Introduction.nb.html) (Download the [Rmarkdown file](/docs/Session 1 - Introduction.Rmd) for this session)
 
-**Afternoon:** Visualisation and data manipulation  
+**Afternoon:** [Visualisation and data manipulation](docs/Session_2-plots_dplyr.html)  
 
 ### Day 2:
 
