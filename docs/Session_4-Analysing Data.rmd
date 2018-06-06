@@ -323,7 +323,7 @@ anova(mdl.clm,mdl.clm.Null)
 ```
 
 ## Interpreting a cumulative model
-As a way to interpret the model, we can look at the coefficients and make sense of the results. A CLM model is a Logistic model with a cumulative effect. The "Coeficients" are the estimates for each level of the fixed effect; the "Threshold coefficients" are those of the response. For the former, a negative coefficient indicates a negative association with the response; and a positive is positively associated with the response. The p values are indicating the significance of each level. For the "Threshold coefficients", we can see the cumulative effects of ratings 1|2, 2|3, 3|4 and 4|5 which indicate an overall increase in ht eratings from 1 to 5. 
+As a way to interpret the model, we can look at the coefficients and make sense of the results. A CLM model is a Logistic model with a cumulative effect. The "Coefficients" are the estimates for each level of the fixed effect; the "Threshold coefficients" are those of the response. For the former, a negative coefficient indicates a negative association with the response; and a positive is positively associated with the response. The p values are indicating the significance of each level. For the "Threshold coefficients", we can see the cumulative effects of ratings 1|2, 2|3, 3|4 and 4|5 which indicate an overall increase in ht eratings from 1 to 5. 
 
 ## Plotting 
 We use a modified version of a plotting function that allows us to visualise the effects. For this, we use the base R plotting functions
