@@ -476,7 +476,7 @@ Here's my final graph that I think looks nice:
 ggplot(bl_data, aes(x=type, y=rt, colour=type)) + geom_boxplot() +
   ylab("reaction time (ms)") +
   xlab("") +
-  scale_colour_brewer(palette = "Set1") +
+  scale_colour_brewer(palette = "Spectral") +
   theme_bw()
 ```
 
