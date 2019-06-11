@@ -6,9 +6,9 @@ This workshop has been funded by the Faculty of Humanities Arts and Social Scien
 
 ## Information:
 
-**When:** 7-8 June; 09.00 -- 17.00  
+**When:** 25-26 June; 09.00 -- 17.00  
 **Where:** ARMB.G.17  
-**Instructors:** Lauren Ackerman, Jalal Al-Tamimi, Danielle Turton, and Nick Riches  
+**Instructors:** Lauren Ackerman, Jalal Al-Tamimi, Jasmine Warburton, and Nick Riches  
 
 Before the workshop, please make sure you have downloaded R and RStudio. [**This** brief tutorial](docs/Setting_Up.nb.html) may help.
 
