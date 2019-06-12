@@ -1,13 +1,13 @@
 # Welcome to the Adventures In R Workshop!
 
-*This repository will serve as the base for designing and sharing materials for the 2018 Workshop in R.*
+*This repository will serve as the base for designing and sharing materials for the 2019 Workshop in R.*
 
 This workshop has been funded by the Faculty of Humanities Arts and Social Sciences, and is open to all postgraduate students at Newcastle University and universities which constitute the NINE-DTP consortium. The aim is to provide a strong foundation in what is fast becoming the standard package for data analysis, manipulation and visualisation. By the end of this course, attendees will have a sufficiently strong foundation to enable them to work on more complex challenges in their own time.
 
 ## Information:
 
-**When:** 25-26 June; 09.00 -- 17.00  
-**Where:** ARMB.G.17  
+**When:** 25-26 June 2019; 09.00 -- 17.00  
+**Where:** ARMB.2.09
 **Instructors:** Lauren Ackerman, Jalal Al-Tamimi, Jasmine Warburton, and Nick Riches  
 
 Before the workshop, please make sure you have downloaded R and RStudio. [**This** brief tutorial](docs/Setting_Up.nb.html) may help.
@@ -38,12 +38,8 @@ If you already have R and RStudio installed, we recommend you update to the late
 
 ### Notes:
 
-05 June 2018: The newest version of RStudio is 1.1.453. This fixes the bug described below for data frames and tibbles but not for certain other output.
+12 June 2019: Please install the latest version of R (3.6.0). Also install the latest version of R Studio (version 1.2.1335). We will send a list of all packages to be installed.
 
-25 May 2018: One aspect of the bug mentioned below for R version 3.5.0 interacting with RStudio version 1.1.447 can easily be fixed by piping data table displays to `group_by()`.
+%## Feedback
 
-16 May 2018: R version 3.5.0 has a known bug in its interface with RStudio version 1.1.447. This bug only seems to effect a small number of aspects of compiling R Notebooks (a tool that will be used throughout the workshop). We do not anticipate this becoming an issue during the workshop and will keep this page updated with any announcements regarding this bug. (It is currently being addressed by the RStudio development team as a high priority.)
-
-## Feedback
-
-Please leave anonymous feedback for us at the end of the course using our [feedback form](https://forms.ncl.ac.uk/view.php?id=2216008)
+%Please leave anonymous feedback for us at the end of the course using our [feedback form](https://forms.ncl.ac.uk/view.php?id=2216008)
