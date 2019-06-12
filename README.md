@@ -40,6 +40,4 @@ If you already have R and RStudio installed, we recommend you update to the late
 
 12 June 2019: Please install the latest version of R (3.6.0). Also install the latest version of R Studio (version 1.2.1335). We will send a list of all packages to be installed.
 
-%## Feedback
 
-%Please leave anonymous feedback for us at the end of the course using our [feedback form](https://forms.ncl.ac.uk/view.php?id=2216008)
