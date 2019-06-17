@@ -6,7 +6,6 @@ This workshop has been funded by the Faculty of Humanities Arts and Social Scien
 
 ## Information:
 
-<<<<<<< HEAD
 **When:** 25-26 June; 09.30 -- 17.00  
 **Session Plan:** Session 1: 9.30 — 12, Lunch: 12 — 1, Session 2: 1 - 3.30, Coffee break: 3.30 - 4, Q&A: 4 - 5
 
@@ -14,7 +13,6 @@ This workshop has been funded by the Faculty of Humanities Arts and Social Scien
 =======
 **When:** 25-26 June 2019; 09.00 -- 17.00  
 **Where:** ARMB 2.09  
->>>>>>> b49f2fe741c7e1c634c5ba2ab22639049ccc7663
 **Instructors:** Lauren Ackerman, Jalal Al-Tamimi, Jasmine Warburton, and Nick Riches  
 
 Before the workshop, please make sure you have downloaded R and RStudio. [**This** brief tutorial](docs/Setting_Up.nb.html) may help.
