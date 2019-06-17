@@ -1,12 +1,13 @@
 ---
-title: "Session_4-Analysing Data"
+title: "Session_4-AnalysingData"
 output: 
   html_notebook:
-    number_sections: true
-    toc: true
+    highlight: pygments
+    number_sections: yes
+    toc: yes
     toc_depth: 4
     toc_float:
-      collapsed: true
+      collapsed: yes
 ---
 
 In this session, we will look at basic functions in R that will help us in running some inferential statistics. These will help us to evaluate the relationship between one (or more) predictor(s) and an outcome. We will start with a basic example. Using the dataframe "cars".
@@ -15,63 +16,272 @@ In this session, we will look at basic functions in R that will help us in runni
 # Loading packages 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 ## Use the code below to check if you have all required packages installed. If some are not installed already, the code below will install these. If you have all packages installed, then you could load them with the second code.
-requiredPackages = c('ggplot2','tidyverse','psycho','lme4','ordinal','lmerTest','PresenceAbsence')
+requiredPackages = c('ggplot2','tidyverse','psycho','ordinal','PresenceAbsence','broom','emmeans')
 for(p in requiredPackages){
   if(!require(p,character.only = TRUE)) install.packages(p)
   library(p,character.only = TRUE)
 }
-# library(ggplot2);library(tidyverse);library(psycho);library(lme4);library(ordinal);library(lmerTest)
 ```
 
-# Starting with a linear model
-```{r warning=FALSE, message=FALSE, error=FALSE}
-head(cars)
-str(cars)
-summary(cars)
-ggplot.cars1 <- ggplot(cars,aes(x=speed,y=dist))+
-                geom_point()+theme_bw(base_size = 20)+
-                labs(y = "Stopping distance (ft)", x = "Speed (mph)")
-ggplot.cars1
+# Basic statistics 
+
+## Built-in datasets
+
+We will use one of the built in `R`. You can check all available datasets in `R` using the following:
+
+```{r}
+data()
+# or below for all datasets available in all installed packages
+data(package = .packages(all.available = TRUE))
+```
+
+We will use the `iris` dataset from the package `MASS`
+
+## Checking structure and summaries
+
+### Structure
+
+```{r}
+str(iris)
+```
+
+We have a dataframe with 150 observations and 5 variables; 4 numeric and 1 factor with 3 levels. 
+
+### Summary
+
+We summarise the data to see the trends:
+
+```{r}
+summary(iris)
+```
+
+So we have an equal dataframe (50 observations under each level of the factor `Species`), with no missing values (aka `NA`).
+
+
+### Advanced
+
+What if you want to summarise the data and get the mean, SD, by each level of the factor?
+
+```{r}
+iris %>% 
+  group_by (Species) %>% 
+  summarise(
+  SL.Mean = mean(Sepal.Length),
+  SL.SD = sd(Sepal.Length)
+  )
+```
+
+### Up to you
+
+Do some additional summaries
+
+```{r}
 
 ```
 
-## Basic correlations and plotting the linear relationship 
-Let us do some basic correlation analysis using base R and package psycho. And let's visualise this correlation using a linear regression line
 
-```{r warning=FALSE, message=FALSE, error=FALSE}
-cor(cars)
+## Plot
+
+We can make a boxplot of the data and add a trend line. This allows us to visualise the median, and quantiles in addition to the standard deviation and any outliers... All in the same plot!
+
+```{r,warning=FALSE,message=FALSE}
+ggplot(data = iris, aes(x=Species, y = Sepal.Length))+
+  geom_boxplot() +
+  labs(x="Species",y="Length",title="Boxplot and trend line",subtitle="with ggplot2") + 
+  theme_bw() + theme(text=element_text(size=15))+
+  geom_smooth(aes(x = as.numeric(Species), y = Sepal.Length),method="lm")
+```
+
+Here I have used the variable `Sepal.Length`. You can use any of the additional variables to plot the data.
+
+## Correlation tests
+
+### Basic correlations
+
+We use the function `cor` to obtain the pearson correlation and `cor.test` to run a basic correlation test on our data with significance testing
+
+```{r}
+cor(iris$Sepal.Length,iris$Sepal.Width,method = "pearson")
+cor.test(iris$Sepal.Length,iris$Petal.Width)
+```
+
+#### Up to you
+
+Can you check whether there is a correlation between the `Sepal.Length` and the `Petal.Length`? What about `Petal.Length` and `Petal.Width`? 
+
+
+```{r}
+
+```
+
+
+
+### Using the package `psycho`
+
+Above, we did a correlation test on two predictors. We run multiple correlations on multiple predictors with corrections. You can get a table, and a plot. (see here https://www.r-bloggers.com/beautiful-and-powerful-correlation-tables-in-r/amp/)
+
+#### Defaults
+
+```{r}
 ## correlation using "psycho"
-cars %>% 
+## use "Alt" + "-" to add "<-"
+## use "Ctrl" + "Shift" + "M" to obtain "%>%" 
+cor <- iris %>% 
   correlation()
+summary(cor)
+plot(cor)
+print(cor)
+```
 
-ggplot.cars2 <- ggplot(cars,aes(x=speed,y=dist))+
-                geom_point()+theme_bw(base_size = 20)+
-                labs(y = "Stopping distance (ft)", x = "Speed (mph)")+
-                geom_smooth(method = lm, se=F)
-ggplot.cars2
+#### Changing parameters
+
+You can change the following if you are interested in getting a `spearman` correlation compared to a `pearson` correlation: 
+`method = "spearman"` (method = "pearson", "spearman", "kendall").
+
+The defaults have corrections for multiple comparisons using the `holm` method; you can use `adjust="bonferroni"` to use a bonferroni correction (adjust= "holm" (default), "bonferroni", "fdr", "none")
+
+### Up to you
+
+Run multiple correlations below by changing the method, or the adjustments. Any comments? 
+
+```{r}
 
 ```
 
-## Our first statistical model
-What about running our first statistical analysis of the data? We will use a Linear regression model. We can visualise the results using "summary". If you are new to linear models and prefer an ANOVA-style analysis, then use the function "ANOVA" on the linear model. We'll come back to the linear model later on. 
 
-```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lm <- lm(dist~speed, data=cars)
-mdl.lm#also print(mdl.lm)
+Up to now, we have done some basic summaries and checked the correlations in the data. The pearson correlations we have done provided us with significance levels related to the correlations between two *numeric* outcomes We do not know if the levels of our variable `Species` are statistically different based on one of the predictors. We use inferential statistics here.
+
+## First step into statistics
+
+### Basic t-tests
+
+We can run a basic t-test on our data, using the function `t-test`. This looks at the two numeric outcomes and sees if they are different from each other
+
+```{r}
+t.test(iris$Sepal.Length,iris$Petal.Width)
+```
+What if I am interested in the effects between the levels of the grouping factor and one of the outcomes?
+
+### Basic ANOVA
+
+We can use the function `aov` to run an Analysis of Variance
+
+```{r}
+mdl.aov <- aov(Sepal.Length~Species, data=iris)
+summary(mdl.aov)
+```
+
+### Linear model
+
+We can use the function `lm` to run a linear model
+
+```{r}
+mdl.lm <- lm(Sepal.Length~Species, data=iris)
 summary(mdl.lm)
+
+```
+
+But wait... How is the linear model comparable to the analysis of variance we ran above? This linear model derives the analysis of variance we saw above, use `anova` on your linear model..
+
+Here are the results of the initial Analysis of variance:
+
+```{r}
+summary(mdl.aov)
+```
+
+And here are the results of the linear model with the `anova` function
+
+```{r}
 anova(mdl.lm)
 ```
 
-To interpret the model, we need look at the coefficients. The "Intercept" is -17.5791 and the coefficient for "speed" is 3.9324. This tells us that when "speed" = 0, the "distance" is at -17.5791; with one unit increase in "speed", the "distance" increases by 3.9324 (ft). There may be some issues with interpretation of this model and we need to center, standardise scores. We are not going to cover this here, but you can center and/or scale with this formula: 
+They are exactly the same... The underlying of an Analysis of variance is a linear model..
 
-1. Center = scale(x, center = TRUE, scale = FALSE)
-2. Standardise = scale(x, center = TRUE, scale = TRUE)
+## Looking again at our Linear Model
+
+The basic assumption of a Linear model is to create a regression analysis on the data. We have an outcome (or dependent variable) and a predictor (or an independent variable). The formula of a linear model is as follows `outcome~predictor` that can be read as "outcome as a function of the predictor". We can add "1" to specify an intercept, but this is by default added to the model
+
+### Model estimation
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+mdl.lm <- lm(Sepal.Length~Species, data=iris)
+# same as below.
+#mdl.lm <- lm(Sepal.Length~1+Species, data=iris)
+mdl.lm#also print(mdl.lm)
+summary(mdl.lm)
+```
+
+### Tidying the output
+
+```{r}
+# from library(broom)
+tidy(mdl.lm) %>% 
+  select(term, estimate) %>% 
+  mutate(estimate = round(estimate, 3))
+mycoef <- tidy(mdl.lm) %>% pull(estimate)
+
+```
+
+
+
+To interpret the model, we need look at the coefficients. The "Intercept" (=Setosa) is `r mycoef[1]` and the coefficients for Versicolor and for Virginica are respectively `r mycoef[2]` and `r mycoef[3]` This tells us that compared to Setosa, moving from this category to Versicolor leads to a significant increase by `r mycoef[2]`, and for Virginica, there is a significant increase by `r mycoef[3]`. 
+
+### Obtaining our "true" coefficients
+
+But where are our actual values based on the means in the table above?
+We run a model that suppresses the intercept (i.e., adding 0 instead of 1) and this will allow us to obtain the "true" coefficients for each level of our predictor
+
+```{r}
+mdl.lm.2 <- lm(Sepal.Length~0+Species, data=iris)
+summary(mdl.lm.2)
+```
+
+### Plot
+
+Looking back at our plot
+
+```{r,warning=FALSE,message=FALSE}
+ggplot(data = iris, aes(x=Species, y = Sepal.Length))+
+  geom_boxplot() +
+  labs(x="Species",y="Length",title="Boxplot and trend line",subtitle="with ggplot2") + 
+  theme_bw() + theme(text=element_text(size=15))+
+  geom_smooth(aes(x = as.numeric(Species), y = Sepal.Length),method="lm")
+```
+
+This matches the original data. Setosa has a mean of `r mycoef[1]`, Versicolor `r mycoef[1] + mycoef[2]`, and Virginica `r mycoef[1] + mycoef[2]`. See table above and coefficients below 
+
+```{r}
+#Setosa
+mycoef[1]
+#Versicolor
+mycoef[1] + mycoef[2]
+#Virginica
+mycoef[1] + mycoef[3]
+```
+
+The same as
+
+```{r}
+tidy(mdl.lm.2) %>% 
+  select(term, estimate) %>% 
+  mutate(estimate = round(estimate, 3))
+mycoef <- tidy(mdl.lm.2) %>% pull(estimate)
+
+#Setosa
+mycoef[1]
+#Versicolor
+mycoef[2]
+#Virginica
+mycoef[3]
+```
 
 
 ### Dissecting the model
+
 Let us dissect the model. If you use "str", you will be able to see what is available under our linear model. To access some info from the model
 
-### "str" and "coef"
+#### "str" and "coef"
+
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 str(mdl.lm)
 coef(mdl.lm)
@@ -80,7 +290,9 @@ coef(mdl.lm)
 ```
 
 #### "coef" and "coefficients"
+
 What if I want to obtain the "Intercept"? Or the coefficient for distance? What if I want the full row for distance?
+
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 coef(mdl.lm)[1] # same as mdl.lm$coefficients[1]
 coef(mdl.lm)[2] # same as mdl.lm$coefficients[2]
@@ -90,6 +302,16 @@ summary(mdl.lm)$coefficients[2, 4] #for p value
 
 ```
 
+
+#### Up to you
+
+Play around with the model summary and obtain the t values for the three levels. You can do this by referring to the coefficient as above
+
+```{r}
+
+```
+
+
 What about residuals (difference between the observed value and the estimated value of the quantity) and fitted values?
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
@@ -98,83 +320,107 @@ fitted(mdl.lm)
 ```
 
 #### Goodness of fit?
+
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 AIC(mdl.lm)	# Akaike's Information Criterion, lower values are better
 BIC(mdl.lm)	# Bayesian AIC
 logLik(mdl.lm)	# log likelihood
 ```
 
-#### Significance testing
-Are the above informative? of course not directly. If we want to test for overall significance of model. We run a null model (aka intercept only) and compare models. 
 
-```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lm.Null <- lm(dist~1, data=cars)
-anova(mdl.lm,mdl.lm.Null)
+Or use the following from `broom`
 
+```{r}
+glance(mdl.lm)
 ```
 
+
+#### Significance testing
+
+Are the above informative? of course not directly. If we want to test for overall significance of model. We run a null model (aka intercept only) and compare models.
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+mdl.lm.Null <- lm(Sepal.Length~1, data=iris)
+mdl.comp <- anova(mdl.lm.Null,mdl.lm)
+mdl.comp
+```
+
+The results show that adding the factor "Species" improves the model fit. We can write this as follows: Model comparison showed that the addition of Species improved the model fit when compared with an intercept only model ($F$(`r mdl.comp[2,3]`)=`r round(mdl.comp[2,5],2)`,*p*<`r mdl.comp[2,6]`) 
 
 #### Plotting fitted values
-Let's plot our fitted values. Any problems with this?
-```{r warning=FALSE, message=FALSE, error=FALSE}
-ggplot.cars3 <- ggplot(cars,aes(x=speed,y=predict(mdl.lm)))+
-                geom_point()+theme_bw(base_size = 20)+
-                labs(y = "Stopping distance (ft)", x = "Speed (mph)")+
-                geom_smooth(method = lm, se=F)
-ggplot.cars3
 
+##### Trend line
+
+Let's plot our fitted values but only for the trend line
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+ggplot(data = iris, aes(x=Species, y = Sepal.Length))+
+  geom_boxplot() +
+  labs(x="Species",y="Length",title="Boxplot and predicted trend line",subtitle="with ggplot2") + 
+  theme_bw() + theme(text=element_text(size=15))+
+  geom_smooth(aes(x = as.numeric(Species), y = predict(mdl.lm)),method="lm",color="blue")
+```
+
+This allows us to plot the fitted values from our model with the predicted linear trend. This is exactly the same as our original data.
+
+##### Predicted means and the trend line
+
+We can also plot the predicted means and linear trend
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+ggplot(data = iris, aes(x=Species, y = predict(mdl.lm)))+
+  geom_boxplot(color="blue") +
+  labs(x="Species",y="Length",title="Predicted means and trend line",subtitle="with ggplot2") + 
+  theme_bw() + theme(text=element_text(size=15))+
+  geom_smooth(aes(x = as.numeric(Species), y = predict(mdl.lm)),method="lm",color="blue")
 ```
 
 
-## Some cool correlations
-Above, we had two predictors and we checked for correlations. What if we have more predictors and we want to have cool correlation tables and plots? (see here https://www.r-bloggers.com/beautiful-and-powerful-correlation-tables-in-r/amp/)
+##### Raw data, predicted means and the trend line
 
-### With corrections
-```{r warning=FALSE, message=FALSE, error=FALSE}
-cor <- psycho::affective %>% 
-  correlation()
-summary(cor)
-plot(cor)
-print(cor)
-```
-
-### No corrections
-What of we don't want to use corrections for multiple comparisons?
+We can also plot the actual data, the predicted means and linear trend
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-cor <- psycho::affective %>% 
-  correlation(adjust="none")
-summary(cor)
-plot(cor)
+ggplot(data = iris, aes(x=Species, y = Sepal.Length))+
+  geom_boxplot()+
+  geom_boxplot(aes(x = Species, y = predict(mdl.lm)),color="blue") +
+  labs(x="Species",y="Length",title="Boxplot raw data, predicted means (in blue) and trend line",subtitle="with ggplot2") + 
+  theme_bw() + theme(text=element_text(size=15))+
+  geom_smooth(aes(x = as.numeric(Species), y = predict(mdl.lm)),method="lm",color="blue")
 ```
 
 
-### Issues with no corrections
-Let's generate a dataframe with 11 predictors and 1000 rows each. Because these are simulated data, there is no underlying correlation between these.
+### What about pairwise comparison?
 
-```{r warning=FALSE, message=FALSE, error=FALSE}
-df_with_11_vars <- data.frame(replicate(11, rnorm(1000)))
-cor2 <- correlation(df_with_11_vars, adjust="none")
-summary(cor2)
+Based on our model's summary, can you tell me if there is a difference between Versicolor and Virginica?
+
+```{r}
+summary(mdl.lm)
 ```
 
-Deactivate this by using "i_am_cheating"!
-```{r warning=FALSE, message=FALSE, error=FALSE}
-cor3 <- correlation(df_with_11_vars, adjust="none",i_am_cheating=TRUE)
-summary(cor3)
+
+```{r}
+emmeans(mdl.lm, pairwise~Species,adjust="fdr")
 ```
 
-### Same model with corrections
+How to interpret the output? Discuss with your neighbour and share with the group.
 
-```{r warning=FALSE, message=FALSE, error=FALSE}
-cor4 <- correlation(df_with_11_vars)
-summary(cor4)
-```
+Hint... Look at the emmeans values for each level of our factor "Species" and the contrasts. 
+
+## What about the other outcomes?
+
+So far, we only looked at "Sepal.Length". What about the other outcomes? how informative are they? Do we have statistical difference between the three levels of our predictor? You can do this in your spare time.
+
+## Conclusion
+
+We have so far looked at the Linear Model. The underlying assumption about linear models is that we have a normal (Gaussian) distribution. This is the model to be used when we have a numeric outcome. What if our outcome is not numeric? What if we have two categories, i.e., black vs white? correct vs incorrect? yes vs no? These are categorical **binary** outcome. We look in the next section at Logistic Regression
 
 # From Linear to Logistic models
-Here we will look at an example when the outcome is a binary outcome. This simulated data is structured as follows. We asked one participant to listen to 165 sentences, and to judge whether these are "grammatical" or "ungrammatical". There were 105 sentences that were "grammatical" and 60 "ungrammatical". This fictitious example can apply in any other situation. Let's think Geography: 165 lands: 105 "flat" and 60 "non-flat", etc. This applies to any case where you need to "categorise" the outcome into two groups. 
+
+Here we will look at an example when the outcome is binary. This simulated data is structured as follows. We asked one participant to listen to 165 sentences, and to judge whether these are "grammatical" or "ungrammatical". There were 105 sentences that were "grammatical" and 60 "ungrammatical". This fictitious example can apply in any other situation. Let's think Geography: 165 lands: 105 "flat" and 60 "non-flat", etc. This applies to any case where you need to "categorise" the outcome into two groups. 
 
 ## Load and summaries
+
 Let's load in the data and do some basic summaries
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
@@ -186,7 +432,18 @@ table(grammatical$grammaticality,grammatical$response)
 ```
 
 ## Accuracy and Signal Detection Theory
-We are generally interested in performance, i.e., whether the we have "accurately" categorised the outcome or not. Let's do some stats on this 
+
+### Rationale
+
+We are generally interested in performance, i.e., whether the we have "accurately" categorised the outcome or not and at the same time want to evaluate our biases in responses. When deciding on categories, we are usually biased in our selection. 
+
+Let's ask the question: How many of you have a Mac laptop and how many a Windows laptop? For those with a Mac, what was the main reason for choosing it? Are you biased in anyway by yur decision? 
+
+To correct for these biases, we use some variants from Signal Detection Theory to obtain the true estimates without being influenced by the biases. 
+
+### Running stats
+
+Let's do some stats on this 
 
 |  | Yes | No | Total |
 |----------------------------|--------------------|------------------|------------------|
@@ -208,32 +465,41 @@ Total = 165
 (FP+FN)/Total # error, also 1-accuracy
 
 # When stimulus = yes, how many times response = yes?
-TP/(TP+FN) # also True Positive Rate:
+TP/(TP+FN) # also True Positive Rate or Specificity
 
 # When stimulus = no, how many times response = yes?
 FP/(FP+TN) # False Positive Rate, 
 
 # When stimulus = no, how many times response = no?
-TN/(FP+TN) # specificity, also 1-sensetivity 
+TN/(FP+TN) # True Negative Rate or Sensitivity 
 
 # When subject responds "yes" how many times is (s)he correct?
 TP/(TP+FP) # precision
 
 # getting dprime (or the sensetivity index); beta (bias criterion, 0-1, lower=increase in "yes"); Aprime (estimate of discriminability, 0-1, 1=good discrimination; 0 at chance); bppd (b prime prime d, -1 to 1; 0 = no bias, negative = tendency to respond "yes", positive = tendency to respond "no"); c (index of bias, equals to SD)
 #(see also https://www.r-bloggers.com/compute-signal-detection-theory-indices-with-r/amp/) 
-psycho::dprime(TP, FP, FN, TN)
+psycho::dprime(TP, FP, FN, TN, 
+               n_targets = TP+FN, 
+               n_distractors = FP+TN,
+               adjust=F)
 
 ```
 
+The most important from above, is d-prime. This is modelling the difference between the rate of "True Positive" responses and "False Positive" responses in standard unit (or z-scores). The formula can be written as:
+
+`d' (d prime) = Z(True Positive Rate) - Z(False Positive Rate)`
+
 
 ## GLM
+
 Let's run a first GLM (Generalised Linear Model). A GLM uses a special family "binomial" as it assumes the outcome has a binomial distribution. In general, results from a Logistic Regression are close to what we get from SDT (see above).
 
-To run the results, we will change the reference level for both response and grammaticality. 
+To run the results, we will change the reference level for both response and grammaticality. The basic assumption about GLM is that we start with our reference level being the "no" responses to the "ungrammatical" category. Any changes to this reference will be seen in the coefficients as "yes" responses to the "grammatical" category.
 
-### Results
+### Model estimation and results
 
-The results below show the logodds for our model. The results show that for one unit increase in the response (i.e., from no to yes), the logodds of being "grammatical" is increased by 4.61 (the intercept shows that when the response is "no", the logodds are -1.61).
+The results below show the logodds for our model. 
+
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 levels(grammatical$response)
 levels(grammatical$grammaticality)
@@ -244,25 +510,50 @@ grammatical$grammaticality <- relevel(grammatical$grammaticality, ref="ungrammat
 mdl.glm <- glm(response~grammaticality,data=grammatical,family = binomial)
 summary(mdl.glm)
 
+tidy(mdl.glm) %>% 
+  select(term, estimate) %>% 
+  mutate(estimate = round(estimate, 3))
+# to only get the coefficients
+mycoef2 <- tidy(mdl.glm) %>% pull(estimate)
 ```
 
+
+The results show that for one unit increase in the response (i.e., from no to yes), the logodds of being "grammatical" is increased by `r mycoef2[2]` (the intercept shows that when the response is "no", the logodds are `r mycoef2[1]`). The actual logodds for the response "yes" to grammatical is `r mycoef2[1]+mycoef2[2]`
+
 ### Getting "true" coefficients from GLM
-Here we will run the same GLM model above but by supressing the "Intercept". The idea here is to get the "true" coefficient for a "grammatical" and a "yes" response.
+
+
+How to get the true coefficients? How to suppress the Intercept?
+
+
+
+
+
+
+
+
+
+
+
+
+
+Here we will run the same GLM model above but by suppressing the "Intercept". The idea here is to get the "true" coefficient for a "grammatical" and a "yes" response. We can use the above code, i.e., "mycoef2[1]+mycoef2[2]" or as below
+
+
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 # An intercept is always included in any regression, but you can specify it with "1"
 ## glm(response~1+grammaticality,data=grammatical,family = binomial)
 
-mdl.glm2 <- glm(response~-1+grammaticality,data=grammatical,family = binomial)
+mdl.glm2 <- glm(response~0+grammaticality,data=grammatical,family = binomial)
 summary(mdl.glm2)
 
 
 ```
 
-
 ### Logodds to Odd ratios
 
-Logodds can be modified to talk about the odds of an event. For our model above, the odds of "grammatical" receiving a "yes" response increase by 100; whereas receiving a "no" is a mere 0.2. Using the second model (i.e., without an Intercept) allows us to get the odd rations for each of responses to "Ungrammatical" and "Grammatical"
+Logodds can be modified to talk about the odds of an event. For our model above, the odds of "grammatical" receiving a "yes" response increase by 100; whereas receiving a "no" is a mere 0.2. Using the second model (i.e., without an Intercept) allows us to get the odd ratios for each of responses to "Ungrammatical" and "Grammatical", which is still 0.2 for "ungrammatical" and 20 for "grammatical", i.e., 20 times more
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 exp(coef(mdl.glm))
@@ -272,7 +563,7 @@ exp(coef(mdl.glm2))
 
 ### LogOdds to proportions
 
-If you want to talk about the percentage "accuracy" of our model, then we can transform our loggodds into proportions. This shows that the proportion of "grammatical" receiving a "yes" response increase by 99%
+If you want to talk about the percentage "accuracy" of our model, then we can transform our loggodds into proportions. This shows that the proportion of "grammatical" receiving a "yes" response increases by 99% (or 95% based on our "true" coefficients)
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 plogis(coef(mdl.glm))
@@ -281,19 +572,32 @@ plogis(coef(mdl.glm2))
 
 ### GLM as a classification tool
 
-The code below demosntrates the links between our GLM model and what we had obtained above from SDT. The predictions' table shows that our GLM was successful at obtaining prediction that are identical to our initial data setup. Look at the table here and the table above. Once we have created our table of outcome, we can compute percent correct, the specificity, the sensetivity, the Kappa score, etc.. this yields the actual value with the SD that is related to variations in responses
+The code below demonstrates the links between our GLM model and what we had obtained above from SDT. The predictions' table shows that our GLM was successful at obtaining prediction that are identical to our initial data setup. Look at the table here and the table above. Once we have created our table of outcome, we can compute percent correct, the specificity, the sensitivity, the Kappa score, etc.. this yields the actual value with the SD that is related to variations in responses. 
 
 ```{r}
 ## predict(mdl.glm)>0.5 is identical to 
 ## predict(glm(response~grammaticality,data=grammatical,family = binomial),type="response")
-tbl.glm <- table(grammatical$response,predict(mdl.glm,type="response")>0.5)
+grammatical$response <- relevel(grammatical$response, "yes")
+grammatical$grammaticality <- relevel(grammatical$grammaticality, "grammatical")
+mdl.glm.C <- glm(response~grammaticality,data=grammatical,family = binomial)
+tbl.glm <- table(grammatical$response,predict(mdl.glm.C,type="response")>0.5)
+colnames(tbl.glm) <- c("grammatical","ungrammatical")
 tbl.glm
 PresenceAbsence::pcc(tbl.glm)
 PresenceAbsence::specificity(tbl.glm)
 PresenceAbsence::sensitivity(tbl.glm)
-PresenceAbsence::Kappa(tbl.glm)
 ###etc..
 ```
+
+If you look at the results from SDT above, these results are the same as
+the following
+
+Accuracy: (TP+TN)/Total (`r (TP+TN)/Total`) 
+
+True Positive Rate (or Specificity) TP/(TP+FN) (`r TP/(TP+FN)`)
+
+True Negative Rate (or Sensitivity) TN/(FP+TN) (`r TN/(FP+TN)`) 
+
 
 ### Plotting
 
@@ -308,6 +612,23 @@ ggplot(grammatical, aes(x=as.numeric(grammaticality), y=prob)) +
     coord_cartesian(ylim=c(0,1))+
     scale_x_discrete(limits = c("Ungrammatical","Grammatical"))
 ```
+
+### GLM and d prime
+
+The values obtained here match those obtained from SDT. For d prime, the difference stems from the use of the logit variant of the Binomial family. By using a probit variant, one obtains the same values ([see here](https://stats.idre.ucla.edu/r/dae/probit-regression/) for more details). A probit variant models the z-score differences in the outcome and is evaluated in change in 1-standard unit. This is modelling the change from "ungrammatical" "no" responses into "grammatical" "yes" responses in z-scores. The same conceptual underpinnings of d-prime from Signal Detection Theory.
+
+```{r}
+## d prime
+psycho::dprime(TP, FP, FN, TN, 
+               n_targets = TP+FN, 
+               n_distractors = FP+TN,
+               adjust=F)$dprime
+
+## GLM with probit
+coef(glm(response~grammaticality,data=grammatical,family = binomial(probit)))[2]
+
+```
+
 
 ## GLM: Other distributions
 
@@ -332,6 +653,7 @@ If your data does not fit a binomial distribution, and is a multinomial (i.e., t
 These models work perfectly with rating data. Ratings are inherently ordered, 1, 2, ... n, and expect to observe an increase (or decrease) in overall ratings from 1 to n. To demonstrate this, we will use an example using the package "ordinal". Data were from a rating experiment where six participants rated the percept of nasality in the production of particular consonants in Arabic. The data came from nine producing subjects. The ratings were from 1 to 5. This example can apply to any study, e.g., rating grammaticality of sentences, rating how positive the sentiments are in a article, interview responses, etc.
 
 ## Importing and pre-processing
+
 We start by importing the data and process it. We change the reference level in the predictor
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
@@ -343,6 +665,7 @@ rating$Context <- relevel(rating$Context, ref="isolation")
 ```
 
 ## Our first model
+
 We run our first clm model as a simple, i.e., with no random effects
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
@@ -352,6 +675,7 @@ summary(mdl.clm)
 
 
 ## Testing significance 
+
 We can evaluate whether "Context" improves the model fit, by comparing a null model with our model. Of course "Context" is improving the model fit.
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
@@ -361,9 +685,11 @@ anova(mdl.clm,mdl.clm.Null)
 ```
 
 ## Interpreting a cumulative model
-As a way to interpret the model, we can look at the coefficients and make sense of the results. A CLM model is a Logistic model with a cumulative effect. The "Coefficients" are the estimates for each level of the fixed effect; the "Threshold coefficients" are those of the response. For the former, a negative coefficient indicates a negative association with the response; and a positive is positively associated with the response. The p values are indicating the significance of each level. For the "Threshold coefficients", we can see the cumulative effects of ratings 1|2, 2|3, 3|4 and 4|5 which indicate an overall increase in ht eratings from 1 to 5. 
+
+As a way to interpret the model, we can look at the coefficients and make sense of the results. A CLM model is a Logistic model with a cumulative effect. The "Coefficients" are the estimates for each level of the fixed effect; the "Threshold coefficients" are those of the response. For the former, a negative coefficient indicates a negative association with the response; and a positive is positively associated with the response. The p values are indicating the significance of each level. For the "Threshold coefficients", we can see the cumulative effects of ratings 1|2, 2|3, 3|4 and 4|5 which indicate an overall increase in the ratings from 1 to 5. 
 
 ## Plotting 
+
 We use a modified version of a plotting function that allows us to visualise the effects. For this, we use the base R plotting functions
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
@@ -386,207 +712,4 @@ legend(par('usr')[2], par('usr')[4], bty='n', xpd=NA,lty=1, col=c("black", "red"
 
 ```
 
-
-# From Linear to Mixed models. Why random effects matter
-Let's generate a new dataframe that we will use later on for our mixed models
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
-set.seed(666)
-#we create 6 subjects
-subjects <- paste0('S', 1:6)
-#here we ad repetitions within speakers
-subjects <- rep(subjects, each = 20)
-items <- paste0('Item', 1:20)
-#below repeates
-items <- rep(items, 6)
-#below is to generate random numbers that are log values
-logFreq <- round(rexp(20)*5,2)
-#below we are repeating the logFreq 6 times to fit with the number of speakers and items
-logFreq <- rep(logFreq,6)
-xdf <- data.frame(subjects, items, logFreq)
-#below removes the individual variables we had created because they are already in the dataframe
-rm(subjects,items,logFreq)
-
-xdf$Intercept <- 300
-submeans <- rep(rnorm(6,sd = 40),20)
-#sort make the means for each subject is the same...
-submeans <- sort(submeans)
-xdf$submeans <- submeans
-#we create the same thing for items... we allow the items mean to vary between words...
-itsmeans <- rep(rnorm(20,sd=20),6)
-xdf$itsmeans <- itsmeans
-xdf$error <- rnorm(120,sd=20)
-#here we create an effect column,  
-#here for each logFreq, we have a decrease of -5 of that particular logFreq 
-xdf$effect <- -5*xdf$logFreq
-
-xdf$dur <- xdf$Intercept +xdf$submeans +xdf$itsmeans +xdf$error + xdf$effect
-
-#below is to subset the data and get only a few columns.. the -c(4:8) removes the columns 4 to 8..
-xreal <- xdf[,-c(4:8)]
-head(xreal)
-rm(xdf,submeans,itsmeans)
-```
-
-## Correlations and plots
-Let's start by doing a correlation test and plotting the data. Our results show that there is a negative correlation between duration and LogFrequency, and the plot shows this decrease. 
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
-cor5 <- xreal %>% 
-  correlation()
-summary(cor5)
-ggplot.xreal <- ggplot(xreal,aes(x=logFreq,y=dur))+
-                geom_point()+theme_bw(base_size = 20)+
-                labs(y = "Duration", x = "Frequency (Log)")+
-                geom_smooth(method = lm, se=F)
-ggplot.xreal
-```
-
-
-## Linear model
-
-Let's run a simple linear model on the data. As we can see below, thereare some issues with the "simple" linear model: we had set our SD for subjects to be 40, but this was picked up as 120 (see histogram of residuals). The QQ Plot is not "normal". 
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lm.xreal <- lm(dur~logFreq, data=xreal)
-summary(mdl.lm.xreal)
-hist(residuals(mdl.lm.xreal))
-qqnorm(residuals(mdl.lm.xreal)); qqline(residuals(mdl.lm.xreal))
-plot(fitted(mdl.lm.xreal),residuals(mdl.lm.xreal), cex = 4)
-```
-
-## Linear Mixed Model
-
-Our Linear Mixed effects Model will take into account the random effects we added and also our model specifications. We use a Maximum Likelihood estimate (REML=FALSE) as this is what we will use for model comparison. The Linear Mixed Model is reflecting our model specifications The SD of our subjects is picked up correctly. The model results are "almost" the same as our linear model above. The coefficient for the "Intercept" is at 337.973 and the coefficient for LogFrequency is at -5.460. This indicates that for each unit of increase in the LogFrequency, there is a decrease by 5.460 (ms).
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lmer.xreal <- lmer(dur~logFreq+(1|subjects)+(1|items), data=xreal,REML=FALSE)
-summary(mdl.lmer.xreal)
-hist(residuals(mdl.lmer.xreal))
-qqnorm(residuals(mdl.lmer.xreal)); qqline(residuals(mdl.lmer.xreal))
-plot(fitted(mdl.lmer.xreal),residuals(mdl.lmer.xreal), cex = 4)
-```
-
-## Our second Mixed model
-
-This second model add a by-subject random slope. Random slopes allow for the variation that exists in the random effects to be taken into account. An intercept only model provides an averaged values to our participants.
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lmer.xreal.2 <- lmer(dur~logFreq+(logFreq|subjects)+(1|items), data=xreal,REML=FALSE)
-summary(mdl.lmer.xreal.2)
-hist(residuals(mdl.lmer.xreal.2))
-qqnorm(residuals(mdl.lmer.xreal.2)); qqline(residuals(mdl.lmer.xreal.2))
-plot(fitted(mdl.lmer.xreal.2),residuals(mdl.lmer.xreal.2), cex = 4)
-```
-
-## Model comparison
-
-But where are our p values? The lme4 developers decided not to include p values due to various issues with estimating df. What we can do instead is to compare models. We need to create a null model to allow for significance testing. As expected our predictor is significantly contributing to the difference. 
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lmer.xreal.Null <- lmer(dur~1+(logFreq|subjects)+(1|items), data=xreal,REML=FALSE)
-anova(mdl.lmer.xreal.Null,mdl.lmer.xreal.2)
-```
-
-Also, do we really need random slopes? From the result below, we don't seem to need random slopes at all, given that adding random slopes does not improve the model fit. I always recommend testing this. Most of the time I keep random slopes.
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
-anova(mdl.lmer.xreal,mdl.lmer.xreal.2)
-```
-
-But if you are really (really!!!) obsessed by p values, then you can also use lmerTest. BUT use after comparing models to evaluate contribution of predictors
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lmer.xreal.lmerTest <- lmer(dur~logFreq+(logFreq|subjects)+(1|items), data=xreal,REML=TRUE)
-summary(mdl.lmer.xreal.lmerTest)
-detach("package:lmerTest", unload=TRUE)
-```
-
-
-## Our final Mixed model
-
-Our final model uses REML (or Restricted Maximum Likelihood Estimate of Variance Component) to estimate the model. 
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lmer.xreal.Full <- lmer(dur~logFreq+(logFreq|subjects)+(1|items), data=xreal,REML=TRUE)
-summary(mdl.lmer.xreal.Full)
-anova(mdl.lmer.xreal.Full)
-hist(residuals(mdl.lmer.xreal.Full))
-qqnorm(residuals(mdl.lmer.xreal.Full)); qqline(residuals(mdl.lmer.xreal.Full))
-plot(fitted(mdl.lmer.xreal.Full),residuals(mdl.lmer.xreal.Full), cex = 4)
-```
-
-
-## Dissecting the model
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
-coef(mdl.lmer.xreal.Full)
-fixef(mdl.lmer.xreal.Full)
-fixef(mdl.lmer.xreal.Full)[1]
-fixef(mdl.lmer.xreal.Full)[2]
-
-coef(mdl.lmer.xreal.Full)$`subjects`[1]
-coef(mdl.lmer.xreal.Full)$`subjects`[2]
-
-coef(mdl.lmer.xreal.Full)$`items`[1]
-coef(mdl.lmer.xreal.Full)$`items`[2]
-
-```
-
-## Using predictions from our model
-In general, I use the prediction from my final model in any plots. To generate this, we can use the following
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
-xreal$Pred_Dur <- predict(lmer(dur~logFreq+(logFreq|subjects)+(1|items), data=xreal,REML=TRUE))
-ggplot.xreal.Pred <- ggplot(xreal,aes(x=logFreq,y=Pred_Dur))+
-                geom_point()+theme_bw(base_size = 20)+
-                labs(y = "Duration", x = "Frequency (Log)",title="Predicted")+
-                geom_smooth(method = lm, se=F)+coord_cartesian(ylim=c(200,450))
-ggplot.xreal.Pred
-## original plot
-ggplot.xreal.Original <- ggplot(xreal,aes(x=logFreq,y=dur))+
-                geom_point()+theme_bw(base_size = 20)+
-                labs(y = "Duration", x = "Frequency (Log)",title="Original")+
-                geom_smooth(method = lm, se=F)+coord_cartesian(ylim=c(200,450))
-ggplot.xreal.Original
-```
-
-## GLMM and CLMM
-
-The code above was using a Linear Mixed Effects Modelling. The outcome was a numeric object. In some cases (as we have seen above), we may have: 
-
-1. Binary outcome (binomial)
-2. Count data (poisson), 
-3. Multi-category outcome (multinomial)
-4. Rating data (cumulative function)
-
-The code below gives you an idea of how to specificy these models
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
-
-## Binomial family
-## lme4::glmer(outcome~predictor(s)+(1|subject)+(1|items)..., data=data, family=binomial)
-
-## Poisson family
-## lme4::glmer(outcome~predictor(s)+(1|subject)+(1|items)..., data=data, family=poisson)
-
-## Multinomial family
-## a bit complicated as tehre is a need to use Bayesian approaches, see e.g., 
-## glmmADMB
-## mixcat
-## MCMCglmm
-## see https://gist.github.com/casallas/8263818
-
-## Rating data, use following
-## ordinal::clmm(outcome~predictor(s)+(1|subject)+(1|items)..., data=data)
-
-
-## Remember to test for random effects and whether slopes are needed.
-
-```
-
-# Running your code and automatically drawing quality tables for publications
-
-See this website for how to run and automatically draw tables for your publications. I haven't tested this but it is in development:
-7)	https://www.r-bloggers.com/elegant-regression-results-tables-and-plots-in-r-the-finalfit-package/amp
 
