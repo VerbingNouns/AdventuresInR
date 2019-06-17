@@ -1,15 +1,20 @@
 # Welcome to the Adventures In R Workshop!
 
-*This repository will serve as the base for designing and sharing materials for the 2018 Workshop in R.*
+*This repository will serve as the base for designing and sharing materials for the 2019 Workshop in R.*
 
 This workshop has been funded by the Faculty of Humanities Arts and Social Sciences, and is open to all postgraduate students at Newcastle University and universities which constitute the NINE-DTP consortium. The aim is to provide a strong foundation in what is fast becoming the standard package for data analysis, manipulation and visualisation. By the end of this course, attendees will have a sufficiently strong foundation to enable them to work on more complex challenges in their own time.
 
 ## Information:
 
+<<<<<<< HEAD
 **When:** 25-26 June; 09.30 -- 17.00  
 **Session Plan:** Session 1: 9.30 — 12, Lunch: 12 — 1, Session 2: 1 - 3.30, Coffee break: 3.30 - 4, Q&A: 4 - 5
 
 **Where:** ARMB.G.17  
+=======
+**When:** 25-26 June 2019; 09.00 -- 17.00  
+**Where:** ARMB 2.09  
+>>>>>>> b49f2fe741c7e1c634c5ba2ab22639049ccc7663
 **Instructors:** Lauren Ackerman, Jalal Al-Tamimi, Jasmine Warburton, and Nick Riches  
 
 Before the workshop, please make sure you have downloaded R and RStudio. [**This** brief tutorial](docs/Setting_Up.nb.html) may help.
@@ -18,12 +23,12 @@ Before the workshop, please make sure you have downloaded R and RStudio. [**This
 
 We anticipate that basic refreshments, including lunch, will be provided.
 
-### Day 1:
+### Day 1: (To be updated)
 
 **Morning:** [Introduction to R and RStudio](/docs/Session_1-Introduction.nb.html) (Download the [Rmarkdown file](/docs/Session_1-Introduction.Rmd) for this session)  
 **Afternoon:** [Visualisation and data manipulation](docs/Session_2-plots_dplyr.html) (Download the [.Rmd file](docs/Session_2-plots_dplyr.Rmd) and [the dialect data](data/dialectdata.csv), [reaction time data](data/reactiondata.txt), and [other data](data/plantanimalrt.csv) for this session)  
 
-### Day 2:
+### Day 2: (To be updated)
 
 **Morning:** [Processing text and corpus data](docs/Session_3.nb.html) (Download [the .Rmd file](docs/Session_3.Rmd) and [the data file](data/Shakespeare_data.csv) for this session)  
 **Afternoon:** [Techniques for analysing data](docs/Session_4-AnalysingData.nb.html) (Download [the .Rmd file](docs/Session_4-AnalysingData.rmd) and the data files [grammatical](data/grammatical.csv) and [rating](data/rating.csv) for this session)
@@ -36,16 +41,10 @@ We anticipate that basic refreshments, including lunch, will be provided.
 The room does not contain any PCs and we would ask attendees to *bring laptops with copies of R and RStudio already installed*
 (please visit  [https://www.r-project.org/](https://www.r-project.org/) to download R, and [https://www.rstudio.com/](https://www.rstudio.com/) to download RStudio). We believe that it’s preferable to work on laptops rather than university machines as it is much easier to update R to the latest version.
 
-If you already have R and RStudio installed, we recommend you update to the latest versions. The recent updates in R version 3.5.0 are substantial and will require the re-installation of any packages you have previously installed. Instructions and help for doing so can be found here: [https://www.r-statistics.com/2018/04/r-3-5-0-is-released-major-release-with-many-new-features/](https://www.r-statistics.com/2018/04/r-3-5-0-is-released-major-release-with-many-new-features/)
+If you already have R and RStudio installed, we recommend you update to the latest versions. Updating R means you need to also update any installed packages. 
 
 ### Notes:
 
-05 June 2018: The newest version of RStudio is 1.1.453. This fixes the bug described below for data frames and tibbles but not for certain other output.
+12 June 2019: Please install the latest version of R (3.6.0). Also install the latest version of R Studio (version 1.2.1335). We will send a list of all packages to be installed.
 
-25 May 2018: One aspect of the bug mentioned below for R version 3.5.0 interacting with RStudio version 1.1.447 can easily be fixed by piping data table displays to `group_by()`.
 
-16 May 2018: R version 3.5.0 has a known bug in its interface with RStudio version 1.1.447. This bug only seems to effect a small number of aspects of compiling R Notebooks (a tool that will be used throughout the workshop). We do not anticipate this becoming an issue during the workshop and will keep this page updated with any announcements regarding this bug. (It is currently being addressed by the RStudio development team as a high priority.)
-
-## Feedback
-
-Please leave anonymous feedback for us at the end of the course using our [feedback form](https://forms.ncl.ac.uk/view.php?id=2216008)
