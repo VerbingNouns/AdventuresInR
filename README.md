@@ -6,9 +6,11 @@ This workshop has been funded by the Faculty of Humanities Arts and Social Scien
 
 ## Information:
 
-**When:** 7-8 June; 09.00 -- 17.00  
+**When:** 25-26 June; 09.30 -- 17.00  
+**Session Plan:** Session 1: 9.30 — 12, Lunch: 12 — 1, Session 2: 1 - 3.30, Coffee break: 3.30 - 4, Q&A: 4 - 5
+
 **Where:** ARMB.G.17  
-**Instructors:** Lauren Ackerman, Jalal Al-Tamimi, Danielle Turton, and Nick Riches  
+**Instructors:** Lauren Ackerman, Jalal Al-Tamimi, Jasmine Warburton, and Nick Riches  
 
 Before the workshop, please make sure you have downloaded R and RStudio. [**This** brief tutorial](docs/Setting_Up.nb.html) may help.
 
@@ -18,14 +20,13 @@ We anticipate that basic refreshments, including lunch, will be provided.
 
 ### Day 1:
 
-**Morning:** [Introduction to R and RStudio](/docs/Session 1 - Introduction.nb.html) (Download the [Rmarkdown file](/docs/Session 1 - Introduction.Rmd) for this session)
-
-**Afternoon:** Visualisation and data manipulation  
+**Morning:** [Introduction to R and RStudio](/docs/Session_1-Introduction.nb.html) (Download the [Rmarkdown file](/docs/Session_1-Introduction.Rmd) for this session)  
+**Afternoon:** [Visualisation and data manipulation](docs/Session_2-plots_dplyr.html) (Download the [.Rmd file](docs/Session_2-plots_dplyr.Rmd) and [the dialect data](data/dialectdata.csv), [reaction time data](data/reactiondata.txt), and [other data](data/plantanimalrt.csv) for this session)  
 
 ### Day 2:
 
 **Morning:** [Processing text and corpus data](docs/Session_3.nb.html) (Download [the .Rmd file](docs/Session_3.Rmd) and [the data file](data/Shakespeare_data.csv) for this session)  
-**Afternoon:** [Techniques for analysing data](docs/Session_4-AnalysingData.nb.html) (Download [the .Rmd file](docs/Session_4-AnalysingData.rmd) and the data files [grammatical](docs/grammatical.csv) and [rating](docs/rating.csv) for this session
+**Afternoon:** [Techniques for analysing data](docs/Session_4-AnalysingData.nb.html) (Download [the .Rmd file](docs/Session_4-AnalysingData.rmd) and the data files [grammatical](data/grammatical.csv) and [rating](data/rating.csv) for this session)
 
 
 *We regret that due to the limited capacity of the room we may not be able to offer a place to all those who apply.*
@@ -33,9 +34,9 @@ We anticipate that basic refreshments, including lunch, will be provided.
 ## What to bring:
 
 The room does not contain any PCs and we would ask attendees to *bring laptops with copies of R and RStudio already installed*
-(please visit  https://www.r-project.org/ to download R, and https://www.rstudio.com/ to download RStudio). We believe that it’s preferable to work on laptops rather than university machines as it is much easier to update R to the latest version.
+(please visit  [https://www.r-project.org/](https://www.r-project.org/) to download R, and [https://www.rstudio.com/](https://www.rstudio.com/) to download RStudio). We believe that it’s preferable to work on laptops rather than university machines as it is much easier to update R to the latest version.
 
-If you already have R and RStudio installed, we recommend you update to the latest versions. The recent updates in R version 3.5.0 are substantial and will require the re-installation of any packages you have previously installed. Instructions and help for doing so can be found here: https://www.r-statistics.com/2018/04/r-3-5-0-is-released-major-release-with-many-new-features/
+If you already have R and RStudio installed, we recommend you update to the latest versions. The recent updates in R version 3.5.0 are substantial and will require the re-installation of any packages you have previously installed. Instructions and help for doing so can be found here: [https://www.r-statistics.com/2018/04/r-3-5-0-is-released-major-release-with-many-new-features/](https://www.r-statistics.com/2018/04/r-3-5-0-is-released-major-release-with-many-new-features/)
 
 ### Notes:
 
