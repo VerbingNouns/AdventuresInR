@@ -16,7 +16,7 @@ In this session, we will look at basic functions in R that will help us in runni
 # Loading packages 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 ## Use the code below to check if you have all required packages installed. If some are not installed already, the code below will install these. If you have all packages installed, then you could load them with the second code.
-requiredPackages = c('ggplot2','tidyverse','psycho','ordinal','PresenceAbsence','broom','emmeans')
+requiredPackages = c('ggplot2', 'tidyverse', 'psycho', 'ordinal', 'PresenceAbsence', 'broom', 'emmeans', 'car')
 for(p in requiredPackages){
   if(!require(p,character.only = TRUE)) install.packages(p)
   library(p,character.only = TRUE)
@@ -64,7 +64,7 @@ What if you want to summarise the data and get the mean, SD, by each level of th
 
 ```{r}
 iris %>% 
-  group_by (Species) %>% 
+  group_by(Species) %>% 
   summarise(
   SL.Mean = mean(Sepal.Length),
   SL.SD = sd(Sepal.Length)
@@ -85,11 +85,11 @@ Do some additional summaries
 We can make a boxplot of the data and add a trend line. This allows us to visualise the median, and quantiles in addition to the standard deviation and any outliers... All in the same plot!
 
 ```{r,warning=FALSE,message=FALSE}
-ggplot(data = iris, aes(x=Species, y = Sepal.Length))+
+ggplot(data = iris, aes(x = Species, y = Sepal.Length))+
   geom_boxplot() +
-  labs(x="Species",y="Length",title="Boxplot and trend line",subtitle="with ggplot2") + 
-  theme_bw() + theme(text=element_text(size=15))+
-  geom_smooth(aes(x = as.numeric(Species), y = Sepal.Length),method="lm")
+  labs(x = "Species", y = "Length", title = "Boxplot and trend line", subtitle="with ggplot2") + 
+  theme_bw() + theme(text = element_text(size = 15))+
+  geom_smooth(aes(x = as.numeric(Species), y = Sepal.Length), method = "lm")
 ```
 
 Here I have used the variable `Sepal.Length`. You can use any of the additional variables to plot the data.
@@ -101,13 +101,13 @@ Here I have used the variable `Sepal.Length`. You can use any of the additional 
 We use the function `cor` to obtain the pearson correlation and `cor.test` to run a basic correlation test on our data with significance testing
 
 ```{r}
-cor(iris$Sepal.Length,iris$Sepal.Width,method = "pearson")
-cor.test(iris$Sepal.Length,iris$Petal.Width)
+cor(iris$Sepal.Length, iris$Petal.Length, method = "pearson")
+cor.test(iris$Sepal.Length, iris$Petal.Length)
 ```
 
 #### Up to you
 
-Can you check whether there is a correlation between the `Sepal.Length` and the `Petal.Length`? What about `Petal.Length` and `Petal.Width`? 
+Can you check whether there is a correlation between the `Sepal.Length` and the `Petal.Width`? What about `Petal.Length` and `Petal.Width`? 
 
 
 ```{r}
@@ -155,19 +155,125 @@ Up to now, we have done some basic summaries and checked the correlations in the
 
 ### Basic t-tests
 
+T.test are used when the outcome (DV) is numeric and the predictor is either numeric or categorical (with two levels only). 
+
+#### Numeric predictor
+
 We can run a basic t-test on our data, using the function `t-test`. This looks at the two numeric outcomes and sees if they are different from each other
 
 ```{r}
-t.test(iris$Sepal.Length,iris$Petal.Width)
+t.test(iris$Sepal.Length, iris$Petal.Length)
 ```
-What if I am interested in the effects between the levels of the grouping factor and one of the outcomes?
+
+#### Categorical predictor
+
+In the `iris` dataset, we have a categorical predictor: `Species` which has three levels
+
+```{r}
+levels(iris$Species)
+```
+
+Let's subset the data and evaluate the differences between `setosa` and `versicolor` using a t-test and a linear model. We will also check the normality and homogenity of variance in the data
+
+##### Subset
+
+```{r}
+irisSub <- subset(iris, Species == c("setosa","versicolor"))
+levels(irisSub$Species)
+```
+
+But wait a minute... We just subsetted the data and our `levels` show three levels factor.. why? Let's run a summary
+
+```{r}
+summary(irisSub$Species)
+```
+
+Aha! So the subsetting worked as the `virginica` cases are 0. We need to tell `R` to change the factor levels
+
+```{r}
+irisSub$Species <- factor(irisSub$Species)
+levels(irisSub$Species)
+```
+
+Now this works better
+
+##### Normality of distribution
+
+###### Shapiro test
+
+To check normality of distribution, we use the `shapiro.test` on the numeric outcome. Given that our predictor now has two levels. We need to subset the data again to check normality of the outcome `Sepal.Length` for each level of our factor `Species`
+
+```{r}
+irisSubSet <- subset(iris, Species == "setosa")
+irisSubVers <- subset(iris, Species == "versicolor")
+shapiro.test(irisSubSet$Sepal.Length)
+shapiro.test(irisSubVers$Sepal.Length)
+```
+
+How to interpret this non-statistically significant result? This tells us that the distribution of the data is not statistically different from a normal distribution.
+
+###### Density plot
+
+We can also use a density plot to evaluate normality. The results show that both levels have bell shaped distributions.
+
+```{r}
+ggplot(irisSub, aes(x = Sepal.Length))+
+  geom_density()+
+  facet_wrap(~Species, scales = "free_x")
+```
+
+
+##### Homogeniety of variance
+
+Because our data is normally distributed, we can use the `barlett` test. If our data were non-normally distributed, we would use the leveneTest. We can check both.
+
+###### Barlett test
+
+```{r}
+bartlett.test(Sepal.Length ~ Species, data = irisSub)
+```
+
+###### Levene test
+
+```{r}
+var.test(Sepal.Length ~ Species, data = irisSub)
+car::leveneTest(Sepal.Length ~ Species, data = irisSub)
+```
+
+In all cases, the non-statistically significant result indicates that there is no evidence that the variance of two levels of the factor `Species` is statistically significant; i.e., the variances are equal
+
+##### T-test
+
+We then run a t-test on the data. We specify the formula as `y ~ x` and add `var.equal = TRUE`
+
+```{r}
+t.test(Sepal.Length ~ Species, data = irisSub, var.equal = TRUE)
+```
+
+To interpret the t-test, we say that there is evidence for a statistically significant difference between the two groups: `setosa` and `versicolor`: `t(48) = -6.9334, p < 9.304e-09`. The mean of `setosa` is significantly lower than that of `versicolor`.
+
+##### Linear Model
+
+Let us run a linear model on the same data
+
+
+```{r}
+summary(lm(Sepal.Length ~ Species, data = irisSub))
+```
+
+Any comments? discuss with your neighbour.
+
+The results of the linear model are exactly the same, albeit with a difference in the sign of the difference. This indicates that the $\beta$ coefficient for `versicolor` is signifcantly higher that than of `setosa` by `0.8560`: `t(48) = 6.933, p < 9.3e-09`.
+
+
+The dataset `iris` contains three species. We will run an ANOVA and a linear model on the data.
 
 ### Basic ANOVA
 
 We can use the function `aov` to run an Analysis of Variance
 
 ```{r}
-mdl.aov <- aov(Sepal.Length~Species, data=iris)
+mdl.aov <- aov(Sepal.Length ~ Species, data = iris)
 summary(mdl.aov)
 ```
 
@@ -176,7 +282,7 @@ summary(mdl.aov)
 We can use the function `lm` to run a linear model
 
 ```{r}
-mdl.lm <- lm(Sepal.Length~Species, data=iris)
+mdl.lm <- lm(Sepal.Length ~ Species, data = iris)
 summary(mdl.lm)
 
 ```
@@ -204,7 +310,7 @@ The basic assumption of a Linear model is to create a regression analysis on the
 ### Model estimation
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lm <- lm(Sepal.Length~Species, data=iris)
+mdl.lm <- lm(Sepal.Length ~ Species, data = iris)
 # same as below.
 #mdl.lm <- lm(Sepal.Length~1+Species, data=iris)
 mdl.lm#also print(mdl.lm)
@@ -232,7 +338,7 @@ But where are our actual values based on the means in the table above?
 We run a model that suppresses the intercept (i.e., adding 0 instead of 1) and this will allow us to obtain the "true" coefficients for each level of our predictor
 
 ```{r}
-mdl.lm.2 <- lm(Sepal.Length~0+Species, data=iris)
+mdl.lm.2 <- lm(Sepal.Length ~ 0 + Species, data = iris)
 summary(mdl.lm.2)
 ```
 
@@ -241,11 +347,11 @@ summary(mdl.lm.2)
 Looking back at our plot
 
 ```{r,warning=FALSE,message=FALSE}
-ggplot(data = iris, aes(x=Species, y = Sepal.Length))+
+ggplot(data = iris, aes(x = Species, y = Sepal.Length))+
   geom_boxplot() +
-  labs(x="Species",y="Length",title="Boxplot and trend line",subtitle="with ggplot2") + 
-  theme_bw() + theme(text=element_text(size=15))+
-  geom_smooth(aes(x = as.numeric(Species), y = Sepal.Length),method="lm")
+  labs(x = "Species", y = "Length", title = "Boxplot and trend line", subtitle = "with ggplot2") + 
+  theme_bw() + theme(text = element_text(size = 15))+
+  geom_smooth(aes(x = as.numeric(Species), y = Sepal.Length), method = "lm")
 ```
 
 This matches the original data. Setosa has a mean of `r mycoef[1]`, Versicolor `r mycoef[1] + mycoef[2]`, and Virginica `r mycoef[1] + mycoef[2]`. See table above and coefficients below 
@@ -340,12 +446,12 @@ glance(mdl.lm)
 Are the above informative? of course not directly. If we want to test for overall significance of model. We run a null model (aka intercept only) and compare models.
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lm.Null <- lm(Sepal.Length~1, data=iris)
-mdl.comp <- anova(mdl.lm.Null,mdl.lm)
+mdl.lm.Null <- lm(Sepal.Length ~ 1, data=iris)
+mdl.comp <- anova(mdl.lm.Null, mdl.lm)
 mdl.comp
 ```
 
-The results show that adding the factor "Species" improves the model fit. We can write this as follows: Model comparison showed that the addition of Species improved the model fit when compared with an intercept only model ($F$(`r mdl.comp[2,3]`)=`r round(mdl.comp[2,5],2)`,*p*<`r mdl.comp[2,6]`) 
+The results show that adding the factor "Species" improves the model fit. We can write this as follows: Model comparison showed that the addition of Species improved the model fit when compared with an intercept only model ($F$(`r mdl.comp[2,3]`) = `r round(mdl.comp[2,5],2)`, *p* < `r mdl.comp[2,6]`) 
 
 #### Plotting fitted values
 
@@ -354,11 +460,11 @@ The results show that adding the factor "Species" improves the model fit. We can
 Let's plot our fitted values but only for the trend line
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-ggplot(data = iris, aes(x=Species, y = Sepal.Length))+
+ggplot(data = iris, aes(x = Species, y = Sepal.Length))+
   geom_boxplot() +
-  labs(x="Species",y="Length",title="Boxplot and predicted trend line",subtitle="with ggplot2") + 
-  theme_bw() + theme(text=element_text(size=15))+
-  geom_smooth(aes(x = as.numeric(Species), y = predict(mdl.lm)),method="lm",color="blue")
+  labs(x = "Species", y = "Length", title = "Boxplot and predicted trend line", subtitle = "with ggplot2") + 
+  theme_bw() + theme(text = element_text(size = 15))+
+  geom_smooth(aes(x = as.numeric(Species), y = predict(mdl.lm)), method = "lm", color = "blue")
 ```
 
 This allows us to plot the fitted values from our model with the predicted linear trend. This is exactly the same as our original data.
@@ -368,11 +474,11 @@ This allows us to plot the fitted values from our model with the predicted linea
 We can also plot the predicted means and linear trend
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-ggplot(data = iris, aes(x=Species, y = predict(mdl.lm)))+
-  geom_boxplot(color="blue") +
-  labs(x="Species",y="Length",title="Predicted means and trend line",subtitle="with ggplot2") + 
-  theme_bw() + theme(text=element_text(size=15))+
-  geom_smooth(aes(x = as.numeric(Species), y = predict(mdl.lm)),method="lm",color="blue")
+ggplot(data = iris, aes(x = Species, y = predict(mdl.lm)))+
+  geom_boxplot(color = "blue") +
+  labs(x = "Species", y = "Length", title = "Predicted means and trend line", subtitle = "with ggplot2") + 
+  theme_bw() + theme(text = element_text(size = 15))+
+  geom_smooth(aes(x = as.numeric(Species), y = predict(mdl.lm)), method = "lm", color = "blue")
 ```
 
 
@@ -381,12 +487,12 @@ ggplot(data = iris, aes(x=Species, y = predict(mdl.lm)))+
 We can also plot the actual data, the predicted means and linear trend
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-ggplot(data = iris, aes(x=Species, y = Sepal.Length))+
+ggplot(data = iris, aes(x = Species, y = Sepal.Length))+
   geom_boxplot()+
-  geom_boxplot(aes(x = Species, y = predict(mdl.lm)),color="blue") +
-  labs(x="Species",y="Length",title="Boxplot raw data, predicted means (in blue) and trend line",subtitle="with ggplot2") + 
-  theme_bw() + theme(text=element_text(size=15))+
-  geom_smooth(aes(x = as.numeric(Species), y = predict(mdl.lm)),method="lm",color="blue")
+  geom_boxplot(aes(x = Species, y = predict(mdl.lm)), color = "blue") +
+  labs(x = "Species", y = "Length", title = "Boxplot raw data, predicted means (in blue) and trend line", subtitle = "with ggplot2") + 
+  theme_bw() + theme(text = element_text(size = 15))+
+  geom_smooth(aes(x = as.numeric(Species), y = predict(mdl.lm)), method = "lm", color = "blue")
 ```
 
 
@@ -400,7 +506,7 @@ summary(mdl.lm)
 
 
 ```{r}
-emmeans(mdl.lm, pairwise~Species,adjust="fdr")
+emmeans(mdl.lm, pairwise ~ Species, adjust = "fdr")
 ```
 
 How to interpret the output? Discuss with your neighbour and share with the group.
@@ -427,8 +533,8 @@ Let's load in the data and do some basic summaries
 grammatical <- read.csv("grammatical.csv")
 str(grammatical)
 head(grammatical)
-grammatical$response <- relevel(grammatical$response,ref="yes")
-table(grammatical$grammaticality,grammatical$response)
+grammatical$response <- relevel(grammatical$response, ref = "yes")
+table(grammatical$grammaticality, grammatical$response)
 ```
 
 ## Accuracy and Signal Detection Theory
@@ -504,10 +610,10 @@ The results below show the logodds for our model.
 levels(grammatical$response)
 levels(grammatical$grammaticality)
 
-grammatical$response <- relevel(grammatical$response, ref="no")
-grammatical$grammaticality <- relevel(grammatical$grammaticality, ref="ungrammatical")
+grammatical$response <- relevel(grammatical$response, ref = "no")
+grammatical$grammaticality <- relevel(grammatical$grammaticality, ref = "ungrammatical")
 
-mdl.glm <- glm(response~grammaticality,data=grammatical,family = binomial)
+mdl.glm <- glm(response ~ grammaticality, data = grammatical, family = binomial)
 summary(mdl.glm)
 
 tidy(mdl.glm) %>% 
@@ -525,18 +631,6 @@ The results show that for one unit increase in the response (i.e., from no to ye
 
 How to get the true coefficients? How to suppress the Intercept?
 
-
-
-
-
-
-
-
-
-
-
-
-
 Here we will run the same GLM model above but by suppressing the "Intercept". The idea here is to get the "true" coefficient for a "grammatical" and a "yes" response. We can use the above code, i.e., "mycoef2[1]+mycoef2[2]" or as below
 
 
@@ -545,7 +639,7 @@ Here we will run the same GLM model above but by suppressing the "Intercept". Th
 # An intercept is always included in any regression, but you can specify it with "1"
 ## glm(response~1+grammaticality,data=grammatical,family = binomial)
 
-mdl.glm2 <- glm(response~0+grammaticality,data=grammatical,family = binomial)
+mdl.glm2 <- glm(response ~ 0 + grammaticality, data = grammatical, family = binomial)
 summary(mdl.glm2)
 
 
@@ -579,9 +673,9 @@ The code below demonstrates the links between our GLM model and what we had obta
 ## predict(glm(response~grammaticality,data=grammatical,family = binomial),type="response")
 grammatical$response <- relevel(grammatical$response, "yes")
 grammatical$grammaticality <- relevel(grammatical$grammaticality, "grammatical")
-mdl.glm.C <- glm(response~grammaticality,data=grammatical,family = binomial)
-tbl.glm <- table(grammatical$response,predict(mdl.glm.C,type="response")>0.5)
-colnames(tbl.glm) <- c("grammatical","ungrammatical")
+mdl.glm.C <- glm(response ~ grammaticality, data = grammatical,family = binomial)
+tbl.glm <- table(grammatical$response, predict(mdl.glm.C, type = "response")>0.5)
+colnames(tbl.glm) <- c("grammatical", "ungrammatical")
 tbl.glm
 PresenceAbsence::pcc(tbl.glm)
 PresenceAbsence::specificity(tbl.glm)
@@ -602,15 +696,15 @@ True Negative Rate (or Sensitivity) TN/(FP+TN) (`r TN/(FP+TN)`)
 ### Plotting
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-grammatical$prob <- predict(glm(response~grammaticality,data=grammatical,family = binomial),type="response")
-ggplot(grammatical, aes(x=as.numeric(grammaticality), y=prob)) +
+grammatical$prob <- predict(glm(response ~ grammaticality, data = grammatical, family = binomial), type = "response")
+ggplot(grammatical, aes(x = as.numeric(grammaticality), y = prob)) +
   geom_point() +
   geom_smooth(method = "glm", 
     method.args = list(family = "binomial"), 
     se = T) + theme_bw(base_size = 20)+
     labs(y = "Probability", x = "")+
-    coord_cartesian(ylim=c(0,1))+
-    scale_x_discrete(limits = c("Ungrammatical","Grammatical"))
+    coord_cartesian(ylim = c(0,1))+
+    scale_x_discrete(limits = c("Ungrammatical", "Grammatical"))
 ```
 
 ### GLM and d prime
@@ -625,7 +719,7 @@ psycho::dprime(TP, FP, FN, TN,
                adjust=F)$dprime
 
 ## GLM with probit
-coef(glm(response~grammaticality,data=grammatical,family = binomial(probit)))[2]
+coef(glm(response ~ grammaticality, data = grammatical, family = binomial(probit)))[2]
 
 ```
 
@@ -669,7 +763,7 @@ rating$Context <- relevel(rating$Context, ref="isolation")
 We run our first clm model as a simple, i.e., with no random effects
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.clm <- clm(Response~Context, data=rating)
+mdl.clm <- clm(Response ~ Context, data = rating)
 summary(mdl.clm)
 ```
 
@@ -679,8 +773,8 @@ summary(mdl.clm)
 We can evaluate whether "Context" improves the model fit, by comparing a null model with our model. Of course "Context" is improving the model fit.
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.clm.Null <- clm(Response~1, data=rating)
-anova(mdl.clm,mdl.clm.Null)
+mdl.clm.Null <- clm(Response ~ 1, data = rating)
+anova(mdl.clm, mdl.clm.Null)
 
 ```
 
