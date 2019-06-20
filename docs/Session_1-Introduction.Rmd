@@ -319,7 +319,7 @@ We can use the menu in Rstudio: ```File > Import dataset```. You can do this to 
 
 ## Reading data frames from files using code
 
-However, rather than use the menu, it's much better to use actual code, as this will automate the process. Let's import a dataset on World Happiness Ratings, by country. The files are [WHR_2017.xlsx](WHR_2017.xlsx), [WHR_2017.sav](WHR_2017.sav), and [WHR_2017.csv](WHR_2017.csv)
+However, rather than use the menu, it's much better to use actual code, as this will automate the process. Let's import a dataset on World Happiness Ratings, by country. The files are [WHR_2017.xlsx](WHR_2017.xlsx), [WHR_2017.sav](WHR_2017.sav), and [WHR_2017.csv](WHR_2017.csv). Alternatively you can actually download the data set straight from the URL (below)
 
 ```{r}
 
@@ -331,6 +331,10 @@ df <- readxl::read_excel("WHR_2017.xlsx") # Read an excel file
 df <- haven::read_spss("WHR_2017.sav") # Read from an SPSS file
 
 df <- read.csv("WHR_2017.csv") # Read from a .csv file
+
+#Or to download straight from the URL!!
+
+df <- read.csv("https://verbingnouns.github.io/AdventuresInR/docs/WHR_2017.csv")
 
 ```
 
