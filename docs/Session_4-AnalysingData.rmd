@@ -8,6 +8,7 @@ output:
     toc_depth: 4
     toc_float:
       collapsed: yes
+    code_folding: hide
 ---
 
 In this session, we will look at basic functions in R that will help us in running some inferential statistics. These will help us to evaluate the relationship between one (or more) predictor(s) and an outcome. We will start with a basic example. Using the dataframe "cars".
@@ -173,12 +174,14 @@ In the `iris` dataset, we have a categorical predictor: `Species` which has thre
 levels(iris$Species)
 ```
 
-Let's subset the data and evaluate the differences between `setosa` and `versicolor` using a t-test and a linear model. We will also check the normality and homogenity of variance in the data
+Let's subset the data and evaluate the differences between `setosa` and `versicolor` using a t-test and a linear model. We will also check the normality and homogeneity of variance in the data
 
 ##### Subset
 
 ```{r}
-irisSub <- subset(iris, Species == c("setosa","versicolor"))
+irisSub <- iris %>% 
+  filter(Species == "setosa" |
+           Species == "versicolor")
 levels(irisSub$Species)
 ```
 
@@ -204,8 +207,11 @@ Now this works better
 To check normality of distribution, we use the `shapiro.test` on the numeric outcome. Given that our predictor now has two levels. We need to subset the data again to check normality of the outcome `Sepal.Length` for each level of our factor `Species`
 
 ```{r}
-irisSubSet <- subset(iris, Species == "setosa")
-irisSubVers <- subset(iris, Species == "versicolor")
+irisSubSet <- iris %>% 
+  filter(Species == "setosa")
+irisSubVers <- iris %>% 
+  filter(Species == "versicolor")
+  
 shapiro.test(irisSubSet$Sepal.Length)
 shapiro.test(irisSubVers$Sepal.Length)
 ```
@@ -217,13 +223,14 @@ How to interpret this non-statistically significant result? This tells us that t
 We can also use a density plot to evaluate normality. The results show that both levels have bell shaped distributions.
 
 ```{r}
-ggplot(irisSub, aes(x = Sepal.Length))+
+irisSub %>% 
+  ggplot(aes(x = Sepal.Length))+
   geom_density()+
   facet_wrap(~Species, scales = "free_x")
 ```
 
 
-##### Homogeniety of variance
+##### Homogeneity of variance
 
 Because our data is normally distributed, we can use the `barlett` test. If our data were non-normally distributed, we would use the leveneTest. We can check both.
 
@@ -240,17 +247,17 @@ var.test(Sepal.Length ~ Species, data = irisSub)
 car::leveneTest(Sepal.Length ~ Species, data = irisSub)
 ```
 
-In all cases, the non-statistically significant result indicates that there is no evidence that the variance of two levels of the factor `Species` is statistically significant; i.e., the variances are equal
+In all cases, the statistically significant result indicates that there is evidence that the variance of two levels of the factor `Species` is statistically significant; i.e., the variances are not equal
 
 ##### T-test
 
-We then run a t-test on the data. We specify the formula as `y ~ x` and add `var.equal = TRUE`
+We then run a t-test on the data. We specify the formula as `y ~ x` and add `var.equal = FALSE`
 
 ```{r}
-t.test(Sepal.Length ~ Species, data = irisSub, var.equal = TRUE)
+t.test(Sepal.Length ~ Species, data = irisSub, var.equal = FALSE)
 ```
 
-To interpret the t-test, we say that there is evidence for a statistically significant difference between the two groups: `setosa` and `versicolor`: `t(48) = -6.9334, p < 9.304e-09`. The mean of `setosa` is significantly lower than that of `versicolor`.
+To interpret the t-test, we say that there is evidence for a statistically significant difference between the two groups: `setosa` and `versicolor`: `t(86) = -10.521, p < 2.2e-16`. The mean of `setosa` is significantly lower than that of `versicolor`.
 
 ##### Linear Model
 
@@ -263,7 +270,7 @@ summary(lm(Sepal.Length ~ Species, data = irisSub))
 
 Any comments? discuss with your neighbour.
 
-The results of the linear model are exactly the same, albeit with a difference in the sign of the difference. This indicates that the $\beta$ coefficient for `versicolor` is signifcantly higher that than of `setosa` by `0.8560`: `t(48) = 6.933, p < 9.3e-09`.
+The results of the linear model are exactly the same, albeit with a difference in the sign of the difference. This indicates that the $\beta$ coefficient for `versicolor` is significantly higher than that of `setosa` by `0.93000`: `t(98) = 10.52, p < <2e-16`.
 
 
 The dataset `iris` contains three species. We will run an ANOVA and a linear model on the data.
@@ -284,7 +291,6 @@ We can use the function `lm` to run a linear model
 ```{r}
 mdl.lm <- lm(Sepal.Length ~ Species, data = iris)
 summary(mdl.lm)
-
 ```
 
 But wait... How is the linear model comparable to the analysis of variance we ran above? This linear model derives the analysis of variance we saw above, use `anova` on your linear model..
@@ -301,7 +307,7 @@ And here are the results of the linear model with the `anova` function
 anova(mdl.lm)
 ```
 
-They are exactly the same... The underlying of an Analysis of variance is a linear model..
+They are exactly the same... The underlying of an Analysis of variance is a linear model. We will continue with a linear model to understand it better
 
 ## Looking again at our Linear Model
 
@@ -543,7 +549,7 @@ table(grammatical$grammaticality, grammatical$response)
 
 We are generally interested in performance, i.e., whether the we have "accurately" categorised the outcome or not and at the same time want to evaluate our biases in responses. When deciding on categories, we are usually biased in our selection. 
 
-Let's ask the question: How many of you have a Mac laptop and how many a Windows laptop? For those with a Mac, what was the main reason for choosing it? Are you biased in anyway by yur decision? 
+Let's ask the question: How many of you have a Mac laptop and how many a Windows laptop? For those with a Mac, what was the main reason for choosing it? Are you biased in anyway by your decision? 
 
 To correct for these biases, we use some variants from Signal Detection Theory to obtain the true estimates without being influenced by the biases. 
 
