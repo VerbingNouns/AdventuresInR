@@ -3,9 +3,13 @@ title: "Session 1 - Introduction.Rmd"
 output:
   html_notebook:
     number_sections: yes
+    code_folding: hide
     toc: yes
     toc_float:
       collapsed: yes
+  html_document:
+    df_print: paged
+    toc: yes
 ---
 
 # The purpose of this course
@@ -28,9 +32,6 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 Try executing this chunk by clicking the *Run* button within the chunk or by
 placing your cursor inside it and pressing *Ctrl+Shift+Enter*.
 
-
-
-
 ```{r}
 plot(cars)
 ```
@@ -47,7 +48,10 @@ preview the HTML file).
 
 RStudio shows you four panes:
 
-1. The 'Source' pane: the file where you write your code 2. The 'Console' where actual code is run 3. The 'Environment' pane, which shows you variables / datasets 3. The 'Viewer' pane, which shows you plots and help files
+1. The 'Source' pane: the file where you write your code
+2. The 'Console' where actual code is run
+3. The 'Environment' pane, which shows you variables / datasets
+3. The 'Viewer' pane, which shows you plots and help files
 
 ![](images/console_etc.png)
 
@@ -80,16 +84,20 @@ If you are not sure what your working directory is type
 We can use the console for general arithmetic
 
 ```{r}
+
 1 + 3 + 5
 (2 + 9) / 7
+
 ```
 
 We can also create variables, e.g.
 
 ```{r}
+
 x <- 10
 y <- 21
 x*y
+
 ```
 
 
@@ -134,10 +142,11 @@ As we have seen above, to find out about a particular function just type ```?```
 
 Help files in R are quite densely written and not particularly aimed at beginners. Fortunately there are loads of excellent resources on the internet. Here are some really good sites:
 
-(a) [https://www.statmethods.net/index.html](https://www.statmethods.net/index.html)
-(b) [https://stats.idre.ucla.edu/r/modules/](https://stats.idre.ucla.edu/r/modules/)
-(c) [https://rseek.org/](https://rseek.org/) - a search engine for all things related to R (because the word 'R' brings up a whole load of irrelevant stuff in Google)
-(d) [http://www.cookbook-r.com/](http://www.cookbook-r.com/)
+(a) [https://www.tidyverse.org/](https://www.tidyverse.org/) - A brilliant set of of resources on all things related to the tidyverse, Hadley Wickham's brilliant suite of packages
+(b) [https://www.statmethods.net/index.html](https://www.statmethods.net/index.html) - a quick way of looking up basic R techniques
+(c) [https://stats.idre.ucla.edu/r/modules/](https://stats.idre.ucla.edu/r/modules/)
+(d) [https://rseek.org/](https://rseek.org/) - a search engine for all things related to R (because the word 'R' brings up a whole load of irrelevant stuff in Google)
+(e) [http://www.cookbook-r.com/](http://www.cookbook-r.com/) - this has lots of tips on how to do graphics.
 
 # Packages
 
@@ -171,11 +180,11 @@ I find that a particularly easy way to load packages is via the `pacman` library
 
 ## Obtaining help
 
-To find out more about a package type ```?package_name``` in the console. Alternatively you can look for the package documntation on [CRAN](https://cran.r-project.org/).
+To find out more about a package type ```?package_name``` in the console. Alternatively you can look for the package documentation on [CRAN](https://cran.r-project.org/).
 
 ## Using functions from packages
 
-Most of the functions loaded in a package should work 'out of the box'. However occastionally you need to refer to the package first, and then the function using the format ```package_name::function_from_that_package```. This is useful for a variety of reasons:
+Most of the functions loaded in a package should work 'out of the box'. However occasionally you need to refer to the package first, and then the function using the format ```package_name::function_from_that_package```. This is useful for a variety of reasons:
 
 1. It allows you to use a function from a package without having to load that package
 2. It helps in cases where you load two packages which contain two different functions which happen to have the same name.
@@ -310,88 +319,39 @@ We can use the menu in Rstudio: ```File > Import dataset```. You can do this to 
 
 ## Reading data frames from files using code
 
-However, rather than use the menu, it's much better to use actual code, as this will automate the process.
+However, rather than use the menu, it's much better to use actual code, as this will automate the process. Let's import a dataset on World Happiness Ratings, by country. The files are [WHR_2017.xlsx](WHR_2017.xlsx), [WHR_2017.sav](WHR_2017.sav), and [WHR_2017.csv](WHR_2017.csv)
 
-To get set up, we're going to create some datasets in foreign formats. The following lines take a native dataset (mtcars), and write this in a variety of different formats. This is purely to provide you with practice of reading the datasets. Once you've run this code you'll find that three new datasets are created in your directory.
+```{r}
 
-```{r, error = TRUE}
-library(tidyverse)
-library(xlsx)
-write.csv(mtcars, "mtcars.csv")
-write.xlsx(mtcars, "mtcars.xlsx")
-haven::write_sav(mtcars, "mtcars.sav")  # NB 'haven' is loaded with "tidyverse" but for some reason when you call haven functions you have to also specify the package. I have no idea why
+pacman::p_load(tidyverse)
+pacman::p_load(haven)
+
+df <- readxl::read_excel("WHR_2017.xlsx") # Read an excel file
+
+df <- haven::read_spss("WHR_2017.sav") # Read from an SPSS file
+
+df <- read.csv("WHR_2017.csv") # Read from a .csv file
+
 ```
 
 Possibly the best data format to work in is the .csv data format. This is good because it is readable in Excel, small, simple, and not easily-corrupted.
 
 To read .csv files we use the ```read.csv()``` function from base R, e.g. 
 
-```{r}
-df <- read.csv("mtcars.csv")
-```
-
-
-To read files in other formats use the following packages:
-
-1. .sav files (SPSS) and .dta files (STATA): ```foreign``` and ```haven```
-2. Excel files (.xls, .xlsx, xlsm): ```read_r``` (part of the tidyverse) or ```openxlsx```
-
-Let's read the SPSS file
-
-```{r}
-df <- haven::read_sav("mtcars.sav")
-```
-
-And the Excel files
-
-```{r, error = TRUE}
-df <- read.xlsx("mtcars.xlsx", 1)
-# NB 1 means that we read from the first tab.
-```
 
 # Subsetting a data set using (a) base R and (d) dplyr
 
 ## Subsetting with base R
 
-We're going to *subset* the mtcars dataset (i.e. choose only those cases which fulfil a specific criterion). To do this we're going to use the ```which()``` function. When you apply ```which``` to a variable in a dataset, it will produce indices of the rows which fulfil a certain criterio, e.g. ```which(df$var_name == 2)``` will give you the indices of all rows where the value of the variable is 2.
+We're going to *subset* the WHR dataset (i.e. choose only those cases/observations which fulfil a specific criterion). To do this we're going to use the ```which()``` function. When you apply ```which``` to a variable in a dataset, it will produce indices of the rows which fulfil a certain criterio, e.g. ```which(df$var_name == 2)``` will give you the indices of all rows where the value of the variable is 2.
 
-EX4: Armed with this knowledge, your task is to subset the data frame so that it only contains cars with 4 cylinders.
+EX4: Armed with this knowledge, your task is to subset the data frame so that it only contains information from African countries.
 
 If you're stuck have a look at the answer below. 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-
-
-
 
 ```{r}
-df.6cyl <- df[which(df$cyl == 6), ]
+df.Africa <- df[which(df$region == "Africa"), ]
 ```
-
 ## Piping
 
 Okay, the above code is pretty horrible to look at, so we're going to explore an alternative using the package ```dplyr``` which is from the ```tidyverse```. But before we can use ```dplyr``` we have to learn how to 'pipe'.
@@ -407,7 +367,7 @@ All pipes do is enable us to 'pass' a data frame (or another object) to a new fu
 Here's how we would subset the data frame using piping:
 
 ```{r}
-df %>% filter(cyl == 6) -> df.6cyl
+df %>% filter(region == "Africa") -> df.Africa
 ```
 
 Note that to create a new data frame, we need a solid arrow at the end. If we don't include that solid arrow, the results are shown in the console, but no new data frame is created. This is an incredibly useful feature of pipes. You can `try before you buy`!
@@ -415,9 +375,15 @@ Note that to create a new data frame, we need a solid arrow at the end. If we do
 And here is an example where we *chain* a series of pipes together:
 
 ```{r}
-df %>% group_by(cyl) %>% summarise(mean.mpg = mean(mpg)) -> df.mean.mpg.by.cyl
+
+df %>% 
+  group_by(region) %>%
+  summarise(mean.happiness = mean(happiness_score)) ->
+  df.mean.happiness.by.region
+
 ```
 
+NB When piping the code becomes more readable when the line ends with the pipe.
 
 There are a couple of important points to note.
 
@@ -430,9 +396,31 @@ As well as using pipes to create data frame, you can also insert pipes into both
 
 ```{r}
 
-aov(mpg ~ hp, data = mtcars %>% filter(cyl == 8))
+# An ANOVA without a pipe. NB we are using the base function "aov". If you would like to conduct SPSS-style ANOVAs, the best package is called "afex".
+
+mod <- aov(happiness_rank ~ region, data = df)
+
+pacman::p_load(broom) # To load the "tidy" function.
+
+tidy(mod)
+
+# Here we use a pipe inside the analysis
+mod <- aov(happiness_rank ~ region, # NB note we can break the line after a comma
+           data = df %>% filter(region == "Africa" | region == "South America"))
+
+tidy(mod)
+
+
+g <- ggplot(aes(x = gdp_per_capita, y = happiness_score, colour = region), # NB note we can break the line after a comma
+            data = df %>% filter(region == "Africa" | region == "South America"))
+g <- g + geom_point()
+g <- g + geom_smooth(method = "lm")
+g
+
 
 ```
+
+Note how I have broken some of the lines after a comma. This makes the code more readable. Generally we can break a line when it ends in some kind of symbol, e.g. a pipe, an arrow, or a comma.
 
 
 # Loops and if-then statements
@@ -441,17 +429,24 @@ Loops and if-then statements are useful programming tools which have the same st
 
 ## Loops
 
-To demonstrate a loop we're going to look at the mtcars data set. We're going to ask the question 'for cars of different different numbers of gears what is the relationship between the 'horsepower' and the number of cylinders. (I have no idea if this is a good question to ask!)
+To demonstrate a loop we're going to look at the WHR data set. We're going to ask the question 'for different regions of the world, what is the relationship between GDP per capita nd happiness?
 
 Here's how we would do it
 
 ```{r}
-list.of.num.gears <- unique(df$gear) # Unique shows unique values of a variable
 
-for (i in 1:length(list.of.num.gears)){ # We loop through the list
-  df %>% filter(df$gear == list.of.num.gears[i]) -> temp.df # we subset the data according to the number of gears
-  model <- cor.test(temp.df$hp, temp.df$cyl) # We do the analysis
-  print(paste("Number of gears", list.of.num.gears[i])) # We print the results
+# This code drops regions where number of observations are less than 3 (we can't do correlations if there are less than 3 observations)
+df %>%
+  group_by(region) %>%
+  summarise(num = n()) %>%
+  filter(num > 3) ->
+  df.region
+
+# Here is the code with the loop
+for (i in 1:length(df.region$region)){ # We loop through the list
+  df %>% filter(region == df.region$region[i]) -> temp.df # we subset the data according to the region. This contains a temporary dataset "temp.df"
+  model <- cor.test(temp.df$gdp_per_capita, temp.df$happiness_score) # We do the analysis
+  print(paste("Region: ", df.region$region[i])) # We print the results
   print(model)
 }
 
@@ -466,34 +461,43 @@ seq(0,30,2.5)
 
 ## If-then statements
 
-To demonstrate if-then statements, we are going to create a new variable which shows if the mpg is above the mean.
+To demonstrate if-then statements, we are going to create a new variable which shows if the happiness index is above the mean
 
 ```{r}
-df$mpg.above.mean <- 0 # Set variable to 0
-mean.mpg <- mean(df$mpg) # Calculate mean mpg
+df$happiness_above_mean <- 0 # Set variable to 0
+mean_happiness <- mean(df$happiness_score) # Calculate mean mpg
 for (i in 1:nrow(df)){
-  if(df$mpg[i] > mean.mpg){df$mpg.above.mean[i] <- 1}
+  if(df$happiness_score[i] > mean_happiness){df$happiness_above_mean[i] <- 1}
 }
 ```
 
-## Evaluating conditions
+And here is the same process using `dplyr`, which avoids the loop adn the if-then statement.
+
+```{r}
+
+df %>%
+  transmute(happiness_above_mean = as.numeric(happiness_score > mean(happiness_score))) ->
+  df
+```
+
+Note loops and if-then statements are quite verbose, and there is almost always a neater and much shorter alternatives. However, I think they are useful procedures for the relative beginner.
 
 Here is a much easier way to create the same variable
-```{r}
-df$mpg.above.mean2 <- as.numeric(df$mpg > mean.mpg)
+```{r results = "hide"}
+
+df <- read_csv("WHR_2017.csv")
+
+df$happiness_above_mean2 <- as.numeric(df$happiness_score > mean(df$happiness_score))
 ```
 So how does this work? The statement in brackets evaluates to TRUE / FALSE. We then turn this into a number using ```as.numeric```. TRUE evaluates to 1, while FALSE evaluates to 0.
 
-It can be quite useful to chain statements. For example, if we wish to identify cars with both mpg and weight about the mean we could do the following:
+It can be quite useful to chain statements. For example, if we wish to identify countries where both the happiness score and life expectancy are above the mean, we could do this....
 
 ```{r}
-mean.weight <- mean(df$wt)
-df$weight.and.mpg.above.mean <- (df$wt > mean.weight) & (df$mpg > mean.mpg)
+df$happiness_and_LE_above_mean <- as.numeric((df$happiness_score > mean(df$happiness_score)) & (df$life_expectancy > mean(df$life_expectancy)))
 ```
 
-We can see that there is no car in this category because there is an inverse relationship between weight and miles per gallon.
-
-EX6: Try to identify cars where both the ```disp``` and ```drat``` variables are above the mean.
+EX6: Try to identify countries where both the GDP per capita and trust in the government are above the mean.
 
 # Stored results
 
@@ -510,7 +514,7 @@ head(df)
 Let's draw a plot looking at the relationship between GDP per capita and Happiness Score. We're not going to focus on the code, which will be covered in the next session.
 
 ```{r}
-g <- ggplot(aes(x = Economy..GDP.per.Capita., y = Happiness.Score), data = df)
+g <- ggplot(aes(x = df$gdp_per_capita, y = df$happiness_score), data = df)
 g <- g + geom_point()
 g <- g + geom_smooth()
 g
@@ -520,25 +524,22 @@ Now let's run a regression
 
 ```{r}
 
-mod <- lm(Happiness.Score ~ Economy..GDP.per.Capita., data = df)
+mod <- lm(happiness_score ~ gdp_per_capita, data = df) # mod = "model"
 
-summary(mod)
+pacman::p_load(broom) # Broom is a package which produces neat tables of results
 
-table <- coefficients(summary(mod))
-
-knitr::kable(coefficients(summary(mod)), digits = c(2,2,1,5))
+tidy(mod) # This is a broom function which tidies up the statistical results for reporting
 
 ```
 
 
+Now, let's have a look at the `structure` of this model. There are two ways to do this:
 
-To see the results of this regression we type ```model``` or ```summary(model)```. Now let's have a look at the `structure` of this model. There are two ways to do this:
-
-1. Use the ```str``` function, e.g. ```str(model)```
-2. Type ```model$```, and then use autocomplete.
+1. Use the ```str``` function, e.g. ```str(mod)```
+2. Type ```mod$```, and then use autocomplete.
 
 We can see that the ```$``` symbol has a dual function in R: firstly, to specify variables within dataframes, and secondly to specify subcomponents of an object.
 
-It is useful to be able to refer to subcomponents of an object so that we can integrate into our report, e.g. the regression yielded a value of `r summary(model)$r.squared`
+It is useful to be able to refer to subcomponents of an object so that we can integrate into our report, e.g. the regression yielded a value of `r summary(mod)$r.squared`
 
 
