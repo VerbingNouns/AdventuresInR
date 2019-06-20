@@ -321,6 +321,7 @@ We can use the menu in Rstudio: ```File > Import dataset```. You can do this to 
 
 However, rather than use the menu, it's much better to use actual code, as this will automate the process. Let's import a dataset on World Happiness Ratings, by country. The files are [WHR_2017.xlsx](WHR_2017.xlsx), [WHR_2017.sav](WHR_2017.sav), and [WHR_2017.csv](WHR_2017.csv). Alternatively you can actually download the data set straight from the URL (below)
 
+
 ```{r}
 
 pacman::p_load(tidyverse)
