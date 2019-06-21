@@ -9,7 +9,7 @@ This workshop has been funded by the Faculty of Humanities Arts and Social Scien
 **When:** 25-26 June; 09.30 -- 17.00  
 **Session Plan:** Session 1: 9.30 — 12, Lunch: 12 — 1, Session 2: 1 - 3.30, Coffee break: 3.30 - 4, Q&A: 4 - 5
 
-**Where:** ARMB.G.17  
+**Where:** ARMB.2.09  
 =======
 **When:** 25-26 June 2019; 09.00 -- 17.00  
 **Where:** ARMB 2.09  
