@@ -24,11 +24,11 @@ We anticipate that basic refreshments, including lunch, will be provided.
 ### Day 1: (To be updated)
 
 **Morning:** [Introduction to R and RStudio](/docs/Session_1-Introduction.nb.html) (Download the [Rmarkdown file](/docs/Session_1-Introduction.Rmd) for this session)  
-**Afternoon:** [Visualisation and data manipulation](docs/Session_2-plots_dplyr.html) (Download the [.Rmd file](docs/Session_2-plots_dplyr.Rmd) and [the dialect data](data/dialectdata.csv), [reaction time data](data/reactiondata.txt), and [other data](data/plantanimalrt.csv) for this session)  
+**Afternoon:** [Processing text and corpus data](docs/Session_3.nb.html) (Download [the .Rmd file](docs/Session_3.Rmd) and [the data file](data/Shakespeare_data.csv) for this session) 
 
-### Day 2: (To be updated)
+### Day 2:
 
-**Morning:** [Processing text and corpus data](docs/Session_3.nb.html) (Download [the .Rmd file](docs/Session_3.Rmd) and [the data file](data/Shakespeare_data.csv) for this session)  
+**Morning:** [Visualisation and data manipulation](docs/Session_2-plots_dplyr.html) (Download the [.Rmd file](docs/Session_2-plots_dplyr.Rmd) and [the dialect data](data/dialectdata.csv), [reaction time data](data/reactiondata.txt), and [other data](data/plantanimalrt.csv) for this session)
 **Afternoon:** [Techniques for analysing data](docs/Session_4-AnalysingData.nb.html) (Download [the .Rmd file](docs/Session_4-AnalysingData.rmd) and the data files [grammatical](data/grammatical.csv) and [rating](data/rating.csv) for this session)
 
 
@@ -42,6 +42,10 @@ The room does not contain any PCs and we would ask attendees to *bring laptops w
 If you already have R and RStudio installed, we recommend you update to the latest versions. Updating R means you need to also update any installed packages. 
 
 ### Notes:
+
+22 June 2019: please install the following packages (if not already installed) that we will use during our workshop. 
+
+tidyverse; psycho; ordinal; PresenceAbsence; broom; emmeans; car; tidytext; knitr
 
 12 June 2019: Please install the latest version of R (3.6.0). Also install the latest version of R Studio (version 1.2.1335). We will send a list of all packages to be installed.
 
