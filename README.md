@@ -24,12 +24,12 @@ We anticipate that basic refreshments, including lunch, will be provided.
 ### Day 1: (To be updated)
 
 **Morning:** [Introduction to R and RStudio](/docs/Session_1-Introduction.nb.html) (Download the [Rmarkdown file](/docs/Session_1-Introduction.Rmd) for this session)  
-**Afternoon:** [Processing text and corpus data](docs/Session_3.nb.html) (Download [the .Rmd file](docs/Session_3.Rmd) and [the data file](data/Shakespeare_data.csv) for this session) 
+**Afternoon:** [Processing text and corpus data](docs/Session_3.nb.html) (Download [the .Rmd file](docs/Session_3.Rmd) and [the data file](data/Shakespeare_data.csv) for this session)  
 
 ### Day 2:
 
-**Morning:** [Visualisation and data manipulation](docs/Session_2-plots_dplyr.html) (Download the [.Rmd file](docs/Session_2-plots_dplyr.Rmd) and [the dialect data](data/dialectdata.csv), [reaction time data](data/reactiondata.txt), and [other data](data/plantanimalrt.csv) for this session)
-**Afternoon:** [Techniques for analysing data](docs/Session_4-AnalysingData.nb.html) (Download [the .Rmd file](docs/Session_4-AnalysingData.rmd) and the data files [grammatical](data/grammatical.csv) and [rating](data/rating.csv) for this session)
+**Morning:** [Visualisation and data manipulation](docs/Session_2-plots_dplyr.html) (Download the [.Rmd file](docs/Session_2-plots_dplyr.Rmd) and [the dialect data](data/dialectdata.csv), [reaction time data](data/reactiondata.txt), and [other data](data/plantanimalrt.csv) for this session)  
+**Afternoon:** [Techniques for analysing data](docs/Session_4-AnalysingData.nb.html) (Download [the .Rmd file](docs/Session_4-AnalysingData.rmd) and the data files [grammatical](data/grammatical.csv) and [rating](data/rating.csv) for this session)  
 
 
 *We regret that due to the limited capacity of the room we may not be able to offer a place to all those who apply.*
