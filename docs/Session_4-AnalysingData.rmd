@@ -17,7 +17,7 @@ In this session, we will look at basic functions in R that will help us in runni
 # Loading packages 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 ## Use the code below to check if you have all required packages installed. If some are not installed already, the code below will install these. If you have all packages installed, then you could load them with the second code.
-requiredPackages = c('tidyverse', 'psycho', 'ordinal', 'PresenceAbsence', 'broom', 'emmeans', 'car')
+requiredPackages = c('tidyverse', 'psycho', 'ordinal', 'PresenceAbsence', 'broom', 'emmeans', 'car','knitr')
 for(p in requiredPackages){
   if(!require(p,character.only = TRUE)) install.packages(p)
   library(p,character.only = TRUE)
@@ -331,13 +331,13 @@ summary(mdl.lm)
 tidy(mdl.lm) %>% 
   select(term, estimate) %>% 
   mutate(estimate = round(estimate, 3))
-mycoef <- tidy(mdl.lm) %>% pull(estimate)
+mycoefE <- tidy(mdl.lm) %>% pull(estimate)
 
 ```
 
 
 
-To interpret the model, we need look at the coefficients. The "Intercept" (=Setosa) is `r mycoef[1]` and the coefficients for Versicolor and for Virginica are respectively `r mycoef[2]` and `r mycoef[3]` This tells us that compared to Setosa, moving from this category to Versicolor leads to a significant increase by `r mycoef[2]`, and for Virginica, there is a significant increase by `r mycoef[3]`. 
+To interpret the model, we need look at the coefficients. The "Intercept" (=Setosa) is `r mycoefE[1]` and the coefficients for Versicolor and for Virginica are respectively `r mycoefE[2]` and `r mycoefE[3]` This tells us that compared to Setosa, moving from this category to Versicolor leads to a significant increase by `r mycoefE[2]`, and for Virginica, there is a significant increase by `r mycoefE[3]`. 
 
 ### Obtaining our "true" coefficients
 
@@ -349,28 +349,15 @@ mdl.lm.2 <- lm(Sepal.Length ~ 0 + Species, data = iris)
 summary(mdl.lm.2)
 ```
 
-### Plot
-
-Looking back at our plot
-
-```{r,warning=FALSE,message=FALSE}
-iris %>% 
-  ggplot(aes(x = Species, y = Sepal.Length))+
-  geom_boxplot() +
-  labs(x = "Species", y = "Length", title = "Boxplot and trend line", subtitle = "with ggplot2") + 
-  theme_bw() + theme(text = element_text(size = 15))+
-  geom_smooth(aes(x = as.numeric(Species), y = Sepal.Length), method = "lm")
-```
-
-This matches the original data. Setosa has a mean of `r mycoef[1]`, Versicolor `r mycoef[1] + mycoef[2]`, and Virginica `r mycoef[1] + mycoef[2]`. See table above and coefficients below 
+This matches the original data. Setosa has a mean of `r mycoefE[1]`, Versicolor `r mycoefE[1] + mycoefE[2]`, and Virginica `r mycoefE[1] + mycoefE[2]`. See table above and coefficients below 
 
 ```{r}
 #Setosa
-mycoef[1]
+mycoefE[1]
 #Versicolor
-mycoef[1] + mycoef[2]
+mycoefE[1] + mycoefE[2]
 #Virginica
-mycoef[1] + mycoef[3]
+mycoefE[1] + mycoefE[3]
 ```
 
 The same as
@@ -379,14 +366,34 @@ The same as
 tidy(mdl.lm.2) %>% 
   select(term, estimate) %>% 
   mutate(estimate = round(estimate, 3))
-mycoef <- tidy(mdl.lm.2) %>% pull(estimate)
+mycoefE <- tidy(mdl.lm.2) %>%
+  pull(estimate)
 
 #Setosa
-mycoef[1]
+mycoefE[1]
 #Versicolor
-mycoef[2]
+mycoefE[2]
 #Virginica
-mycoef[3]
+mycoefE[3]
+```
+
+
+### Nice table of our model summary
+
+We can also obtain a nice table of our model summary. We can use the package `knitr` or `xtable`
+
+#### Directly from model summary
+
+```{r}
+kable(summary(mdl.lm)$coef, digits=3)
+
+```
+
+#### From the `tidy` output
+
+```{r}
+mdl.lmT <- tidy(mdl.lm)
+kable(mdl.lmT, digits=3)
 ```
 
 
@@ -426,11 +433,14 @@ Play around with the model summary and obtain the t values for the three levels.
 ```
 
 
+#### Residuals
+
 What about residuals (difference between the observed value and the estimated value of the quantity) and fitted values?
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-residuals(mdl.lm)
-fitted(mdl.lm)
+hist(residuals(mdl.lm))
+qqnorm(residuals(mdl.lm)); qqline(residuals(mdl.lm))
+plot(fitted(mdl.lm),residuals(mdl.lm), cex = 4)
 ```
 
 #### Goodness of fit?
