@@ -17,7 +17,7 @@ In this session, we will look at basic functions in R that will help us in runni
 # Loading packages 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 ## Use the code below to check if you have all required packages installed. If some are not installed already, the code below will install these. If you have all packages installed, then you could load them with the second code.
-requiredPackages = c('ggplot2', 'tidyverse', 'psycho', 'ordinal', 'PresenceAbsence', 'broom', 'emmeans', 'car')
+requiredPackages = c('tidyverse', 'psycho', 'ordinal', 'PresenceAbsence', 'broom', 'emmeans', 'car')
 for(p in requiredPackages){
   if(!require(p,character.only = TRUE)) install.packages(p)
   library(p,character.only = TRUE)
@@ -86,7 +86,8 @@ Do some additional summaries
 We can make a boxplot of the data and add a trend line. This allows us to visualise the median, and quantiles in addition to the standard deviation and any outliers... All in the same plot!
 
 ```{r,warning=FALSE,message=FALSE}
-ggplot(data = iris, aes(x = Species, y = Sepal.Length))+
+iris %>% 
+  ggplot(aes(x = Species, y = Sepal.Length))+
   geom_boxplot() +
   labs(x = "Species", y = "Length", title = "Boxplot and trend line", subtitle="with ggplot2") + 
   theme_bw() + theme(text = element_text(size = 15))+
@@ -353,7 +354,8 @@ summary(mdl.lm.2)
 Looking back at our plot
 
 ```{r,warning=FALSE,message=FALSE}
-ggplot(data = iris, aes(x = Species, y = Sepal.Length))+
+iris %>% 
+  ggplot(aes(x = Species, y = Sepal.Length))+
   geom_boxplot() +
   labs(x = "Species", y = "Length", title = "Boxplot and trend line", subtitle = "with ggplot2") + 
   theme_bw() + theme(text = element_text(size = 15))+
@@ -466,7 +468,8 @@ The results show that adding the factor "Species" improves the model fit. We can
 Let's plot our fitted values but only for the trend line
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-ggplot(data = iris, aes(x = Species, y = Sepal.Length))+
+iris %>% 
+  ggplot(aes(x = Species, y = Sepal.Length))+
   geom_boxplot() +
   labs(x = "Species", y = "Length", title = "Boxplot and predicted trend line", subtitle = "with ggplot2") + 
   theme_bw() + theme(text = element_text(size = 15))+
@@ -480,7 +483,8 @@ This allows us to plot the fitted values from our model with the predicted linea
 We can also plot the predicted means and linear trend
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-ggplot(data = iris, aes(x = Species, y = predict(mdl.lm)))+
+iris %>% 
+  ggplot(aes(x = Species, y = predict(mdl.lm)))+
   geom_boxplot(color = "blue") +
   labs(x = "Species", y = "Length", title = "Predicted means and trend line", subtitle = "with ggplot2") + 
   theme_bw() + theme(text = element_text(size = 15))+
@@ -493,7 +497,8 @@ ggplot(data = iris, aes(x = Species, y = predict(mdl.lm)))+
 We can also plot the actual data, the predicted means and linear trend
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-ggplot(data = iris, aes(x = Species, y = Sepal.Length))+
+iris %>% 
+  ggplot(aes(x = Species, y = Sepal.Length))+
   geom_boxplot()+
   geom_boxplot(aes(x = Species, y = predict(mdl.lm)), color = "blue") +
   labs(x = "Species", y = "Length", title = "Boxplot raw data, predicted means (in blue) and trend line", subtitle = "with ggplot2") + 
@@ -703,7 +708,8 @@ True Negative Rate (or Sensitivity) TN/(FP+TN) (`r TN/(FP+TN)`)
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 grammatical$prob <- predict(glm(response ~ grammaticality, data = grammatical, family = binomial), type = "response")
-ggplot(grammatical, aes(x = as.numeric(grammaticality), y = prob)) +
+grammatical %>% 
+  ggplot(aes(x = as.numeric(grammaticality), y = prob)) +
   geom_point() +
   geom_smooth(method = "glm", 
     method.args = list(family = "binomial"), 
