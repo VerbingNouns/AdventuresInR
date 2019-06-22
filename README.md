@@ -34,7 +34,7 @@ We anticipate that basic refreshments, including lunch, will be provided.
 
 *We regret that due to the limited capacity of the room we may not be able to offer a place to all those who apply.*
 
-## What to bring:
+## What to bring: 
 
 The room does not contain any PCs and we would ask attendees to *bring laptops with copies of R and RStudio already installed*
 (please visit  [https://www.r-project.org/](https://www.r-project.org/) to download R, and [https://www.rstudio.com/](https://www.rstudio.com/) to download RStudio). We believe that it’s preferable to work on laptops rather than university machines as it is much easier to update R to the latest version.
