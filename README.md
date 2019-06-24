@@ -24,7 +24,7 @@ We anticipate that basic refreshments, including lunch, will be provided.
 ### Day 1: (To be updated)
 
 **Morning:** [Introduction to R and RStudio](/docs/Session_1-Introduction.nb.html) (Download the [Rmarkdown file](/docs/Session_1-Introduction.Rmd) for this session)  
-**Afternoon:** [Processing text and corpus data](docs/Session_3.nb.html) (Download [the .Rmd file](docs/Session_3.Rmd) and [the data file](data/Shakespeare_data.csv) for this session)  
+**Afternoon:** [Processing data and text](docs/Session_2-tidyverse-tidytext.nb.html) (Download [the .Rmd file](docs/Session_2-tidyverse-tidytext.Rmd) and [the data file](data/Shakespeare_data.csv) for this session)  
 
 ### Day 2:
 
@@ -45,7 +45,17 @@ If you already have R and RStudio installed, we recommend you update to the late
 
 22 June 2019: please install the following packages (if not already installed) that we will use during our workshop. 
 
-tidyverse; psycho; ordinal; PresenceAbsence; broom; emmeans; car; tidytext; knitr
+```
+tidyverse
+psycho
+ordinal
+PresenceAbsence
+broom
+emmeans
+car
+tidytext
+knitr
+```
 
 12 June 2019: Please install the latest version of R (3.6.0). Also install the latest version of R Studio (version 1.2.1335). We will send a list of all packages to be installed.
 
