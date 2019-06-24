@@ -7,7 +7,15 @@ This workshop has been funded by the Faculty of Humanities Arts and Social Scien
 ## Information:
 
 **When:** 25-26 June; 09.30 -- 17.00  
-**Session Plan:** Session 1: 9.30 — 12, Lunch: 12 — 1, Session 2: 1 - 3.30, Coffee break: 3.30 - 4, Q&A: 4 - 5
+**Session Plan:**
+
+| Session | Time |
+| --- | --- |
+|Session 1|9.30 — 12.00|
+|Lunch|12.00 — 13.00|
+|Session 2|13.00 - 15.30|
+|Coffee break|15.30 - 16.00|
+|Q&A|16.00 - 17.00|
 
 **Where:** ARMB.2.09  
 =======
@@ -24,11 +32,11 @@ We anticipate that basic refreshments, including lunch, will be provided.
 ### Day 1: (To be updated)
 
 **Morning:** [Introduction to R and RStudio](/docs/Session_1-Introduction.nb.html) (Download the [Rmarkdown file](/docs/Session_1-Introduction.Rmd) for this session)  
-**Afternoon:** [Processing data and text](docs/Session_2-tidyverse-tidytext.nb.html) (Download [the .Rmd file](docs/Session_2-tidyverse-tidytext.Rmd) and [the data file](data/Shakespeare_data.csv) for this session)  
+**Afternoon:** [Processing data and text](docs/Session_2-tidyverse-tidytext.html) (Download [the .Rmd file](docs/Session_2-tidyverse-tidytext.Rmd) and [the data file](data/Shakespeare_data.csv) for this session)  
 
 ### Day 2:
 
-**Morning:** [Visualisation and data manipulation](docs/Session_2-plots_dplyr.html) (Download the [.Rmd file](docs/Session_2-plots_dplyr.Rmd) and [the dialect data](data/dialectdata.csv), [reaction time data](data/reactiondata.txt), and [other data](data/plantanimalrt.csv) for this session)  
+**Morning:** [Visualisation and data manipulation](docs/Session_3_data_Viz.html) (Download the [.Rmd file](docs/Session_3_data_Viz.Rmd) and [the dialect data](data/dialectdata.csv), [reaction time data](data/reactiondata.txt), and [other data](data/plantanimalrt.csv) for this session)  
 **Afternoon:** [Techniques for analysing data](docs/Session_4-AnalysingData.nb.html) (Download [the .Rmd file](docs/Session_4-AnalysingData.rmd) and the data files [grammatical](data/grammatical.csv) and [rating](data/rating.csv) for this session)  
 
 

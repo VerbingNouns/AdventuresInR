@@ -279,4 +279,4 @@ shake %>%
 
 # More information
 
-For more advanced ways to visualise and process corpus data like this, please see [last year's session on text mining](https://verbingnouns.github.io/AdventuresInR/docs/Session_3.nb.html) and [the TidyText online textbook](https://www.tidytextmining.com/)!
+For more advanced ways to visualise and process corpus data like this, please see [last year's session on text mining](https://verbingnouns.github.io/AdventuresInR/docs/advanced_textmining.html) and [the TidyText online textbook](https://www.tidytextmining.com/)!
