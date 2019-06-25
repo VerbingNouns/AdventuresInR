@@ -5,13 +5,13 @@ output:
     highlight: pygments
     number_sections: yes
     toc: yes
-    toc_depth: 4
+    toc_depth: 6
     toc_float:
       collapsed: yes
-    code_folding: hide
+  
 ---
 
-In this session, we will look at basic functions in R that will help us in running some inferential statistics. These will help us to evaluate the relationship between one (or more) predictor(s) and an outcome. We will start with a basic example. Using the dataframe "cars".
+In this session, we will look at basic functions in R that will help us in running some inferential statistics. These will help us to evaluate the relationship between one (or more) predictor(s) and an outcome. We will start with a basic example. Using the dataframe "cars". 
 
 
 # Loading packages 
@@ -61,7 +61,7 @@ So we have an equal dataframe (50 observations under each level of the factor `S
 
 ### Advanced
 
-What if you want to summarise the data and get the mean, SD, by each level of the factor?
+What if you want to summarise the data and get the mean, SD, by each level of the factor? 
 
 ```{r}
 iris %>% 
@@ -645,7 +645,7 @@ mycoef2 <- tidy(mdl.glm) %>% pull(estimate)
 ```
 
 
-The results show that for one unit increase in the response (i.e., from no to yes), the logodds of being "grammatical" is increased by `r mycoef2[2]` (the intercept shows that when the response is "no", the logodds are `r mycoef2[1]`). The actual logodds for the response "yes" to grammatical is `r mycoef2[1]+mycoef2[2]`
+The results show that for one unit increase in the response (i.e., from no to yes), the logodds of being "grammatical" is increased by `r mycoef2[2]` (the intercept shows that when the response is "no", the logodds are `r mycoef2[1]`). The actual logodds for the response "yes" to grammatical is `r mycoef2[1]+mycoef2[2]` 
 
 ### Getting "true" coefficients from GLM
 
