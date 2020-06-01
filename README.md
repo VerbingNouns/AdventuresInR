@@ -15,8 +15,8 @@ This workshop has been funded by the Faculty of Humanities Arts and Social Scien
 |Break/Individual work|12.00 -- 16.00|
 |Q&A|16.00 -- 17.00|
 
-**Where:** Zoom (link sent separately) 
-**Instructors:** Lauren Ackerman, Jalal Al-Tamimi, Jasmine Warburton, and Nick Riches  
+**Where:** Zoom (link sent separately)  
+**Instructors:** Lauren Ackerman, Jalal Al-Tamimi, and Nick Riches  
 
 Before the workshop, please make sure you have downloaded R and RStudio. [**This** brief tutorial](docs/Setting_Up.nb.html) may help.
 
