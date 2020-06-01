@@ -56,24 +56,11 @@ If you already have R and RStudio installed, we recommend you update to the late
 
 ```
 tidyverse
-lme4
 knitr
-```
-
-22 June 2019: please install the following packages (if not already installed) that we will use during our workshop. 
-
-```
-tidyverse
-psycho
 ordinal
-PresenceAbsence
 broom
 emmeans
-car
-tidytext
-knitr
+Hmisc
+corrplot
 ```
-
-12 June 2019: Please install the latest version of R (3.6.0). Also install the latest version of R Studio (version 1.2.1335). We will send a list of all packages to be installed.
-
 
