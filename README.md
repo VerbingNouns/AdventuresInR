@@ -1,6 +1,6 @@
 # Welcome to the Adventures In R Workshop!
 
-*This repository will serve as the base for designing and sharing materials for the 2019 Workshop in R.*
+*This repository will serve as the base for designing and sharing materials for the 2020 Workshop in R.*
 
 This workshop has been funded by the Faculty of Humanities Arts and Social Sciences, and is open to all postgraduate students at Newcastle University and universities which constitute the NINE-DTP consortium. The aim is to provide a strong foundation in what is fast becoming the standard package for data analysis, manipulation and visualisation. By the end of this course, attendees will have a sufficiently strong foundation to enable them to work on more complex challenges in their own time.
 
