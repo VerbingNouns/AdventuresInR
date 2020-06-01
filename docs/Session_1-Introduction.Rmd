@@ -1,18 +1,20 @@
 ---
 title: "Session 1 - Introduction.Rmd"
 output:
-  html_notebook:
-    number_sections: yes
-    code_folding: hide
-    toc: yes
-    toc_float:
-      collapsed: yes
   html_document:
     df_print: paged
     toc: yes
+  word_document:
+    toc: yes
+  html_notebook:
+    code_folding: hide
+    number_sections: yes
+    toc: yes
+    toc_float:
+      collapsed: yes
 ---
 
-# The purpose of this course
+# The purpose of this courssssse
 
 - An introduction to basic techniques in R
 ![](images/crawl-walk-run-fly.png)
@@ -158,7 +160,7 @@ time, we download these from 'CRAN' ```Tools > Install packages``` or ```install
 Remember using a package/library is a two-stage process. We
 
 1. `Install` the package/library onto your computer (from the internet)
-2. `Load` the package/library using the library command.
+2. `Load` the package/library into your current session using the library command.
 
 One of the most useful packages is called 'tidyverse'.
 
