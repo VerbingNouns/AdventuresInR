@@ -11,9 +11,9 @@ This workshop has been funded by the Faculty of Humanities Arts and Social Scien
 
 | Session | Time |
 | --- | --- |
-|Lecture and group work|10.00 — 12.00|
-|Break/Individual work|12.00-16.00|
-|Q&A|16.00 - 17.00|
+|Lecture and group work|10.00 -- 12.00|
+|Break/Individual work|12.00 -- 16.00|
+|Q&A|16.00 -- 17.00|
 
 **Where:** Zoom (link sent separately) 
 **Instructors:** Lauren Ackerman, Jalal Al-Tamimi, Jasmine Warburton, and Nick Riches  
