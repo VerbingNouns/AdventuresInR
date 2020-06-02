@@ -1,6 +1,6 @@
 # Welcome to the Adventures In R Workshop!
 
-*This repository will serve as the base for designing and sharing materials for the 2019 Workshop in R.*
+*This repository will serve as the base for designing and sharing materials for the 2020 Workshop in R.*
 
 This workshop has been funded by the Faculty of Humanities Arts and Social Sciences, and is open to all postgraduate students at Newcastle University and universities which constitute the NINE-DTP consortium. The aim is to provide a strong foundation in what is fast becoming the standard package for data analysis, manipulation and visualisation. By the end of this course, attendees will have a sufficiently strong foundation to enable them to work on more complex challenges in their own time.
 
@@ -15,8 +15,8 @@ This workshop has been funded by the Faculty of Humanities Arts and Social Scien
 |Break/Individual work|12.00 -- 16.00|
 |Q&A|16.00 -- 17.00|
 
-**Where:** Zoom (link sent separately) 
-**Instructors:** Lauren Ackerman, Jalal Al-Tamimi, Jasmine Warburton, and Nick Riches  
+**Where:** Zoom (link sent separately)  
+**Instructors:** Lauren Ackerman, Jalal Al-Tamimi, and Nick Riches  
 
 Before the workshop, please make sure you have downloaded R and RStudio. [**This** brief tutorial](docs/Setting_Up.nb.html) may help.
 
@@ -56,24 +56,12 @@ If you already have R and RStudio installed, we recommend you update to the late
 
 ```
 tidyverse
-lme4
+cowplot
 knitr
-```
-
-22 June 2019: please install the following packages (if not already installed) that we will use during our workshop. 
-
-```
-tidyverse
-psycho
 ordinal
-PresenceAbsence
 broom
 emmeans
-car
-tidytext
-knitr
+Hmisc
+corrplot
 ```
-
-12 June 2019: Please install the latest version of R (3.6.0). Also install the latest version of R Studio (version 1.2.1335). We will send a list of all packages to be installed.
-
 

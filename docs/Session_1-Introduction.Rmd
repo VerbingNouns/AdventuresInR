@@ -2,14 +2,16 @@
 title: "Session 1 - Introduction.Rmd"
 output:
   html_notebook:
+    df_print: paged
     number_sections: yes
-    code_folding: hide
     toc: yes
+    toc_depth: 2
     toc_float:
-      collapsed: yes
+      collapsed: no
   html_document:
     df_print: paged
     toc: yes
+    toc_depth: '2'
 ---
 
 # The purpose of this course
@@ -66,18 +68,22 @@ RStudio has fantastic autocomplete capabilites. To autocomplete just press TAB. 
 
 # R basics
 
-## Setting the 'working directory'
+## Setting the working directory
 
 At the very beginning of an R session you MUST set a 'working directory'. This tells R where to look for and save files. To do this type
 
-```setwd("path/to/directory")```
+`setwd("path/to/directory")`
 
 Unfortunately, if you are on a windows machine you will need to change all
-backslashes ```\``` to forward slashes ```/```. This is because R follows UNIX conventions which are native to Linux and Mac computers.
+backslashes `\` to forward slashes `/`. This is because R follows UNIX conventions which are native to Linux and Mac computers.
 
 If you are not sure what your working directory is type
 
-```getwd()```
+`getwd()`
+
+Getting the right path is a vital first step in R, and you really need to know how to do this. Here are some instructional videos if you get stuck...
+
+For Windows computers refer to [this YouTube video](https://www.youtube.com/watch?v=QzSV8wvA1Do). For Macs refer to [this YouTube video](https://www.youtube.com/watch?v=43W9TuPwqac). If you're on Linux then refer to [this YouTube video](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
 ## Using R as a calculator
 
@@ -104,9 +110,9 @@ x*y
 
 ## Comments
 
-If you'd like to comment on any code you write (i.e. you do not wish R to try to 'run' this code) just add a hash (```#```) or series of hashes in front of it, e.g.
+If you'd like to comment on any code you write (i.e. you do not wish R to try to 'run' this code) just add a hash (`#`) or series of hashes in front of it, e.g.
 
-```df <- read.csv("csv_file.csv") # This reads in the main file for the experiment```
+`df <- read.csv("csv_file.csv") # This reads in the main file for the experiment`
 
 ## Functions
 
@@ -121,9 +127,11 @@ seq(1,10,2)
 
 ```
 
-EX1: What do the arguments of ```seq``` do? To find out more search for the relevant help file in the console by typing ```?seq```
+## EX 1 & 2: Working with Functions
 
-EX2: Have a look at the following arguments called ```gsub``` and ```grepl```. What do they do? Clue: if you're stuck, search the help file using ```?```
+EX1: What do the arguments of `seq` do? To find out more search for the relevant help file in the console by typing `?seq`
+
+EX2: Have a look at the following arguments called `gsub` and `grepl`. What do they do? Clue: if you're stuck, search the help file using `?`
 ```{r}
 
 gsub("R-studio", "Rstudio", "R-studio is a great piece of software")
@@ -132,13 +140,14 @@ grepl("chocolate", "Mary likes chocolate cookies")
 
 ```
 
+
 ## DIY functions
 
 It's possible to **create your own functions**. This makes R extremely powerful and extendible. We're not going to cover making your own functions in this course, but it's important to be aware of this capability. There are plenty of good resources online for learning how to do this, including [this one](https://www.statmethods.net/management/userfunctions.html)
 
 ## Getting help
 
-As we have seen above, to find out about a particular function just type ```?``` and the name of the function into the console, e.g. ```?grepl```. This accesses the help files on your computer. If you'd like to search more broadly type ```??grepl``` and your computer will look online for relevant materials on CRAN (the main R website)
+As we have seen above, to find out about a particular function just type `?` and the name of the function into the console, e.g. `?grepl`. This accesses the help files on your computer. If you'd like to search more broadly type `??grepl` and your computer will look online for relevant materials on CRAN (the main R website)
 
 Help files in R are quite densely written and not particularly aimed at beginners. Fortunately there are loads of excellent resources on the internet. Here are some really good sites:
 
@@ -153,12 +162,12 @@ Help files in R are quite densely written and not particularly aimed at beginner
 ## Installation
 
 To enhance the basic capabilities of R, we need to load packages/libraries. Most of the
-time, we download these from 'CRAN' ```Tools > Install packages``` or ```install.packages()```. Once the package/library is installed (i.e. it is sitting somewhere on your computer), we then need to _load_ it to the current R session using the ```library()```function.
+time, we download these from 'CRAN' `Tools > Install packages` or `install.packages()`. Once the package/library is installed (i.e. it is sitting somewhere on your computer), we then need to _load_ it to the current R session using the `library()` function.
 
 Remember using a package/library is a two-stage process. We
 
 1. `Install` the package/library onto your computer (from the internet)
-2. `Load` the package/library using the library command.
+2. `Load` the package/library into your current session using the library command.
 
 One of the most useful packages is called 'tidyverse'.
 
@@ -180,21 +189,26 @@ I find that a particularly easy way to load packages is via the `pacman` library
 
 ## Obtaining help
 
-To find out more about a package type ```?package_name``` in the console. Alternatively you can look for the package documentation on [CRAN](https://cran.r-project.org/).
+To find out more about a package type `?package_name` in the console. Alternatively you can look for the package documentation on [CRAN](https://cran.r-project.org/).
 
 ## Using functions from packages
 
-Most of the functions loaded in a package should work 'out of the box'. However occasionally you need to refer to the package first, and then the function using the format ```package_name::function_from_that_package```. This is useful for a variety of reasons:
+Most of the functions loaded in a package should work 'out of the box'. However occasionally you need to refer to the package first, and then the function using the format `package_name::function_from_that_package`. This is useful for a variety of reasons:
 
 1. It allows you to use a function from a package without having to load that package
 2. It helps in cases where you load two packages which contain two different functions which happen to have the same name.
 3. Sometimes, even when a package is loaded, you need to precede a function by the package name. However, most of the time this is not necessary.
 
+## EX 3 - Using packages
+
+1. Install the package `pacman`
+2. Load the package `tidyverse` using the p_load function.
+
 # Objects, data frames and indices
 
 ## Objects
 
-A variable is a type of 'object' which R stores in memory. R is capable of creating and storing a wide range of objects. To see what type of object we have created, we use the function ```class()```, e.g.
+A variable is a type of 'object' which R stores in memory. R is capable of creating and storing a wide range of objects. To see what type of object we have created, we use the function `class()`, e.g.
 
 ```{r}
 
@@ -215,7 +229,7 @@ x + z
 ```
 
 Here we have tried to add a number to a string which is clearly impossible. It's possible to change the class of an object using commands such as
-```as.character```, ```as.integer```, ```as.numeric```, ```as.factor```, e.g.
+`as.character`, `as.integer`, `as.numeric`, `as.factor`, e.g.
 
 ```{r, error = TRUE}
 one <- "1"
@@ -233,7 +247,7 @@ Here is a list of the main object classes in R:
 5. Dataframe - a 2 x 2 array in which each column has a name
 6. List - this is like a vector, except it is capable of storing multiple object classes, e.g. it can contain both numbers and strings.
 
-In order to create a vector we need to use the ```c``` function. (c = 'combine'), e.g.
+In order to create a vector we need to use the `c` function. (c = 'combine'), e.g.
 
 ```{r}
 list.of.numbers <- c(1,4,54,22,43,9,0,0,21)
@@ -255,7 +269,7 @@ a.list <- as.list(c(1, 2, "Mary", "Jane"))
 
 A data frame is a two-dimensional object containing variables and row numbers. It's basically a spreadsheet.
 
-The following code creates a data frame programmatically. It creates two variables, and combines them together to make a data frame. Note that to do this we need to use the functions ```as.data.frame``` and ```cbind```.
+The following code creates a data frame programmatically. It creates two variables, and combines them together to make a data frame. Note that to do this we need to use the functions `as.data.frame` and `cbind`.
 
 ```{r}
 list.of.movies <- c("Independence Day", "Pretty Woman", "The Godfather Part
@@ -268,13 +282,13 @@ df <- as.data.frame(cbind(list.of.movies, rotten.tomatoes.variable)) # 'cbind' b
 
 ## Viewing the contents of a data frame
 
-To glimpse the top few rows type ```head(name_of_data_frame)``` in the console, e.g.
+To glimpse the top few rows type `head(name_of_data_frame)` in the console, e.g.
 
 ```{r}
 head(df)
 ```
 
-To view the data frame in the 'source' window, type ```View(name_of_data_frame)``` in the console, .e.g.
+To view the data frame in the 'source' window, type `View(name_of_data_frame)` in the console, .e.g.
 
 ```{r}
 View(df) #NB first letter is a capital letter.
@@ -282,17 +296,17 @@ View(df) #NB first letter is a capital letter.
 
 ## Referring to variables
 
-To refer to variables, use the following syntax ```data_frame_name$variable_name```, e.g.
+To refer to variables, use the following syntax `data_frame_name$variable_name`, e.g.
 ```{r}
 df$list.of.movies
 ```
-When naming variables we can use dots and underscores, e.g. ```df$list.of.movies``` and ```df$list_of_movies```. We can use numbers as long as they don't come at the beginning, e.g. ```df$list_of_movies.v3```.
+When naming variables we can use dots and underscores, e.g. `df$list.of.movies` and `df$list_of_movies`. We can use numbers as long as they don't come at the beginning, e.g. `df$list_of_movies.v3`.
 
 If you use this convention, then the names for variables can get very long. However, it's generally useful, as in R you often have multiple data frames loaded into memory. By specifiying both the name of the data frame and the variable, this avoids confusion.
 
 Try to be consistent with your naming conventions. I tend to use underscores to name variables, e.g. `data.frame.x$variable_y`. This is also what Hadley Wickham recommends (Have a look at the [Tidyverse Style Guide](https://style.tidyverse.org/))
 
-If you'd like to see all the variable names in a data frame type ```names(data_frame)```, e.g. 
+If you'd like to see all the variable names in a data frame type `names(data_frame)`, e.g. 
 
 ```{r}
 names(df)
@@ -300,7 +314,7 @@ names(df)
 
 ## Indices
 
-Whenever you wish to access the contents of an object with multiple values (e.g. a data frame) you use indexes. These are placed inside square brackets, e.g. ```[1]```. Have a look at the following example:
+Whenever you wish to access the contents of an object with multiple values (e.g. a data frame) you use indexes. These are placed inside square brackets, e.g. `[1]`. Have a look at the following example:
 
 
 ```{r}
@@ -311,11 +325,13 @@ df[1,] # here the second number is blank
 df[,2] # here the first number is blank
 ```
 
-EX3: What does each number refer to? What happens when we leave a blank cell?
+## EX 3 - understanding indices
+
+What does each number refer to? What happens when we leave a blank cell?
 
 ## Reading data frames from files using menus
 
-We can use the menu in Rstudio: ```File > Import dataset```. You can do this to import Excel, SPSS, SAS and STATA files.
+We can use the menu in Rstudio: `File > Import dataset`. You can do this to import Excel, SPSS, SAS and STATA files.
 
 ## Reading data frames from files using code
 
@@ -331,26 +347,28 @@ df <- readxl::read_excel("WHR_2017.xlsx") # Read an excel file
 
 df <- haven::read_spss("WHR_2017.sav") # Read from an SPSS file
 
-df <- read.csv("WHR_2017.csv") # Read from a .csv file
+df <- read_csv("WHR_2017.csv") # Read from a .csv file
 
 #Or to download straight from the URL!!
 
-df <- read.csv("https://verbingnouns.github.io/AdventuresInR/docs/WHR_2017.csv")
+df <- read_csv("https://verbingnouns.github.io/AdventuresInR/docs/WHR_2017.csv")
 
 ```
 
 Possibly the best data format to work in is the .csv data format. This is good because it is readable in Excel, small, simple, and not easily-corrupted.
 
-To read .csv files we use the ```read.csv()``` function from base R, e.g. 
+To read .csv files we use the `read.csv()` function from base R, or `read_csv()` from the tidyverse (I would go with the latter as it also shows you a list of the variable types)
 
 
 # Subsetting a data set using (a) base R and (d) dplyr
 
 ## Subsetting with base R
 
-We're going to *subset* the WHR dataset (i.e. choose only those cases/observations which fulfil a specific criterion). To do this we're going to use the ```which()``` function. When you apply ```which``` to a variable in a dataset, it will produce indices of the rows which fulfil a certain criterio, e.g. ```which(df$var_name == 2)``` will give you the indices of all rows where the value of the variable is 2.
+We're going to *subset* the WHR dataset (i.e. choose only those cases/observations which fulfil a specific criterion). To do this we're going to use the `which()` function. When you apply `which` to a variable in a dataset, it will produce indices of the rows which fulfil a certain criterio, e.g. `which(df$var_name == 2)` will give you the indices of all rows where the value of the variable is 2.
 
-EX4: Armed with this knowledge, your task is to subset the data frame so that it only contains information from African countries.
+## EX4: Subsetting the hard way!
+
+Armed with this knowledge, your task is to subset the data frame so that it only contains information from African countries.
 
 If you're stuck have a look at the answer below. 
 
@@ -359,11 +377,11 @@ df.Africa <- df[which(df$region == "Africa"), ]
 ```
 ## Piping
 
-Okay, the above code is pretty horrible to look at, so we're going to explore an alternative using the package ```dplyr``` which is from the ```tidyverse```. But before we can use ```dplyr``` we have to learn how to 'pipe'.
+Okay, the above code is pretty horrible to look at, so we're going to explore an alternative using the package `dplyr` which is from the `tidyverse`. But before we can use `dplyr` we have to learn how to 'pipe'.
 
 ![](images/MagrittePipe.jpg)
 
-Pipes are written in R as ```%>%``` (note you must use a percentage sign before and after the pipe). To demonstrate what pipes do, I have a look at the following pseudocode.
+Pipes are written in R as `%>%` (note you must use a percentage sign before and after the pipe). To demonstrate what pipes do, I have a look at the following pseudocode.
 
 ![](images/piping.png)
 
@@ -393,7 +411,7 @@ NB When piping the code becomes more readable when the line ends with the pipe.
 There are a couple of important points to note.
 
 (1) We can refer to variables without specifying the data frame
-(2) If we wish to store the results we must output them using and arrow ```->```. If we don't store the results they will merely be displayed in the console.
+(2) If we wish to store the results we must output them using and arrow `->`. If we don't store the results they will merely be displayed in the console.
 
 Piping is a key technique in R and once you've learnt it you will write much more powerful and readable code.
 
@@ -430,7 +448,7 @@ Note how I have broken some of the lines after a comma. This makes the code more
 
 # Loops and if-then statements
 
-Loops and if-then statements are useful programming tools which have the same structure: ```FUNCTION (STATEMENT) {.....}```.
+Loops and if-then statements are useful programming tools which have the same structure: `FUNCTION (STATEMENT) {.....}`.
 
 ## Loops
 
@@ -457,7 +475,9 @@ for (i in 1:length(df.region$region)){ # We loop through the list
 
 ```
 
-EX5: The code below creates a sequence ranging from 0 to 30 going up in steps of 0.25. Try to achieve the same result using a loop
+## EX5: Loops
+
+The code below creates a sequence ranging from 0 to 30 going up in steps of 0.25. Try to achieve the same result using a loop
 
 ```{r}
 seq(0,30,2.5)
@@ -494,7 +514,7 @@ df <- read_csv("WHR_2017.csv")
 
 df$happiness_above_mean2 <- as.numeric(df$happiness_score > mean(df$happiness_score))
 ```
-So how does this work? The statement in brackets evaluates to TRUE / FALSE. We then turn this into a number using ```as.numeric```. TRUE evaluates to 1, while FALSE evaluates to 0.
+So how does this work? The statement in brackets evaluates to TRUE / FALSE. We then turn this into a number using `as.numeric`. TRUE evaluates to 1, while FALSE evaluates to 0.
 
 It can be quite useful to chain statements. For example, if we wish to identify countries where both the happiness score and life expectancy are above the mean, we could do this....
 
@@ -502,7 +522,9 @@ It can be quite useful to chain statements. For example, if we wish to identify 
 df$happiness_and_LE_above_mean <- as.numeric((df$happiness_score > mean(df$happiness_score)) & (df$life_expectancy > mean(df$life_expectancy)))
 ```
 
-EX6: Try to identify countries where both the GDP per capita and trust in the government are above the mean.
+## EX6: Creating variables
+
+Try to identify countries where both the GDP per capita and trust in the government are above the mean.
 
 # Stored results
 
@@ -540,11 +562,86 @@ tidy(mod) # This is a broom function which tidies up the statistical results for
 
 Now, let's have a look at the `structure` of this model. There are two ways to do this:
 
-1. Use the ```str``` function, e.g. ```str(mod)```
-2. Type ```mod$```, and then use autocomplete.
+1. Use the `str` function, e.g. `str(mod)`
+2. Type `mod$`, and then use autocomplete.
 
-We can see that the ```$``` symbol has a dual function in R: firstly, to specify variables within dataframes, and secondly to specify subcomponents of an object.
+We can see that the `$` symbol has a dual function in R: firstly, to specify variables within dataframes, and secondly to specify subcomponents of an object.
 
 It is useful to be able to refer to subcomponents of an object so that we can integrate into our report, e.g. the regression yielded a value of `r summary(mod)$r.squared`
+
+## EX 6: Let's put it all together!!!
+
+(1) Download data for COVID deaths from the World Health Organisation
+(2) Download population data from the UN
+(3) Calculate COVID infection rate per head of population
+(4) Merge this data with World Health Report data.
+(5) Is there any relationship between the results of the WHR survey, e.g. GDP per capita, and COVID infection rates?
+
+```{r with errors, eval = FALSE}
+
+whr <- read_csv("WHR_2017.csv")
+
+cov <- read_cvs("WHO-COVID-19-global-data.csv") # Downloaded from; https://covid19.who.int/?gclid=CjwKCAjw8df2BRA3EiwAvfZWaJP1dju-Nt3omCCK7ZtdCtgwoBJOVKD1vC7suVRM1HSVy_0vZHzlDRoCRlkQAvD_BwE
+
+pop <- read_csv("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv")
+
+cov$date <- as.Date(cov$Date_reported) # NB Date_reported is in a weird format. This converts it to a format which is easier to process
+
+whr %>% 
+  rename(Country = country) -> # In the "whr" dataset, the variable "country" begins with a lower case C. In order to adequately merge, the key variables need to have the same name
+  whr
+
+pop %>%  
+  rename(Country = Location) %>% # creates "Country" variable in order to merge data
+  filter(Time = 2020 & Variant == "No change") %>% 
+  merge(cov) %>% 
+  select(date == ("2020-06-01")) %>% 
+  mutate(cumulative_cases_per_million = (Cumulative_cases / PopTotal) * 1000000) %>% 
+  merge(whr) %>% 
+  df
+
+
+plot(df$cumulative_cases_per_million, df$trust_in_government)
+
+plot(df$cumulative_cases_per_million, df$gdp_per_capita)
+
+```
+
+
+```{r Correct!}
+
+whr <- read_csv("WHR_2017.csv")
+
+cov <- read_csv("WHO-COVID-19-global-data.csv") # Downloaded from; https://covid19.who.int/?gclid=CjwKCAjw8df2BRA3EiwAvfZWaJP1dju-Nt3omCCK7ZtdCtgwoBJOVKD1vC7suVRM1HSVy_0vZHzlDRoCRlkQAvD_BwE
+
+pop <- read_csv("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv")
+
+cov$date <- as.Date(cov$Date_reported)
+
+whr %>% 
+  rename(Country = country) ->
+  whr
+
+pop %>%  
+  rename(Country = Location) %>% 
+  filter(Time == 2020 & Variant == "No change") %>% 
+  merge(cov) %>% 
+  filter(date == ("2020-06-01")) %>% 
+  mutate(cumulative_cases_per_million = (Cumulative_cases / PopTotal) * 1000000) %>% 
+  merge(whr) ->
+  df
+
+
+plot(df$cumulative_cases_per_million, df$trust_in_government)
+
+plot(df$cumulative_cases_per_million, df$gdp_per_capita)
+
+```
+
+# R Markdown
+
+R markdown is a special format (.Rmd) which contains both R code, and text. It enables you to produce your report and your analysis as a *single document*.
+
+
 
 
