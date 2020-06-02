@@ -1824,7 +1824,7 @@ x*y</code></pre>
 <h1>Packages</h1>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
-<p>To enhance the basic capabilities of R, we need to load packages/libraries. Most of the time, we download these from ‘CRAN’ <code>Tools &gt; Install packages</code> or <code>install.packages()</code>. Once the package/library is installed (i.e. it is sitting somewhere on your computer), we then need to <em>load</em> it to the current R session using the <code>library()</code>function.</p>
+<p>To enhance the basic capabilities of R, we need to load packages/libraries. Most of the time, we download these from ‘CRAN’ <code>Tools &gt; Install packages</code> or <code>install.packages()</code>. Once the package/library is installed (i.e. it is sitting somewhere on your computer), we then need to <em>load</em> it to the current R session using the <code>library()</code> function.</p>
 <p>Remember using a package/library is a two-stage process. We</p>
 <ol style="list-style-type: decimal">
 <li><code>Install</code> the package/library onto your computer (from the internet)</li>
@@ -1835,12 +1835,12 @@ x*y</code></pre>
 <p>It contains a number of useful commands for plots, and data manipulation.</p>
 <p>Install the ‘tidyverse’ package, and then load it with the following function:</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ── Attaching packages ───────────────────</code></pre>
 <pre><code>## ✔ ggplot2 3.2.1     ✔ purrr   0.3.3
 ## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
 ## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
 ## ✔ readr   1.3.1     ✔ forcats 0.4.0</code></pre>
-<pre><code>## ── Conflicts ───────────── tidyverse_conflicts() ──
+<pre><code>## ── Conflicts ─── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 <p>I find that a particularly easy way to load packages is via the <code>pacman</code> library. This contains the incredibly useful function <code>p_load</code>. This</p>
@@ -2023,7 +2023,7 @@ df &lt;- read_csv(&quot;https://verbingnouns.github.io/AdventuresInR/docs/WHR_20
 ##   dystopia_residual = col_double()
 ## )</code></pre>
 <p>Possibly the best data format to work in is the .csv data format. This is good because it is readable in Excel, small, simple, and not easily-corrupted.</p>
-<p>To read .csv files we use the <code>read.csv()</code> function from base R, o <code>read_csv()</code> from the tidyverse (I would go with the latter as it also shows you a list of the variable types)</p>
+<p>To read .csv files we use the <code>read.csv()</code> function from base R, or <code>read_csv()</code> from the tidyverse (I would go with the latter as it also shows you a list of the variable types)</p>
 </div>
 </div>
 <div id="subsetting-a-data-set-using-a-base-r-and-d-dplyr" class="section level1">
