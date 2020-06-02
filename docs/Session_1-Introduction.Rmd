@@ -1,20 +1,20 @@
 ---
 title: "Session 1 - Introduction.Rmd"
 output:
+  html_notebook:
+    df_print: paged
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+    toc_float:
+      collapsed: no
   html_document:
     df_print: paged
     toc: yes
-  word_document:
-    toc: yes
-  html_notebook:
-    code_folding: hide
-    number_sections: yes
-    toc: yes
-    toc_float:
-      collapsed: yes
+    toc_depth: '2'
 ---
 
-# The purpose of this courssssse
+# The purpose of this course
 
 - An introduction to basic techniques in R
 ![](images/crawl-walk-run-fly.png)
@@ -68,18 +68,22 @@ RStudio has fantastic autocomplete capabilites. To autocomplete just press TAB. 
 
 # R basics
 
-## Setting the 'working directory'
+## Setting the working directory
 
 At the very beginning of an R session you MUST set a 'working directory'. This tells R where to look for and save files. To do this type
 
-```setwd("path/to/directory")```
+`setwd("path/to/directory")`
 
 Unfortunately, if you are on a windows machine you will need to change all
 backslashes ```\``` to forward slashes ```/```. This is because R follows UNIX conventions which are native to Linux and Mac computers.
 
 If you are not sure what your working directory is type
 
-```getwd()```
+`getwd()`
+
+Getting the right path is a vital first step in R, and you really need to know how to do this. Here are some instructional videos if you get stuck...
+
+For Windows computers refer to [this YouTube video](https://www.youtube.com/watch?v=QzSV8wvA1Do). For Macs refer to [this YouTube video](https://www.youtube.com/watch?v=43W9TuPwqac). If you're on Linux then refer to [this YouTube video](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
 ## Using R as a calculator
 
@@ -123,6 +127,8 @@ seq(1,10,2)
 
 ```
 
+## EX 1 & 2: Working with Functions
+
 EX1: What do the arguments of ```seq``` do? To find out more search for the relevant help file in the console by typing ```?seq```
 
 EX2: Have a look at the following arguments called ```gsub``` and ```grepl```. What do they do? Clue: if you're stuck, search the help file using ```?```
@@ -133,6 +139,7 @@ gsub("R-studio", "Rstudio", "R-studio is a great piece of software")
 grepl("chocolate", "Mary likes chocolate cookies")
 
 ```
+
 
 ## DIY functions
 
@@ -191,6 +198,11 @@ Most of the functions loaded in a package should work 'out of the box'. However 
 1. It allows you to use a function from a package without having to load that package
 2. It helps in cases where you load two packages which contain two different functions which happen to have the same name.
 3. Sometimes, even when a package is loaded, you need to precede a function by the package name. However, most of the time this is not necessary.
+
+## EX 3 - Using packages
+
+1. Install the package `pacman`
+2. Load the package `tidyverse` using the p_load function.
 
 # Objects, data frames and indices
 
@@ -313,7 +325,9 @@ df[1,] # here the second number is blank
 df[,2] # here the first number is blank
 ```
 
-EX3: What does each number refer to? What happens when we leave a blank cell?
+## EX 3 - understanding indices
+
+What does each number refer to? What happens when we leave a blank cell?
 
 ## Reading data frames from files using menus
 
@@ -333,17 +347,17 @@ df <- readxl::read_excel("WHR_2017.xlsx") # Read an excel file
 
 df <- haven::read_spss("WHR_2017.sav") # Read from an SPSS file
 
-df <- read.csv("WHR_2017.csv") # Read from a .csv file
+df <- read_csv("WHR_2017.csv") # Read from a .csv file
 
 #Or to download straight from the URL!!
 
-df <- read.csv("https://verbingnouns.github.io/AdventuresInR/docs/WHR_2017.csv")
+df <- read_csv("https://verbingnouns.github.io/AdventuresInR/docs/WHR_2017.csv")
 
 ```
 
 Possibly the best data format to work in is the .csv data format. This is good because it is readable in Excel, small, simple, and not easily-corrupted.
 
-To read .csv files we use the ```read.csv()``` function from base R, e.g. 
+To read .csv files we use the ```read.csv()``` function from base R, o ```read_csv()``` from the tidyverse (I would go with the latter as it also shows you a list of the variable types)
 
 
 # Subsetting a data set using (a) base R and (d) dplyr
@@ -352,7 +366,9 @@ To read .csv files we use the ```read.csv()``` function from base R, e.g.
 
 We're going to *subset* the WHR dataset (i.e. choose only those cases/observations which fulfil a specific criterion). To do this we're going to use the ```which()``` function. When you apply ```which``` to a variable in a dataset, it will produce indices of the rows which fulfil a certain criterio, e.g. ```which(df$var_name == 2)``` will give you the indices of all rows where the value of the variable is 2.
 
-EX4: Armed with this knowledge, your task is to subset the data frame so that it only contains information from African countries.
+## EX4: Subsetting the hard way!
+
+Armed with this knowledge, your task is to subset the data frame so that it only contains information from African countries.
 
 If you're stuck have a look at the answer below. 
 
@@ -459,7 +475,9 @@ for (i in 1:length(df.region$region)){ # We loop through the list
 
 ```
 
-EX5: The code below creates a sequence ranging from 0 to 30 going up in steps of 0.25. Try to achieve the same result using a loop
+## EX5: Loops
+
+The code below creates a sequence ranging from 0 to 30 going up in steps of 0.25. Try to achieve the same result using a loop
 
 ```{r}
 seq(0,30,2.5)
@@ -504,7 +522,9 @@ It can be quite useful to chain statements. For example, if we wish to identify 
 df$happiness_and_LE_above_mean <- as.numeric((df$happiness_score > mean(df$happiness_score)) & (df$life_expectancy > mean(df$life_expectancy)))
 ```
 
-EX6: Try to identify countries where both the GDP per capita and trust in the government are above the mean.
+## EX6: Creating variables
+
+Try to identify countries where both the GDP per capita and trust in the government are above the mean.
 
 # Stored results
 
@@ -548,5 +568,80 @@ Now, let's have a look at the `structure` of this model. There are two ways to d
 We can see that the ```$``` symbol has a dual function in R: firstly, to specify variables within dataframes, and secondly to specify subcomponents of an object.
 
 It is useful to be able to refer to subcomponents of an object so that we can integrate into our report, e.g. the regression yielded a value of `r summary(mod)$r.squared`
+
+## EX 6: Let's put it all together!!!
+
+(1) Download data for COVID deaths from the World Health Organisation
+(2) Download population data from the UN
+(3) Calculate COVID infection rate per head of population
+(4) Merge this data with World Health Report data.
+(5) Is there any relationship between the results of the WHR survey, e.g. GDP per capita, and COVID infection rates?
+
+```{r with errors, eval = FALSE}
+
+whr <- read_csv("WHR_2017.csv")
+
+cov <- read_cvs("WHO-COVID-19-global-data.csv") # Downloaded from; https://covid19.who.int/?gclid=CjwKCAjw8df2BRA3EiwAvfZWaJP1dju-Nt3omCCK7ZtdCtgwoBJOVKD1vC7suVRM1HSVy_0vZHzlDRoCRlkQAvD_BwE
+
+pop <- read_csv("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv")
+
+cov$date <- as.Date(cov$Date_reported) # NB Date_reported is in a weird format. This converts it to a format which is easier to process
+
+whr %>% 
+  rename(Country = country) -> # In the "whr" dataset, the variable "country" begins with a lower case C. In order to adequately merge, the key variables need to have the same name
+  whr
+
+pop %>%  
+  rename(Country = Location) %>% # creates "Country" variable in order to merge data
+  filter(Time = 2020 & Variant == "No change") %>% 
+  merge(cov) %>% 
+  select(date == ("2020-06-01")) %>% 
+  mutate(cumulative_cases_per_million = (Cumulative_cases / PopTotal) * 1000000) %>% 
+  merge(whr) %>% 
+  df
+
+
+plot(df$cumulative_cases_per_million, df$trust_in_government)
+
+plot(df$cumulative_cases_per_million, df$gdp_per_capita)
+
+```
+
+
+```{r Correct!}
+
+whr <- read_csv("WHR_2017.csv")
+
+cov <- read_csv("WHO-COVID-19-global-data.csv") # Downloaded from; https://covid19.who.int/?gclid=CjwKCAjw8df2BRA3EiwAvfZWaJP1dju-Nt3omCCK7ZtdCtgwoBJOVKD1vC7suVRM1HSVy_0vZHzlDRoCRlkQAvD_BwE
+
+pop <- read_csv("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv")
+
+cov$date <- as.Date(cov$Date_reported)
+
+whr %>% 
+  rename(Country = country) ->
+  whr
+
+pop %>%  
+  rename(Country = Location) %>% 
+  filter(Time == 2020 & Variant == "No change") %>% 
+  merge(cov) %>% 
+  filter(date == ("2020-06-01")) %>% 
+  mutate(cumulative_cases_per_million = (Cumulative_cases / PopTotal) * 1000000) %>% 
+  merge(whr) ->
+  df
+
+
+plot(df$cumulative_cases_per_million, df$trust_in_government)
+
+plot(df$cumulative_cases_per_million, df$gdp_per_capita)
+
+```
+
+# R Markdown
+
+R markdown is a special format (.Rmd) which contains both R code, and text. It enables you to produce your report and your analysis as a *single document*.
+
+
 
 
