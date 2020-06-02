@@ -56,6 +56,7 @@ If you already have R and RStudio installed, we recommend you update to the late
 
 ```
 tidyverse
+cowplot
 knitr
 ordinal
 broom
