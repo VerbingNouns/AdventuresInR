@@ -27,7 +27,7 @@ We also recommend [swirl](https://swirlstats.com/) which is an excellent package
 
 ### Day 1:
 
-**Morning:** [Introduction to R and RStudio]() (Download the [Rmarkdown file]() for this session)  
+**Morning:** [Introduction to R and RStudio](docs/Session_1-Introduction.html) (Download the [Rmarkdown file](docs/Session_1-Introduction.Rmd) for this session)  
 **Afternoon:** Q&A Session with Nick Riches
 
 ### Day 2:

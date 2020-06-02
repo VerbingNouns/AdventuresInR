@@ -1,5 +1,5 @@
 ---
-title: "Session_4-AnalysingData"
+title: "Session_3-AnalysingData"
 output: 
   html_notebook:
     highlight: pygments
@@ -143,7 +143,7 @@ Can you check whether there is a correlation between the `Sepal.Length` and the 
 
 ### Using the package `corrplot`
 
-Above, we did a correlation test on two predictors. We run multiple correlations on multiple predictors. You can get a table, and a plot. (see here http://www.sthda.com/english/wiki/visualize-correlation-matrix-using-correlogram)
+Above, we did a correlation test on two predictors. We run multiple correlations on multiple predictors. 
 
 #### Correlations
 

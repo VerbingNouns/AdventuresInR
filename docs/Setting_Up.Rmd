@@ -12,7 +12,7 @@ output:
 
 Congratulations! You have downloaded [R](https://www.stats.bris.ac.uk/R/) and [RStudio](https://www.rstudio.com/products/rstudio/download/#download).
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. If you are reading this on the workshop website, you are looking at the HTML (web) version. Make sure you have the `.Rmd` file as well, which you should have received via email.
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. If you are reading this on the workshop website, you are looking at the HTML (web) version. Make sure you have the `.Rmd` file as well, which you can download by right-clicking [here](Setting_Up.Rmd) and saving as `Setting_Up.Rmd`.
 
 The HTML version can serve as an easy-to-read copy, but you can only run the code if you open the `.Rmd` file using RStudio.
 
@@ -37,6 +37,7 @@ Execute this code now, then save this file (`Cmd+s` on Mac, `CTRL+s` on Windows)
 ```{r}
 plot(cars)
 ```
+
 ![](images/plot_cars.png)
 
 This graph was generated using some data that comes pre-loaded with the basic R software. However, to use R you will need to:
@@ -55,13 +56,13 @@ First, make sure you are connected to the internet. Install the following packag
 
 ````{r}
 install.packages("tidyverse")
-install.packages("lme4")
-install.packages("tm")
+install.packages("knitr")
+install.packages("cowplot")
 install.packages("ordinal")
-install.packages("SnowballC")
-install.packages("psycho")
-install.packages("reshape2")
+install.packages("broom")
+install.packages("emmeans")
 install.packages("Hmisc")
+install.packages("corrplot")
 ````
 
 If you get an error or if nothing seems to be happening, you may need to respond to the program like below (type `yes` and hit `Enter`).
@@ -84,7 +85,7 @@ library(ggplot2)
 
 If this code was successful, it will appear as though nothing happened. To show you what **an error** looks like, run the following code.
 
-```{r}
+```{r, eval=FALSE}
 library(Ggplot2)
 ```
 
@@ -107,4 +108,4 @@ If everything has gone to plan, you should now see a second graph that looks ver
 
 If you run into any trouble before the workshop, *please* email one of the instructors in advance.  
 
-<big>**See you soon!**</big>
+> **See you soon!**
