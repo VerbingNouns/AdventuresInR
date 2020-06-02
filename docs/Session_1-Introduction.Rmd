@@ -335,10 +335,10 @@ We can use the menu in Rstudio: `File > Import dataset`. You can do this to impo
 
 ## Reading data frames from files using code
 
-However, rather than use the menu, it's much better to use actual code, as this will automate the process. Let's import a dataset on World Happiness Ratings, by country. The files are [WHR_2017.xlsx](WHR_2017.xlsx), [WHR_2017.sav](WHR_2017.sav), and [WHR_2017.csv](WHR_2017.csv). Alternatively you can actually download the data set straight from the URL (below)
+However, rather than use the menu, it's much better to use actual code, as this will automate the process. Let's import a dataset on World Happiness Report (2017), by country. The files are [WHR_2017.xlsx](WHR_2017.xlsx), [WHR_2017.sav](WHR_2017.sav), and [WHR_2017.csv](WHR_2017.csv). Alternatively you can actually download the data set straight from the URL (below)
 
 
-```{r}
+```{r, message = FALSE}
 
 pacman::p_load(tidyverse)
 pacman::p_load(haven)
@@ -508,7 +508,7 @@ df %>%
 Note loops and if-then statements are quite verbose, and there is almost always a neater and much shorter alternatives. However, I think they are useful procedures for the relative beginner.
 
 Here is a much easier way to create the same variable
-```{r results = "hide"}
+```{r, message = FALSE}
 
 df <- read_csv("WHR_2017.csv")
 
@@ -530,7 +530,7 @@ Try to identify countries where both the GDP per capita and trust in the governm
 
 Whenever you run an analysis in R and save that to an object, the object has an internal structure. To demonstrate this, let's do a simple regression using the mtcars dataset:
 
-```{r}
+```{r, message = FALSE}
 
 df <- read.csv("WHR_2017.csv")
 
@@ -571,76 +571,54 @@ It is useful to be able to refer to subcomponents of an object so that we can in
 
 ## EX 6: Let's put it all together!!!
 
-(1) Download data for COVID deaths from the World Health Organisation
-(2) Download population data from the UN
-(3) Calculate COVID infection rate per head of population
-(4) Merge this data with World Health Report data.
-(5) Is there any relationship between the results of the WHR survey, e.g. GDP per capita, and COVID infection rates?
+(1) Download the data for [life expectancy by country](WHO_life_expectancy.csv)
+(2) The data covers many years. Select the most recent year.
+(3) Merge the data with the "WHR" data (you will need to merge using the "country" variable)
+(4) Draw plots of (a) life expectancy against GDP per capita, (b) life expectancy against family values
 
-```{r with errors, eval = FALSE}
+Once you get stuck have a look at the first code chunk below. This contains the solution but with pesky errors added! See if you can sort out the errors.
+
+```{r with errors, eval = FALSE, message = FALSE}
 
 whr <- read_csv("WHR_2017.csv")
 
-cov <- read_cvs("WHO-COVID-19-global-data.csv") # Downloaded from; https://covid19.who.int/?gclid=CjwKCAjw8df2BRA3EiwAvfZWaJP1dju-Nt3omCCK7ZtdCtgwoBJOVKD1vC7suVRM1HSVy_0vZHzlDRoCRlkQAvD_BwE
+le <- read_csv("WHO_life_expectancy.csv")
 
-pop <- read_csv("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv")
-
-cov$date <- as.Date(cov$Date_reported) # NB Date_reported is in a weird format. This converts it to a format which is easier to process
-
-whr %>% 
-  rename(Country = country) -> # In the "whr" dataset, the variable "country" begins with a lower case C. In order to adequately merge, the key variables need to have the same name
+whr %>% # NB we need to ensure that the "country" variable has exactly the same name in both datasets
+  rename(country = Country) ->
   whr
 
-pop %>%  
-  rename(Country = Location) %>% # creates "Country" variable in order to merge data
-  filter(Time = 2020 & Variant == "No change") %>% 
-  merge(cov) %>% 
-  select(date == ("2020-06-01")) %>% 
-  mutate(cumulative_cases_per_million = (Cumulative_cases / PopTotal) * 1000000) %>% 
+le %>% 
+  select(Year = 2015) %>% 
   merge(whr) %>% 
   df
 
-
-plot(df$cumulative_cases_per_million, df$trust_in_government)
-
-plot(df$cumulative_cases_per_million, df$gdp_per_capita)
+plot(df$`Life expectancy`, df$GDP)
+plot(df$`Life expectancy`, df$family)
 
 ```
 
+The code in this chunk shows the solution!
 
-```{r Correct!}
+```{r Correct!, message = FALSE}
 
 whr <- read_csv("WHR_2017.csv")
 
-cov <- read_csv("WHO-COVID-19-global-data.csv") # Downloaded from; https://covid19.who.int/?gclid=CjwKCAjw8df2BRA3EiwAvfZWaJP1dju-Nt3omCCK7ZtdCtgwoBJOVKD1vC7suVRM1HSVy_0vZHzlDRoCRlkQAvD_BwE
-
-pop <- read_csv("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv")
-
-cov$date <- as.Date(cov$Date_reported)
+le <- read_csv("WHO_life_expectancy.csv")
 
 whr %>% 
   rename(Country = country) ->
   whr
 
-pop %>%  
-  rename(Country = Location) %>% 
-  filter(Time == 2020 & Variant == "No change") %>% 
-  merge(cov) %>% 
-  filter(date == ("2020-06-01")) %>% 
-  mutate(cumulative_cases_per_million = (Cumulative_cases / PopTotal) * 1000000) %>% 
+le %>% 
+  filter(Year == 2015) %>% 
   merge(whr) ->
   df
 
-
-plot(df$cumulative_cases_per_million, df$trust_in_government)
-
-plot(df$cumulative_cases_per_million, df$gdp_per_capita)
+plot(df$`Life expectancy`, df$GDP)
+plot(df$`Life expectancy`, df$family)
 
 ```
-
-# R Markdown
-
-R markdown is a special format (.Rmd) which contains both R code, and text. It enables you to produce your report and your analysis as a *single document*.
 
 
 
