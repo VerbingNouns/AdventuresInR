@@ -15,7 +15,7 @@ output:
 # Loading packages 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 ## Use the code below to check if you have all required packages installed. If some are not installed already, the code below will install these. If you have all packages installed, then you could load them with the second code.
-requiredPackages = c('tidyverse', 'ordinal', 'broom', 'emmeans', 'knitr', 'Hmisc', 'corrplot', 'lme4', 'lmerTest')
+requiredPackages = c('tidyverse', 'ordinal', 'broom', 'emmeans', 'knitr', 'Hmisc', 'corrplot', 'psycho', 'PresenceAbsence', 'lme4', 'lmerTest')
 for(p in requiredPackages){
   if(!require(p,character.only = TRUE)) install.packages(p)
   library(p,character.only = TRUE)
@@ -31,7 +31,19 @@ It is important to know the class of the outcome before doing any pre-data analy
 
 2. `Categorical` (Unordered): Observations for two or more categories. As an example, we can have gender of a speaker (male or female); responses to a True vs False perception tests; Colour (unordered) categorisation, e.g., red, blue, yellow, orange, etc.. For these we can use a Generalised Linear Model (binomial or multinomial) or a simple chi-square test. Count data are numbers related to a category. But these should be analysed using a poisson logistic regression
 
-3. `Categorical` (Ordered): When you run a rating experiment, where the outcome is either `numeric` (i.e., 1, 2, 3, 4, 5) or `categories` (i.e., disagree, neutral, agree). The `numeric` option is NOT a true number as for the participant, these are categories. Cumulative Logit models (or Generalised Linear Model with a cumulative function) are used. The mean is meaningless here, and the median is a preferred descriptive statistic  
+3. `Categorical` (Ordered): When you run a rating experiment, where the outcome is either `numeric` (i.e., 1, 2, 3, 4, 5) or `categories` (i.e., disagree, neutral, agree). The `numeric` option is NOT a true number as for the participant, these are categories. Cumulative Logit models (or Generalised Linear Model with a cumulative function) are used. The mean is meaningless here, and the median is a preferred descriptive statistic.
+
+The content will be split into 5 sections. Some of you will only ever look at some of these, while others may need to use all. Look at the section that works best for your data.
+
+1. Pre-data analyses: We will look at summaries, plotting, correlations, checking normality of distribution and homogeneity of variance (for t-tests)
+
+2. Statistical Analyses: from t-test and ANOVA, to Linear Models: model estimation, understanding coefficients, residuals, and predictions
+
+3. We then move to Generalised Linear Models, with Logistic Regression (with a binomial categorical outcome) and touch upon Signal Detection Theory for estimating accuracy, biases, with sensitivity and specificity measures.
+
+4. Dealing with rating data using Generalised Linear Models, with a Cumulative Logit function
+
+5. Linear Mixed effects Models: Introduction to random effects and how to deal with these. 
 
 
 # Pre-data analsyes
@@ -258,7 +270,7 @@ car::leveneTest(Sepal.Length ~ Species, data = irisSub)
 
 In all cases, the statistically significant result indicates that there is evidence that the variance of two levels of the factor `Species` is statistically significant; i.e., the variances are not equal. This is important as we will use this in our t-test later on
 
-# Statistical analyses (or inferential statistics)
+# Linear Models
 
 Up to now, we have looked at descriptive statistics, and evaluated summaries, correlations in the data (with p values), and checked the normality of distribution of our data.
 
@@ -553,7 +565,7 @@ How to interpret the output? Discuss with your neighbour and share with the grou
 
 Hint... Look at the emmeans values for each level of our factor "Species" and the contrasts. 
 
-## What about the other outcomes?
+## Other outcomes?
 
 So far, we only looked at "Sepal.Length". What about the other outcomes? how informative are they? Do we have statistical difference between the three levels of our predictor? You can do this in your spare time.
 
@@ -561,7 +573,7 @@ So far, we only looked at "Sepal.Length". What about the other outcomes? how inf
 
 We have so far looked at the Linear Model. The underlying assumption about linear models is that we have a normal (Gaussian) distribution. This is the model to be used when we have a `numeric` outcome. What if our outcome is not numeric? What if we have two categories, i.e., black vs white? correct vs incorrect? yes vs no? These are categorical **binary** outcome. We look in the next section at Logistic Regression
 
-# From Linear to Logistic models
+# Generalised Linear Models
 
 Here we will look at an example when the outcome is binary. This simulated data is structured as follows. We asked one participant to listen to 165 sentences, and to judge whether these are "grammatical" or "ungrammatical". There were 105 sentences that were "grammatical" and 60 "ungrammatical". This fictitious example can apply in any other situation. Let's think Geography: 165 lands: 105 "flat" and 60 "non-flat", etc. This applies to any case where you need to "categorise" the outcome into two groups. 
 
@@ -642,6 +654,128 @@ grammatical %>%
     scale_x_discrete(limits = c("Ungrammatical", "Grammatical"))
 ```
 
+## Accuracy and Signal Detection Theory
+
+### Rationale
+
+We are generally interested in performance, i.e., whether the we have "accurately" categorised the outcome or not and at the same time want to evaluate our biases in responses. When deciding on categories, we are usually biased in our selection. 
+
+Let's ask the question: How many of you have a Mac laptop and how many a Windows laptop? For those with a Mac, what was the main reason for choosing it? Are you biased in anyway by your decision? 
+
+To correct for these biases, we use some variants from Signal Detection Theory to obtain the true estimates without being influenced by the biases. 
+
+### Running stats
+
+Let's do some stats on this 
+
+|  | Yes | No | Total |
+|----------------------------|--------------------|------------------|------------------|
+| Grammatical (Yes Actual) | TP = 100 | FN = 5 | (Yes Actual) 105 |
+| Ungrammatical (No Actual)  | FP = 10 | TN = 50 | (No Actual) 60 |
+| Total | (Yes Response) 110 | (No Response) 55 | 165 |
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+grammatical <- grammatical %>% 
+  mutate(response = factor(response, levels = c("yes", "no")),
+         grammaticality = factor(grammaticality, levels = c("grammatical", "ungrammatical")))
+
+## TP = True Positive (Hit); FP = False Positive; FN = False Negative; TN = True Negative
+
+
+TP <- nrow(grammatical %>% 
+             filter(grammaticality == "grammatical" &
+                      response == "yes"))
+FN <- nrow(grammatical %>% 
+             filter(grammaticality == "grammatical" &
+                      response == "no"))
+FP <- nrow(grammatical %>% 
+             filter(grammaticality == "ungrammatical" &
+                      response == "yes"))
+TN <- nrow(grammatical %>% 
+             filter(grammaticality == "ungrammatical" &
+                      response == "no"))
+TP
+FN
+FP
+TN
+
+Total <- nrow(grammatical)
+Total
+(TP+TN)/Total # accuracy
+(FP+FN)/Total # error, also 1-accuracy
+
+# When stimulus = yes, how many times response = yes?
+TP/(TP+FN) # also True Positive Rate or Specificity
+
+# When stimulus = no, how many times response = yes?
+FP/(FP+TN) # False Positive Rate, 
+
+# When stimulus = no, how many times response = no?
+TN/(FP+TN) # True Negative Rate or Sensitivity 
+
+# When subject responds "yes" how many times is (s)he correct?
+TP/(TP+FP) # precision
+
+# getting dprime (or the sensetivity index); beta (bias criterion, 0-1, lower=increase in "yes"); Aprime (estimate of discriminability, 0-1, 1=good discrimination; 0 at chance); bppd (b prime prime d, -1 to 1; 0 = no bias, negative = tendency to respond "yes", positive = tendency to respond "no"); c (index of bias, equals to SD)
+#(see also https://www.r-bloggers.com/compute-signal-detection-theory-indices-with-r/amp/) 
+psycho::dprime(TP, FP, FN, TN, 
+               n_targets = TP+FN, 
+               n_distractors = FP+TN,
+               adjust=F)
+
+```
+
+The most important from above, is d-prime. This is modelling the difference between the rate of "True Positive" responses and "False Positive" responses in standard unit (or z-scores). The formula can be written as:
+
+`d' (d prime) = Z(True Positive Rate) - Z(False Positive Rate)`
+
+### GLM as a classification tool
+
+The code below demonstrates the links between our GLM model and what we had obtained above from SDT. The predictions' table shows that our GLM was successful at obtaining prediction that are identical to our initial data setup. Look at the table here and the table above. Once we have created our table of outcome, we can compute percent correct, the specificity, the sensitivity, the Kappa score, etc.. this yields the actual value with the SD that is related to variations in responses. 
+
+```{r}
+## predict(mdl.glm)>0.5 is identical to 
+## predict(glm(response~grammaticality,data=grammatical,family = binomial),type="response")
+grammatical$response <- relevel(grammatical$response, "yes")
+grammatical$grammaticality <- relevel(grammatical$grammaticality, "grammatical")
+mdl.glm.C <- glm(response ~ grammaticality, data = grammatical,family = binomial)
+tbl.glm <- table(grammatical$response, predict(mdl.glm.C, type = "response")>0.5)
+colnames(tbl.glm) <- c("grammatical", "ungrammatical")
+tbl.glm
+PresenceAbsence::pcc(tbl.glm)
+PresenceAbsence::specificity(tbl.glm)
+PresenceAbsence::sensitivity(tbl.glm)
+###etc..
+```
+
+If you look at the results from SDT above, these results are the same as
+the following
+
+Accuracy: (TP+TN)/Total (`r (TP+TN)/Total`) 
+
+True Positive Rate (or Specificity) TP/(TP+FN) (`r TP/(TP+FN)`)
+
+True Negative Rate (or Sensitivity) TN/(FP+TN) (`r TN/(FP+TN)`) 
+
+### GLM and d prime
+
+The values obtained here match those obtained from SDT. For d prime, the difference stems from the use of the logit variant of the Binomial family. By using a probit variant, one obtains the same values ([see here](https://stats.idre.ucla.edu/r/dae/probit-regression/) for more details). A probit variant models the z-score differences in the outcome and is evaluated in change in 1-standard unit. This is modelling the change from "ungrammatical" "no" responses into "grammatical" "yes" responses in z-scores. The same conceptual underpinnings of d-prime from Signal Detection Theory.
+
+```{r}
+## d prime
+psycho::dprime(TP, FP, FN, TN, 
+               n_targets = TP+FN, 
+               n_distractors = FP+TN,
+               adjust=F)$dprime
+
+## GLM with probit
+coef(glm(response ~ grammaticality, data = grammatical, family = binomial(probit)))[2]
+
+```
+
+
+
+
 ## GLM: Other distributions
 
 If your data does not fit a binomial distribution, and is a multinomial (i.e., three or more response categories) or poisson (count data), then you need to use the glm function with a specific family function. 
@@ -660,7 +794,8 @@ If your data does not fit a binomial distribution, and is a multinomial (i.e., t
 ```
 
 
-# Cumulative Link Models
+
+# Cumulative Logit Link Models
 
 These models work perfectly with rating data. Ratings are inherently ordered, 1, 2, ... n, and expect to observe an increase (or decrease) in overall ratings from 1 to n. To demonstrate this, we will use an example using the package "ordinal". Data were from a rating experiment where six participants rated the percept of nasality in the production of particular consonants in Arabic. The data came from nine producing subjects. The ratings were from 1 to 5. This example can apply to any study, e.g., rating grammaticality of sentences, rating how positive the sentiments are in a article, interview responses, etc.
 
@@ -726,7 +861,7 @@ legend(par('usr')[2], par('usr')[4], bty='n', xpd=NA,lty=1, col=c("black", "red"
 
 ```
 
-# From Linear to Mixed models. Why random effects matter
+# Linear Mixed-effects Models. Why random effects matter
 
 Let's generate a new dataframe that we will use later on for our mixed models
 
