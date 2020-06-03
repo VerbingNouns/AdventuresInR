@@ -63,5 +63,9 @@ broom
 emmeans
 Hmisc
 corrplot
+psycho
+PresenceAbsence
+lme4
+lmerTest
 ```
 
