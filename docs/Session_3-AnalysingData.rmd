@@ -15,7 +15,7 @@ output:
 # Loading packages 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 ## Use the code below to check if you have all required packages installed. If some are not installed already, the code below will install these. If you have all packages installed, then you could load them with the second code.
-requiredPackages = c('tidyverse', 'ordinal', 'broom', 'emmeans', 'knitr', 'Hmisc', 'corrplot')
+requiredPackages = c('tidyverse', 'ordinal', 'broom', 'emmeans', 'knitr', 'Hmisc', 'corrplot', 'lme4', 'lmerTest')
 for(p in requiredPackages){
   if(!require(p,character.only = TRUE)) install.packages(p)
   library(p,character.only = TRUE)
@@ -29,9 +29,9 @@ It is important to know the class of the outcome before doing any pre-data analy
 
 1. `Numeric`: As an example, we have length/width of leaf; height of mountain; fundamental frequency of the voice; etc. These are `true` numbers and we can use summaries, t-tests, linear models, etc. 
 
-2. `Categorical` (Unordered): Observations for two or more categories. As an example, we can have gender of a speaker (male or female); responses to a True vs False perception tests; Colour (unordered) categorisation, e.g., red, blue, yellow, orange, etc.. For these we can use a Generalised Linear Model (binomial or multinomial) or a simple chi-square test
+2. `Categorical` (Unordered): Observations for two or more categories. As an example, we can have gender of a speaker (male or female); responses to a True vs False perception tests; Colour (unordered) categorisation, e.g., red, blue, yellow, orange, etc.. For these we can use a Generalised Linear Model (binomial or multinomial) or a simple chi-square test. Count data are numbers related to a category. But these should be analysed using a poisson logistic regression
 
-3. `Categorical` (Ordered): When you run a rating experiment, where the outcome is either `numeric` (i.e., 1, 2, 3, 4, 5) or `categories` (i.e., disagree, neutral, agree). The `numeric` option are NOT true numbers as for the participant, these are categories. Cumulative Logit models (or Generalised Linear Model with a cumulative function) are used. The mean is meaningless here, and the median is a preferred descriptive statistic  
+3. `Categorical` (Ordered): When you run a rating experiment, where the outcome is either `numeric` (i.e., 1, 2, 3, 4, 5) or `categories` (i.e., disagree, neutral, agree). The `numeric` option is NOT a true number as for the participant, these are categories. Cumulative Logit models (or Generalised Linear Model with a cumulative function) are used. The mean is meaningless here, and the median is a preferred descriptive statistic  
 
 
 # Pre-data analsyes
@@ -726,4 +726,210 @@ legend(par('usr')[2], par('usr')[4], bty='n', xpd=NA,lty=1, col=c("black", "red"
 
 ```
 
+# From Linear to Mixed models. Why random effects matter
 
+Let's generate a new dataframe that we will use later on for our mixed models
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+## Courtesy of Bodo Winter
+set.seed(666)
+#we create 6 subjects
+subjects <- paste0('S', 1:6)
+#here we add repetitions within speakers
+subjects <- rep(subjects, each = 20)
+items <- paste0('Item', 1:20)
+#below repeats
+items <- rep(items, 6)
+#below is to generate random numbers that are log values
+logFreq <- round(rexp(20)*5, 2)
+#below we are repeating the logFreq 6 times to fit with the number of speakers and items
+logFreq <- rep(logFreq, 6)
+xdf <- data.frame(subjects, items, logFreq)
+#below removes the individual variables we had created because they are already in the dataframe
+rm(subjects, items, logFreq)
+
+xdf$Intercept <- 300
+submeans <- rep(rnorm(6, sd = 40), 20)
+#sort make the means for each subject is the same...
+submeans <- sort(submeans)
+xdf$submeans <- submeans
+#we create the same thing for items... we allow the items mean to vary between words...
+itsmeans <- rep(rnorm(20, sd = 20), 6)
+xdf$itsmeans <- itsmeans
+xdf$error <- rnorm(120, sd = 20)
+#here we create an effect column,  
+#here for each logFreq, we have a decrease of -5 of that particular logFreq 
+xdf$effect <- -5 * xdf$logFreq
+
+xdf$dur <- xdf$Intercept + xdf$submeans + xdf$itsmeans + xdf$error + xdf$effect
+#below is to subset the data and get only a few columns.. the -c(4:8) removes the columns 4 to 8..
+xreal <- xdf[,-c(4:8)]
+head(xreal)
+rm(xdf, submeans, itsmeans)
+```
+
+## Plots
+Let's start by doing a correlation test and plotting the data. Our results show that there is a negative correlation between duration and LogFrequency, and the plot shows this decrease. 
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+corrMixed <- as.matrix(xreal[-c(1:2)]) %>% 
+  rcorr(type="pearson")
+print(corrMixed)
+corrplot(corrMixed$r, method = "circle", type = "upper", tl.srt = 45,
+         addCoef.col = "black", diag = FALSE,
+         p.mat = corrMixed$p, sig.level = 0.05)
+
+
+
+ggplot.xreal <- xreal %>% 
+  ggplot(aes(x = logFreq, y = dur)) +
+  geom_point()+ theme_bw(base_size = 20) +
+  labs(y = "Duration", x = "Frequency (Log)") +
+  geom_smooth(method = lm, se=F)
+ggplot.xreal
+```
+
+
+## Linear model
+
+Let's run a simple linear model on the data. As we can see below, there are some issues with the "simple" linear model: we had set our SD for subjects to be 40, but this was picked up as 120 (see histogram of residuals). The QQ Plot is not "normal". 
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+mdl.lm.xreal <- lm(dur ~ logFreq, data = xreal)
+summary(mdl.lm.xreal)
+hist(residuals(mdl.lm.xreal))
+qqnorm(residuals(mdl.lm.xreal)); qqline(residuals(mdl.lm.xreal))
+plot(fitted(mdl.lm.xreal), residuals(mdl.lm.xreal), cex = 4)
+```
+
+## Linear Mixed Model
+
+Our Linear Mixed effects Model will take into account the random effects we added and also our model specifications. We use a Maximum Likelihood estimate (REML = FALSE) as this is what we will use for model comparison. The Linear Mixed Model is reflecting our model specifications The SD of our subjects is picked up correctly. The model results are "almost" the same as our linear model above. The coefficient for the "Intercept" is at 337.973 and the coefficient for LogFrequency is at -5.460. This indicates that for each unit of increase in the LogFrequency, there is a decrease by 5.460 (ms).
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+mdl.lmer.xreal <- lmer(dur ~ logFreq  +(1|subjects) + (1|items), data = xreal, REML = FALSE)
+summary(mdl.lmer.xreal)
+hist(residuals(mdl.lmer.xreal))
+qqnorm(residuals(mdl.lmer.xreal)); qqline(residuals(mdl.lmer.xreal))
+plot(fitted(mdl.lmer.xreal), residuals(mdl.lmer.xreal), cex = 4)
+```
+
+## Our second Mixed model
+
+This second model add a by-subject random slope. Random slopes allow for the variation that exists in the random effects to be taken into account. An intercept only model provides an averaged values to our participants.
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+mdl.lmer.xreal.2 <- lmer(dur ~ logFreq + (logFreq|subjects) + (1|items), data = xreal, REML = FALSE)
+summary(mdl.lmer.xreal.2)
+hist(residuals(mdl.lmer.xreal.2))
+qqnorm(residuals(mdl.lmer.xreal.2)); qqline(residuals(mdl.lmer.xreal.2))
+plot(fitted(mdl.lmer.xreal.2), residuals(mdl.lmer.xreal.2), cex = 4)
+```
+
+## Model comparison
+
+But where are our p values? The lme4 developers decided not to include p values due to various issues with estimating df. What we can do instead is to compare models. We need to create a null model to allow for significance testing. As expected our predictor is significantly contributing to the difference. 
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+mdl.lmer.xreal.Null <- lmer(dur ~ 1 + (logFreq|subjects) + (1|items), data = xreal, REML = FALSE)
+anova(mdl.lmer.xreal.Null, mdl.lmer.xreal.2)
+```
+
+Also, do we really need random slopes? From the result below, we don't seem to need random slopes at all, given that adding random slopes does not improve the model fit. I always recommend testing this. Most of the time I keep random slopes.
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+anova(mdl.lmer.xreal, mdl.lmer.xreal.2)
+```
+
+But if you are really (really!!!) obsessed by p values, then you can also use lmerTest. BUT use after comparing models to evaluate contribution of predictors
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+mdl.lmer.xreal.lmerTest <- lmer(dur ~ logFreq + (logFreq|subjects) + (1|items), data = xreal, REML = TRUE)
+summary(mdl.lmer.xreal.lmerTest)
+detach("package:lmerTest", unload = TRUE)
+```
+
+
+## Our final Mixed model
+
+Our final model uses REML (or Restricted Maximum Likelihood Estimate of Variance Component) to estimate the model. 
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+mdl.lmer.xreal.Full <- lmer(dur ~ logFreq + (logFreq|subjects) + (1|items), data = xreal, REML = TRUE)
+summary(mdl.lmer.xreal.Full)
+anova(mdl.lmer.xreal.Full)
+hist(residuals(mdl.lmer.xreal.Full))
+qqnorm(residuals(mdl.lmer.xreal.Full)); qqline(residuals(mdl.lmer.xreal.Full))
+plot(fitted(mdl.lmer.xreal.Full), residuals(mdl.lmer.xreal.Full), cex = 4)
+```
+
+
+## Dissecting the model
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+coef(mdl.lmer.xreal.Full)
+fixef(mdl.lmer.xreal.Full)
+fixef(mdl.lmer.xreal.Full)[1]
+fixef(mdl.lmer.xreal.Full)[2]
+
+coef(mdl.lmer.xreal.Full)$`subjects`[1]
+coef(mdl.lmer.xreal.Full)$`subjects`[2]
+
+coef(mdl.lmer.xreal.Full)$`items`[1]
+coef(mdl.lmer.xreal.Full)$`items`[2]
+
+```
+
+## Using predictions from our model
+In general, I use the prediction from my final model in any plots. To generate this, we can use the following
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+xreal$Pred_Dur <- predict(lmer(dur ~ logFreq + (logFreq|subjects) + (1|items), data = xreal, REML = TRUE))
+ggplot.xreal.Pred <- xreal %>% 
+  ggplot(aes(x = logFreq, y = Pred_Dur)) +
+  geom_point() + theme_bw(base_size = 20) +
+  labs(y = "Duration", x = "Frequency (Log)", title = "Predicted") +
+  geom_smooth(method = lm, se = F) + coord_cartesian(ylim = c(200,450))
+ggplot.xreal.Pred
+## original plot
+ggplot.xreal.Original <- xreal %>% 
+  ggplot(aes(x = logFreq , y = dur)) +
+  geom_point() + theme_bw(base_size = 20)+
+  labs(y = "Duration", x = "Frequency (Log)", title = "Original")+
+  geom_smooth(method = lm, se = F) + coord_cartesian(ylim = c(200,450))
+ggplot.xreal.Original
+```
+
+## GLMM and CLMM
+
+The code above was using a Linear Mixed Effects Modelling. The outcome was a numeric object. In some cases (as we have seen above), we may have: 
+
+1. Binary outcome (binomial)
+2. Count data (poisson), 
+3. Multi-category outcome (multinomial)
+4. Rating data (cumulative function)
+
+The code below gives you an idea of how to specify these models
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+
+## Binomial family
+## lme4::glmer(outcome~predictor(s)+(1|subject)+(1|items)..., data=data, family=binomial)
+
+## Poisson family
+## lme4::glmer(outcome~predictor(s)+(1|subject)+(1|items)..., data=data, family=poisson)
+
+## Multinomial family
+## a bit complicated as tehre is a need to use Bayesian approaches, see e.g., 
+## glmmADMB
+## mixcat
+## MCMCglmm
+## see https://gist.github.com/casallas/8263818
+
+## Rating data, use following
+## ordinal::clmm(outcome~predictor(s)+(1|subject)+(1|items)..., data=data)
+
+
+## Remember to test for random effects and whether slopes are needed.
+
+```
