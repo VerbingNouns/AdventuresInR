@@ -16,92 +16,115 @@ output:
 
 Tidyverse is a package, or a set of add-on tools, that you can optionally use in R to easily and clearly process and visualise your data. In the tidyverse, there are a number of included packages. You do not need to use them all, nor do you need to load them all, but for simplicity's sake, it's easier to load the whole thing and then not worry about it.
 
-```{r}
-#install.packages(c("knitr","tidyverse"))
-library(tidyverse)
+```{r import libraries}
+## Packages required for this lesson:
+#install.packages(c("knitr","tidyverse","cowplot"))
+library(tidyverse) # Rstudio should prompt you if a package is required to run a notebook but isn't installed.
 ```
 
-How would you write the base R function `head(quakes)`?
+## Quick recap
 
-```{r}
+- `%>%` is called a "pipe"  
+- It passes the previous line into the data argument of the next line  
+- It does not save any changes after output  
+
+For our examples for now, we'll use a built-in dataset called `quakes`.
+
+```{r comparison example}
+# An example as a reminder
+str(quakes) # base R code
+
+quakes %>% str() # tidy R code
+```
+
+
+How would you write the base R function `head(quakes)` using `tidyverse`?
+
+```{r quick response}
+# Check it here, then type your answer into the chat!
 
 ```
 
 The verb `count()` counts how many attestations there are of each level in the specified column.
 
 How many attestations of each type of `mag` in `quakes`?
-```{r}
-
-```
-
-What does `quakes` look like?
-```{r}
+```{r count}
+# using `count()`
 
 ```
 
 
-# Processing into tables
+# Processing data
 
-Before we start learning anything about our data and results, we need to process and organise the data.
+Before we start learning anything about the shape of our data and statistical results, we often need to process and organise the data.
+
+## Filter
+
+If we only want to look at magnitudes between 4.5 and 4.9 from `quakes`, we can filter the dataset (which is like subsetting):
+```{r filter}
+# recap from last session
+
+```
 
 ## Add columns
 
 How can you make a new column?
-```{r}
+```{r new column}
+# `mutate` just means "create"
 
 ```
 
 Duplicate `mag` into `magFct` for `quakes`:
-```{r}
+```{r duplicate column}
+# `mutate`
 
 ```
 
 Create a column in `quakes` that calculates the `depth` of the quake divided by the number of `stations` reporting:
-```{r}
+```{r calculated column}
+# `mutate`
 
 ```
 
-### Case when
+## Logical operators
 
-Tidyverse tries to reduce the need for "for loops". Instead of going line by line through a dataset to determine what contingent behaviour to perform. The for-loop behaviour is time and energy intensive on large datasets. That's why `case_when` is so powerful.
+These will be useful throughout your work in R, but also pretty much any other programming language you encounter:
+
+- `==` equivalent to  
+- `>` greater than  
+- `<` less than  
+- `>=` greater than or equal to  
+- `<=` less than or equal to  
+- `!=` NOT equivalent to ("bang-equals")  
+- `&` and  
+
+## Case when
+
+Tidyverse tries to reduce the need for "for loops". Instead of going line by line through a dataset to determine what contingent behaviour to perform, `case_when` simplifies this. The for-loop behaviour is time and energy intensive on large datasets. That's why `case_when` is so simple and yet so powerful.
 
 Here's an example of how one might create a column that translates the values in `mag` in `quakes` to a word:
-```{r}
-# == equivalent to
-# > greater than
-# < less than
-# >= greater or equal
-# <= less or equal
-# != NOT equivalent to
-# & and
-# | or
-
-quakes %>% 
-  mutate(magText = case_when(mag<"5" ~ "four",
-                             mag>="6" ~ "six",
+```{r case_when example}
+quakes %>% #
+  mutate(magText = case_when(mag <  "5" ~ "four",
+                             mag >= "6" ~ "six",
                              TRUE ~ "five"))
 ```
 
 
 Now, how would you create a column in `quakes` that groups magnitude into "low", "medium" and "high"? What if we want a fourth category?
-```{r}
+```{r low-med-high}
+# `mutate` and `case_when`
 
 ```
 
 We can also use this to perform other sorts of contingent calculations.
 
 Create a column that adds 10 to `long` when it is above 175 and subtracts 10 from `long when it is below 175:
-```{r}
+```{r group work 1}
+# take 5 minutes to fill in the ??? with values to accomplish the task
 quakes %>% 
-  mutate(???  = case_when(??? ~ ???,
-                          ??? ~ ???))
-```
-
-## Filter
-
-If we only want to look at magnitudes between 4.5 and 4.9 from `quakes`, we can filter the dataset (which is like subsetting):
-```{r}
-
+  mutate(???  = case_when(??? ??? ??? ~ ???,
+                          ??? ??? ??? ~ ???))
 ```
 
 ## Group and summarise
@@ -111,23 +134,25 @@ What if we want to get aggregate values from our dataset, rather than looking at
 **`group_by`** is a verb that flags certain columns for operations down the line. **`summarise`** checks which columns are flagged and performs operations based on the permuations of values in those columns.
 
 What happens when we use `group_by` by itself?
-```{r}
+```{r group_by}
+# look at each step of the code by itself to understand what it is doing
 quakes %>% 
   group_by(mag)
 ```
 
 How many observations are there per "level" of magnitude?
-```{r}
+```{r summarise example}
+# using `summarise()`
 
 ```
 
 We can use `group_by` and `summarise` to do a lot more than just count:
-```{r}
+```{r fill in the blanks together}
 # mean value of `stations` for `groupMag` magnitudes
 quakes %>% 
-  mutate(groupMag = case_when(mag ??? ~ "low",
-                              mag ??? ~ "medium",
-                              mag ??? ~ "high") %>%
+  mutate(groupMag = case_when(mag ??? ??? ~ "low",
+                              mag ??? ??? ~ "medium",
+                              mag ??? ??? ~ "high") %>%
                     recode_factor(`low`="low",
                                   `medium`="medium",
                                   `high`="high")) %>% # this turns our character vector into an ordered factor
@@ -136,80 +161,194 @@ quakes %>%
 ```
 
 Let's create a table of the means, standard deviations, and standard errors for both stations reporting and depths grouped by magnitude:
-```{r}
-quakes %>%
-  group_by(???) %>%
-  summarise(number = ???,
-            stationMean = ???,
-            stationSD = ???,
-            stationSE = ???,
-            depthMean = ???,
-            depthSD = ???,
-            depthSE = ???)
+```{r summary stats table}
+# print a table of means, SDs and SEs
 ```
 
 (This is VERY useful for graphing and creating summary statistics tables!)
 
-# Processing Text
+## Join and reshape
 
-```{r}
-shake <- read.csv("../data/Shakespeare_data.csv", as.is = TRUE)
+One type of data processing that can be a huge hassle without a programming language is merging or joining datasets.
+
+In order to illustrate this, I will create two small datasets that imitate a survey.
+
+Here is the demographic data:
+```{r demographic data}
+participant <- c("John", "Simone", "Aaliyah", "Marcus")
+gender <- c("m", "f", "f", "m")
+age <- c(24, 18, 38, NA)
+
+demographics <- tibble(participant, gender, age)
+```
+Here is some quantitative survey data that also has some more qualitative responses:
+```{r survey questions}
+q1 <- c("yes", "yes", "yes", "no")
+q2 <- c(4, 3, 4, 5)
+q3 <- c(1, 4, 5, 2)
+q4 <- c("rarely", "often", "always", "sometimes")
+q5 <- c(1, 2, 1, 1)
+q6 <- c(3, 1, 5, 5)
+
+survey <- tibble(participant, q1, q2, q3, q4, q5, q6)
 ```
 
-What is the structure of this dataset?
-```{r}
-
-```
-
-## Select and transmute
-
-Select allows you to specify which columns to keep.
-```{r}
-
-```
-
-Or which to get rid of.
-```{r}
-
-```
-
-Transmute allows you to select which to keep while also renaming them.
-```{r}
-
-```
-
-## Unite and separate (text)
-
-The column `ActSceneLine` can be split into three columns to be more useful:
-```{r}
+Combine the two datasets using the column they have in common:
+```{r full_join}
+# save it as `mySurvey`
 
 ```
 
-Create a new column that combines the play's name with the act number:
-```{r}
-shake %>% 
-  separate(???) %>% 
-  mutate(???) %>% 
-  unite(???)
+Switch the rows and columns for only numeric survey questions:
+```{r pivot_longer}
+# save it as `mySurvey_long` with two new columns: `questions` and `responses`
+
+# look up `pivot_wider` for the function to reverse this
 ```
 
-More examples [here](https://tidyr.tidyverse.org/reference/separate.html).
+Why would you want to do this? It's not as easy for human eyes to read, but it's much easier to graph...
 
-## Tidytext: Unnest
+# Visualisation
 
-`unnest_tokens` automatically creates a new row for each word from a text column:
-```{r}
+In the `tidyverse`, the package for making elegant plots is called `ggplot2`. It works a lot like how pipes work, but since it was originally designed as a separate package, it uses `+` instead of `%>%`.
 
-```
-
-Combine this with our new column structure and remove unwanted columns:
-```{r}
+To begin, we need to specify what data we're using.
+```{r blank plot}
+# this will print a blank plot
 
 ```
 
-Filter this dataset so it's only spoken lines, no stage directions:
-```{r}
+Now we have to tell it what the axes are. Make the x-axis `participant` and the y-axis `responses`.
+```{r empty grid}
+# this will print a *mostly* blank plot...
+
+```
+What's the difference? Why isn't the data visible?
+
+Now let's tell it what kind of plot to make. This is called the plot's "geometry", abbreviated "geom".
+```{r simple boxplot}
+# make a box and whisker plot
 
 ```
 
+We can add colours automatically to add more information to the plot
+```{r colour as a dimension}
+# fill in plot with colour contigent on gender
 
+```
+
+Or maybe:
+```{r order by value}
+# mutate(participant = fct_reorder(participant, desc(responses)))
+
+```
+
+## Arrange plots
+
+To do this, we can use the library called `cowplot`.
+```{r import cowplot}
+library(cowplot)
+```
+
+`cowplot` allows us to put multiple graphs into one window. You could do this by hand, too, but why not make it easy on yourself?
+
+```{r cowplot, warning=FALSE, message=FALSE}
+# save the plot from before as 'p1' or any other variable name
+
+# save another plot as 'p2'
+mySurvey %>% 
+  mutate(participant = fct_reorder(participant, 
+                                   age)) %>% 
+  ggplot(aes(x = participant, y = age, fill=gender)) +
+  geom_bar(stat = "identity") -> p2
+
+# plot them side by side
+plot_grid(p1,p2)
+```
+
+
+# Challenge activities
+
+Work on these challenges on your own or in small groups this afternoon and we will go over possible solutions together at 16:00.
+
+## Exercise 1
+
+Plot where earthquakes occur using latitude and longitude columns in `quakes`.
+```{r ex1a, warning=FALSE, message=FALSE}
+# can you also add a title using the function `ggtitle()`?
+
+```
+
+Take this plot and colour points differently if they are below 175 and above 175. You will need to add a new column to the dataset that you pipe into your ggplot. Look at the chunk labeled `group work 1` for hints.
+```{r ex1b, warning=FALSE, message=FALSE}
+# use this line of code at the end of your code to choose the two colours you use
+# scale_colour_manual(values=c("red", "blue"))
+
+```
+
+## Exercise 2
+
+Using the code in the chunk labelled `low-med-high`, make a box and whisker plot of how deep each of your groups in `magText` are.
+```{r ex2}
+# play around with colour and labels, too!
+
+```
+
+## Exercise 3
+
+Read through the code below and make comments on it. Your comments should help you make sense of what it is doing. Use Google and the help documents (as well as anything else you can think of) to reverse-engineer the code.
+```{r ex3, message=FALSE, echo=TRUE}
+quakes %>%
+  group_by(mag) %>%
+  summarise(numberOfRows = n(),
+            stationMean = mean(stations),
+            stationSD = sd(stations),
+            stationSE = stationSD/sqrt(numberOfRows),
+            depthMean = mean(depth),
+            depthSD = sd(depth),
+            depthSE = depthSD/sqrt(numberOfRows)) %>%
+  ggplot(aes(x = mag)) +
+  geom_point(aes(y = stationMean),
+             colour="red")+
+  geom_path(aes(y = stationMean),
+            colour = "red")+
+  geom_ribbon(aes(ymin = stationMean - stationSD,
+                  ymax = stationMean + stationSD),
+              fill="red",
+              alpha=.2) +
+  geom_ribbon(aes(ymin = stationMean - stationSE,
+                  ymax = stationMean + stationSE),
+              fill = "red",
+              alpha = .5) +
+  geom_point(aes(y = depthMean),
+             colour = "blue")+
+  geom_path(aes(y = depthMean),
+            colour = "blue")+
+  geom_ribbon(aes(ymin = depthMean - depthSD,
+                  ymax = depthMean + depthSD),
+              fill = "blue",
+              alpha = .2) +
+  geom_ribbon(aes(ymin = depthMean - depthSE,
+                  ymax = depthMean + depthSE),
+              fill = "blue",
+              alpha = .5) +
+  theme_bw() + 
+  ylab("depth OR number of stations reporting") +
+  ggtitle("How does magnitude interact with depth and number of stations reporting?")
+```
+
+
+# Further resources
+
+1. [R for Data Science (R4DS)](https://r4ds.had.co.nz/) is a free book about using R and `tidyverse` to do all types of data science.
+
+    - [Data transformation chapter](https://r4ds.had.co.nz/transform.html)  
+    - [Data visualisation chapter](https://r4ds.had.co.nz/data-visualisation.html)
+
+2. [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/) is a free book about using `ggplot2` to create concise, informative, and beautiful graphics to communicate your data easily.
+
+3. [Dataviz Cheatsheet PDF](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf)
+
+4. [Data Wrangling Cheatsheet PDF](https://rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
+
+5. [Cowplot documentation](https://www.rdocumentation.org/packages/cowplot/versions/1.0.0/topics/plot_grid)
