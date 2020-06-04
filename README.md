@@ -32,7 +32,7 @@ We also recommend [swirl](https://swirlstats.com/) which is an excellent package
 
 ### Day 2:
 
-**Morning:** [Visualisation and data manipulation]() (Download the [.Rmd file]() and [dataset]() for this session)  
+**Morning:** [Visualisation and data manipulation](docs/Session_2-tidyverse.nb.html) (Download the [.Rmd file](docs/Session_2-tidyverse.Rmd) for this session)  
 **Afternoon:** Q&A Session with Lauren Ackerman
 
 ### Day 3:
