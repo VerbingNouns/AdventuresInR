@@ -37,7 +37,7 @@ We also recommend [swirl](https://swirlstats.com/) which is an excellent package
 
 ### Day 3:
 
-**Morning:** [Techniques for analysing data]() (Download [the .Rmd file]() and the data files [grammatical](data/grammatical.csv) and [rating](data/rating.csv) for this session)  
+**Morning:** [Techniques for analysing data](docs/Session_3-AnalysingData.nb.html) (Download [the .Rmd file](docs/Session_3-AnalysingData.rmd) and the data files [grammatical](data/grammatical.csv) and [rating](data/rating.csv) for this session)  
 **Afternoon:** Q&A Session with Jalal Al-Tamimi
 
 
