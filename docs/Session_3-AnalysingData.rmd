@@ -169,7 +169,7 @@ corr <- as.matrix(iris[-5]) %>%
   rcorr(type="pearson")
 print(corr)
 corrplot(corr$r, p.mat = corr$P,
-         addCoef.col = "black", diag = FALSE)
+         addCoef.col = "black", diag = FALSE, type = "upper", tl.srt = 55)
 ```
 
 
