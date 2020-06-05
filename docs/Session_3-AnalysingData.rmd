@@ -65,7 +65,8 @@ We will use the `iris` dataset from the package `MASS`
 ### Structure
 
 ```{r}
-str(iris)
+iris %>% 
+  str()  
 ```
 
 We have a dataframe with 150 observations and 5 variables; 4 numeric and 1 factor with 3 levels. 
@@ -75,7 +76,8 @@ We have a dataframe with 150 observations and 5 variables; 4 numeric and 1 facto
 We summarise the data to see the trends:
 
 ```{r}
-summary(iris)
+iris %>% 
+  summary()
 ```
 
 So we have an equal dataframe (50 observations under each level of the factor `Species`), with no missing values (aka `NA`).
@@ -124,9 +126,9 @@ We can make a boxplot of the data and add a trend line. This allows us to visual
 iris %>% 
   ggplot(aes(x = Species, y = Sepal.Length)) +
   geom_boxplot() +
+  geom_smooth(aes(x = as.numeric(Species), y = Sepal.Length), method = "lm") +
   labs(x = "Species", y = "Length", title = "Boxplot and trend line", subtitle = "with ggplot2") + 
-  theme_bw() + theme(text = element_text(size = 15)) +
-  geom_smooth(aes(x = as.numeric(Species), y = Sepal.Length), method = "lm")
+  theme_bw() + theme(text = element_text(size = 15))
 ```
 
 Here I have used the variable `Sepal.Length`. You can use any of the additional variables to plot the data.
@@ -166,9 +168,8 @@ Above, we did a correlation test on two predictors. We run multiple correlations
 corr <- as.matrix(iris[-5]) %>% 
   rcorr(type="pearson")
 print(corr)
-corrplot(corr$r, method = "circle", type = "upper", tl.srt = 45,
-         addCoef.col = "black", diag = FALSE,
-         p.mat = corr$p, sig.level = 0.05)
+corrplot(corr$r, p.mat = corr$P,
+         addCoef.col = "black", diag = FALSE)
 ```
 
 
@@ -204,23 +205,7 @@ Let's subset the data to `setosa` and `versicolor`. We will also check the norma
 ```{r}
 irisSub <- iris %>% 
   filter(Species %in% c("setosa", "versicolor"))
-levels(irisSub$Species)
 ```
-
-But wait a minute... We just subsetted the data and our `levels` show three levels factor.. why? Let's run a summary
-
-```{r}
-summary(irisSub$Species)
-```
-
-Aha! So the subsetting worked as the `virginica` cases are 0. We need to tell `R` to change the factor levels
-
-```{r}
-irisSub$Species <- factor(irisSub$Species)
-levels(irisSub$Species)
-```
-
-Now this works better
 
 
 ### Shapiro test
@@ -253,9 +238,9 @@ irisSub %>%
 
 ### Homogeneity of variance
 
-Because our data is normally distributed, we can use the `barlett` test. If our data were non-normally distributed, we would use the leveneTest. We can check both.
+Because our data is normally distributed, we can use the `bartlett` test. If our data were non-normally distributed, we would use the Levene Test (either with `var.test` from base-R or `leveneTest` from the car package We can check both.
 
-#### Barlett test
+#### Bartlett test
 
 ```{r}
 irisSub %>% 
