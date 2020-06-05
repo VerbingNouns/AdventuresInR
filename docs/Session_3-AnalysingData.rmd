@@ -258,14 +258,17 @@ Because our data is normally distributed, we can use the `barlett` test. If our 
 #### Barlett test
 
 ```{r}
-bartlett.test(Sepal.Length ~ Species, data = irisSub)
+irisSub %>% 
+  bartlett.test(Sepal.Length ~ Species, data = .)
 ```
 
 #### Levene test
 
 ```{r}
-var.test(Sepal.Length ~ Species, data = irisSub)
-car::leveneTest(Sepal.Length ~ Species, data = irisSub)
+irisSub %>% 
+  var.test(Sepal.Length ~ Species, data = .)
+irisSub %>% 
+  car::leveneTest(Sepal.Length ~ Species, data = .)
 ```
 
 In all cases, the statistically significant result indicates that there is evidence that the variance of two levels of the factor `Species` is statistically significant; i.e., the variances are not equal. This is important as we will use this in our t-test later on
@@ -285,7 +288,8 @@ Let us start with a simple t-test
 We then run a t-test on the data. We specify the formula as `y ~ x` and add `var.equal = FALSE` (based on the normality tests above)
 
 ```{r}
-t.test(Sepal.Length ~ Species, data = irisSub, var.equal = FALSE)
+irisSub %>% 
+  t.test(Sepal.Length ~ Species, data = ., var.equal = FALSE)
 ```
 
 To interpret the t-test, we say that there is evidence for a statistically significant difference between the two groups: `setosa` and `versicolor`: `t(86) = -10.521, p < 2.2e-16`. The mean of `setosa` is significantly lower than that of `versicolor`.
@@ -296,7 +300,9 @@ Let us run a linear model on the same data
 
 
 ```{r}
-summary(lm(Sepal.Length ~ Species, data = irisSub))
+irisSub %>% 
+  lm(Sepal.Length ~ Species, data = .) %>% 
+  summary()
 ```
 
 Any comments? discuss with your neighbour.
@@ -311,8 +317,9 @@ The dataset `iris` contains three species. We will run an ANOVA and a linear mod
 We can use the function `aov` to run an Analysis of Variance on the full dataset
 
 ```{r}
-mdl.aov <- aov(Sepal.Length ~ Species, data = iris)
-summary(mdl.aov)
+iris %>% 
+  aov(Sepal.Length ~ Species, data = .) %>% 
+  summary()
 ```
 
 ### Linear model
@@ -320,8 +327,9 @@ summary(mdl.aov)
 We can use the function `lm` to run a linear model
 
 ```{r}
-mdl.lm <- lm(Sepal.Length ~ Species, data = iris)
-summary(mdl.lm)
+iris %>% 
+  lm(Sepal.Length ~ Species, data = .) %>% 
+  summary()
 ```
 
 But wait... How is the linear model comparable to the analysis of variance we ran above? This linear model derives the analysis of variance we saw above, use `anova` on your linear model..
@@ -329,13 +337,17 @@ But wait... How is the linear model comparable to the analysis of variance we ra
 Here are the results of the initial Analysis of variance:
 
 ```{r}
-summary(mdl.aov)
+iris %>% 
+  aov(Sepal.Length ~ Species, data = .) %>% 
+  summary()
 ```
 
 And here are the results of the linear model with the `anova` function
 
 ```{r}
-anova(mdl.lm)
+iris %>% 
+  lm(Sepal.Length ~ Species, data = .) %>% 
+  anova()
 ```
 
 They are exactly the same... The underlying of an Analysis of variance is a linear model. We will continue with a linear model to understand it better
@@ -347,7 +359,8 @@ The basic assumption of a Linear model is to create a regression analysis on the
 ### Model estimation
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lm <- lm(Sepal.Length ~ Species, data = iris)
+mdl.lm <- iris %>% 
+  lm(Sepal.Length ~ Species, data = .)
 # same as below.
 #mdl.lm <- lm(Sepal.Length ~ 1 + Species, data = iris)
 mdl.lm #also print(mdl.lm)
@@ -376,7 +389,8 @@ But where are our actual values based on the means in the table above?
 We run a model that suppresses the intercept (i.e., adding 0 instead of 1) and this will allow us to obtain the "true" coefficients for each level of our predictor. This is also known as a `saturated` model
 
 ```{r}
-mdl.lm.2 <- lm(Sepal.Length ~ 0 + Species, data = iris)
+mdl.lm.2 <- iris %>% 
+  lm(Sepal.Length ~ 0 + Species, data = .)
 summary(mdl.lm.2)
 ```
 
@@ -416,7 +430,7 @@ We can also obtain a nice table of our model summary. We can use the package `kn
 #### Directly from model summary
 
 ```{r}
-kable(summary(mdl.lm)$coef, digits=3)
+kable(summary(mdl.lm)$coef, digits = 3)
 
 ```
 
@@ -495,7 +509,8 @@ glance(mdl.lm)
 Are the above informative? of course not directly. If we want to test for overall significance of model. We run a null model (aka intercept only) and compare models.
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lm.Null <- lm(Sepal.Length ~ 1, data=iris)
+mdl.lm.Null <- iris %>% 
+  lm(Sepal.Length ~ 1, data = .)
 mdl.comp <- anova(mdl.lm.Null, mdl.lm)
 mdl.comp
 ```
@@ -558,7 +573,7 @@ summary(mdl.lm)
 
 
 ```{r}
-emmeans(mdl.lm, pairwise ~ Species, adjust = "fdr")
+mdl.lm %>% emmeans(pairwise ~ Species, adjust = "fdr")
 ```
 
 How to interpret the output? Discuss with your neighbour and share with the group.
@@ -583,6 +598,7 @@ Let's load in the data and do some basic summaries
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 grammatical <- read_csv("grammatical.csv")
+grammatical
 str(grammatical)
 head(grammatical)
 ```
@@ -602,11 +618,12 @@ grammatical <- grammatical %>%
   mutate(response = factor(response, levels = c("no", "yes")),
          grammaticality = factor(grammaticality, levels = c("ungrammatical", "grammatical")))
 
-grammatical
-table(grammatical$grammaticality, grammatical$response)
+grammatical %>% 
+  group_by(grammaticality, response) %>% 
+  table()
 
-
-mdl.glm <- glm(response ~ grammaticality, data = grammatical, family = binomial)
+mdl.glm <- grammatical %>% 
+  glm(response ~ grammaticality, data = ., family = binomial)
 summary(mdl.glm)
 
 tidy(mdl.glm) %>% 
@@ -642,7 +659,8 @@ plogis(mycoef2[1] + mycoef2[2])
 ### Plotting
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-grammatical$prob <- predict(glm(response ~ grammaticality, data = grammatical, family = binomial), type = "response")
+grammatical <- grammatical %>% 
+  mutate(prob = predict(mdl.glm, type = "response"))
 grammatical %>% 
   ggplot(aes(x = as.numeric(grammaticality), y = prob)) +
   geom_point() +
@@ -736,9 +754,15 @@ The code below demonstrates the links between our GLM model and what we had obta
 ```{r}
 ## predict(mdl.glm)>0.5 is identical to 
 ## predict(glm(response~grammaticality,data=grammatical,family = binomial),type="response")
-grammatical$response <- relevel(grammatical$response, "yes")
-grammatical$grammaticality <- relevel(grammatical$grammaticality, "grammatical")
-mdl.glm.C <- glm(response ~ grammaticality, data = grammatical,family = binomial)
+grammatical <- grammatical %>% 
+  mutate(response = factor(response, levels = c("yes", "no")),
+         grammaticality = factor(grammaticality, levels = c("grammatical", "ungrammatical")))
+
+
+
+mdl.glm.C <- grammatical %>% 
+  glm(response ~ grammaticality, data = .,family = binomial)
+
 tbl.glm <- table(grammatical$response, predict(mdl.glm.C, type = "response")>0.5)
 colnames(tbl.glm) <- c("grammatical", "ungrammatical")
 tbl.glm
@@ -818,7 +842,8 @@ rating
 We run our first clm model as a simple, i.e., with no random effects
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.clm <- clm(Response ~ Context, data = rating)
+mdl.clm <- rating %>% 
+  clm(Response ~ Context, data = .)
 summary(mdl.clm)
 ```
 
@@ -828,7 +853,8 @@ summary(mdl.clm)
 We can evaluate whether "Context" improves the model fit, by comparing a null model with our model. Of course "Context" is improving the model fit.
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.clm.Null <- clm(Response ~ 1, data = rating)
+mdl.clm.Null <- rating %>% 
+  clm(Response ~ 1, data = .)
 anova(mdl.clm, mdl.clm.Null)
 
 ```
@@ -930,7 +956,8 @@ ggplot.xreal
 Let's run a simple linear model on the data. As we can see below, there are some issues with the "simple" linear model: we had set our SD for subjects to be 40, but this was picked up as 120 (see histogram of residuals). The QQ Plot is not "normal". 
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lm.xreal <- lm(dur ~ logFreq, data = xreal)
+mdl.lm.xreal <- xreal %>% 
+  lm(dur ~ logFreq, data = .)
 summary(mdl.lm.xreal)
 hist(residuals(mdl.lm.xreal))
 qqnorm(residuals(mdl.lm.xreal)); qqline(residuals(mdl.lm.xreal))
@@ -942,7 +969,8 @@ plot(fitted(mdl.lm.xreal), residuals(mdl.lm.xreal), cex = 4)
 Our Linear Mixed effects Model will take into account the random effects we added and also our model specifications. We use a Maximum Likelihood estimate (REML = FALSE) as this is what we will use for model comparison. The Linear Mixed Model is reflecting our model specifications The SD of our subjects is picked up correctly. The model results are "almost" the same as our linear model above. The coefficient for the "Intercept" is at 337.973 and the coefficient for LogFrequency is at -5.460. This indicates that for each unit of increase in the LogFrequency, there is a decrease by 5.460 (ms).
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lmer.xreal <- lmer(dur ~ logFreq  +(1|subjects) + (1|items), data = xreal, REML = FALSE)
+mdl.lmer.xreal <- xreal %>% 
+  lmer(dur ~ logFreq  +(1|subjects) + (1|items), data = ., REML = FALSE)
 summary(mdl.lmer.xreal)
 hist(residuals(mdl.lmer.xreal))
 qqnorm(residuals(mdl.lmer.xreal)); qqline(residuals(mdl.lmer.xreal))
@@ -954,7 +982,8 @@ plot(fitted(mdl.lmer.xreal), residuals(mdl.lmer.xreal), cex = 4)
 This second model add a by-subject random slope. Random slopes allow for the variation that exists in the random effects to be taken into account. An intercept only model provides an averaged values to our participants.
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lmer.xreal.2 <- lmer(dur ~ logFreq + (logFreq|subjects) + (1|items), data = xreal, REML = FALSE)
+mdl.lmer.xreal.2 <- xreal %>% 
+  lmer(dur ~ logFreq + (logFreq|subjects) + (1|items), data = ., REML = FALSE)
 summary(mdl.lmer.xreal.2)
 hist(residuals(mdl.lmer.xreal.2))
 qqnorm(residuals(mdl.lmer.xreal.2)); qqline(residuals(mdl.lmer.xreal.2))
@@ -966,7 +995,8 @@ plot(fitted(mdl.lmer.xreal.2), residuals(mdl.lmer.xreal.2), cex = 4)
 But where are our p values? The lme4 developers decided not to include p values due to various issues with estimating df. What we can do instead is to compare models. We need to create a null model to allow for significance testing. As expected our predictor is significantly contributing to the difference. 
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lmer.xreal.Null <- lmer(dur ~ 1 + (logFreq|subjects) + (1|items), data = xreal, REML = FALSE)
+mdl.lmer.xreal.Null <- xreal %>% 
+  lmer(dur ~ 1 + (logFreq|subjects) + (1|items), data = ., REML = FALSE)
 anova(mdl.lmer.xreal.Null, mdl.lmer.xreal.2)
 ```
 
@@ -979,7 +1009,8 @@ anova(mdl.lmer.xreal, mdl.lmer.xreal.2)
 But if you are really (really!!!) obsessed by p values, then you can also use lmerTest. BUT use after comparing models to evaluate contribution of predictors
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lmer.xreal.lmerTest <- lmer(dur ~ logFreq + (logFreq|subjects) + (1|items), data = xreal, REML = TRUE)
+mdl.lmer.xreal.lmerTest <- xreal %>% 
+  lmer(dur ~ logFreq + (logFreq|subjects) + (1|items), data = ., REML = TRUE)
 summary(mdl.lmer.xreal.lmerTest)
 detach("package:lmerTest", unload = TRUE)
 ```
@@ -990,7 +1021,8 @@ detach("package:lmerTest", unload = TRUE)
 Our final model uses REML (or Restricted Maximum Likelihood Estimate of Variance Component) to estimate the model. 
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-mdl.lmer.xreal.Full <- lmer(dur ~ logFreq + (logFreq|subjects) + (1|items), data = xreal, REML = TRUE)
+mdl.lmer.xreal.Full <- xreal %>% 
+  lmer(dur ~ logFreq + (logFreq|subjects) + (1|items), data = ., REML = TRUE)
 summary(mdl.lmer.xreal.Full)
 anova(mdl.lmer.xreal.Full)
 hist(residuals(mdl.lmer.xreal.Full))
@@ -1019,20 +1051,22 @@ coef(mdl.lmer.xreal.Full)$`items`[2]
 In general, I use the prediction from my final model in any plots. To generate this, we can use the following
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-xreal$Pred_Dur <- predict(lmer(dur ~ logFreq + (logFreq|subjects) + (1|items), data = xreal, REML = TRUE))
-ggplot.xreal.Pred <- xreal %>% 
+xreal <- xreal %>% 
+  mutate(Pred_Dur = predict(mdl.lmer.xreal.Full))
+
+xreal %>% 
   ggplot(aes(x = logFreq, y = Pred_Dur)) +
   geom_point() + theme_bw(base_size = 20) +
   labs(y = "Duration", x = "Frequency (Log)", title = "Predicted") +
   geom_smooth(method = lm, se = F) + coord_cartesian(ylim = c(200,450))
-ggplot.xreal.Pred
+
 ## original plot
-ggplot.xreal.Original <- xreal %>% 
+xreal %>% 
   ggplot(aes(x = logFreq , y = dur)) +
   geom_point() + theme_bw(base_size = 20)+
   labs(y = "Duration", x = "Frequency (Log)", title = "Original")+
   geom_smooth(method = lm, se = F) + coord_cartesian(ylim = c(200,450))
-ggplot.xreal.Original
+
 ```
 
 ## GLMM and CLMM
