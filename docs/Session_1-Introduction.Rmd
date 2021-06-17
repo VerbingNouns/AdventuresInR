@@ -1,6 +1,13 @@
 ---
 title: "Session 1 - Introduction.Rmd"
 output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '2'
+  word_document:
+    toc: yes
+    toc_depth: '2'
   html_notebook:
     df_print: paged
     number_sections: yes
@@ -8,10 +15,6 @@ output:
     toc_depth: 2
     toc_float:
       collapsed: no
-  html_document:
-    df_print: paged
-    toc: yes
-    toc_depth: '2'
 ---
 
 # The purpose of this course
@@ -70,7 +73,19 @@ RStudio has fantastic autocomplete capabilites. To autocomplete just press TAB. 
 
 ## Setting the working directory
 
-At the very beginning of an R session you MUST set a 'working directory'. This tells R where to look for and save files. To do this type
+At the very beginning of an R session you MUST set a 'working directory'. This tells R where to look for and save files. An easy way to do this is from RStudio. We're going to look at three ways to dos this.
+
+### The easy way
+
+Within `RStudio go to Session >> Set Working Directory > Choose Directory...`
+
+![](setwd.png)
+
+You also have an option to set the working directory to the most recently-loaded .R or .Rmd file.
+
+### The difficult way (1)
+
+To do this type
 
 `setwd("path/to/directory")`
 
@@ -84,6 +99,12 @@ If you are not sure what your working directory is type
 Getting the right path is a vital first step in R, and you really need to know how to do this. Here are some instructional videos if you get stuck...
 
 For Windows computers refer to [this YouTube video](https://www.youtube.com/watch?v=QzSV8wvA1Do). For Macs refer to [this YouTube video](https://www.youtube.com/watch?v=43W9TuPwqac). If you're on Linux then refer to [this YouTube video](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+
+However this is a big problem with this approach. If you send your file to someone else who is working on a different machine, it is most likely that your path will be pointing to the wrong location
+
+### The difficult way (2) (but by far the best way!)
+
+By far the best way to set the working directory is create and "R Project" in RStudio. When you do this, the RProject stores all files and data objects which were opened in the last session, and also keeps track of where the files are stored, so there is no need to set the directory.
 
 ## Using R as a calculator
 
@@ -101,6 +122,7 @@ We can also create variables, e.g.
 ```{r}
 
 x <- 10
+x = 10 # Does the same thing!!
 y <- 21
 x*y
 
@@ -114,6 +136,7 @@ If you'd like to comment on any code you write (i.e. you do not wish R to try to
 
 `df <- read.csv("csv_file.csv") # This reads in the main file for the experiment`
 
+
 ## Functions
 
 Most work in R is done using _Functions_. These take the following form:
@@ -125,11 +148,13 @@ sqrt(10)
 
 seq(1,10,2)
 
+rep(5, 10)
+
 ```
 
 ## EX 1 & 2: Working with Functions
 
-EX1: What do the arguments of `seq` do? To find out more search for the relevant help file in the console by typing `?seq`
+EX1: What do the arguments of `seq` and `rep` do? To find out more search for the relevant help file in the console by typing `?seq` or by using Google.
 
 EX2: Have a look at the following arguments called `gsub` and `grepl`. What do they do? Clue: if you're stuck, search the help file using `?`
 ```{r}
@@ -157,6 +182,8 @@ Help files in R are quite densely written and not particularly aimed at beginner
 (d) [https://rseek.org/](https://rseek.org/) - a search engine for all things related to R (because the word 'R' brings up a whole load of irrelevant stuff in Google)
 (e) [http://www.cookbook-r.com/](http://www.cookbook-r.com/) - this has lots of tips on how to do graphics.
 
+And there are plenty more! If you find a good one share it with your colleagues via email, Twitter, or whatever social media you prefer!
+
 # Packages
 
 ## Installation
@@ -181,11 +208,7 @@ Install the 'tidyverse' package, and then load it with the following function:
 library(tidyverse)
 ```
 
-I find that a particularly easy way to load packages is via the `pacman` library. This contains the incredibly useful function `p_load`. This
-
-1. Checks if a particular package/library is installed and up-to-date
-2. If it is not installed, or not up-to-date, it will download the latest version of the package/library
-3. It will then load the package/library into the current session.
+I find that a particularly easy way to load packages is via the `p_load` function from the `pacman` library. We are not going to practise using it, but just to let you know that it exists!
 
 ## Obtaining help
 
@@ -201,8 +224,8 @@ Most of the functions loaded in a package should work 'out of the box'. However 
 
 ## EX 3 - Using packages
 
-1. Install the package `pacman`
-2. Load the package `tidyverse` using the p_load function.
+1. Install and load the package `ggplot2`
+2. Look up the function `geom_point` from this package. What does it do?
 
 # Objects, data frames and indices
 
@@ -340,8 +363,8 @@ However, rather than use the menu, it's much better to use actual code, as this 
 
 ```{r, message = FALSE}
 
-pacman::p_load(tidyverse)
-pacman::p_load(haven)
+library(tidyverse)
+library(haven)
 
 df <- readxl::read_excel("WHR_2017.xlsx") # Read an excel file
 
@@ -355,7 +378,7 @@ df <- read_csv("https://verbingnouns.github.io/AdventuresInR/docs/WHR_2017.csv")
 
 ```
 
-Possibly the best data format to work in is the .csv data format. This is good because it is readable in Excel, small, simple, and not easily-corrupted.
+Possibly the best data format to work in is the .csv data format (Comma-Separated Value). This is good because it is readable in Excel, small, simple, and not easily-corrupted.
 
 To read .csv files we use the `read.csv()` function from base R, or `read_csv()` from the tidyverse (I would go with the latter as it also shows you a list of the variable types)
 
@@ -364,7 +387,7 @@ To read .csv files we use the `read.csv()` function from base R, or `read_csv()`
 
 ## Subsetting with base R
 
-We're going to *subset* the WHR dataset (i.e. choose only those cases/observations which fulfil a specific criterion). To do this we're going to use the `which()` function. When you apply `which` to a variable in a dataset, it will produce indices of the rows which fulfil a certain criterio, e.g. `which(df$var_name == 2)` will give you the indices of all rows where the value of the variable is 2.
+We're going to *subset* the WHR dataset (i.e. choose only those cases/observations which fulfil a specific criterion). To do this we're going to use the `which()` function. When you apply `which` to a variable in a dataset, it will produce indices (indexes) of the rows which fulfil a certain criterio, e.g. `which(df$var_name == 2)` will give you the indices of all rows where the value of the variable is 2.
 
 ## EX4: Subsetting the hard way!
 
@@ -375,6 +398,7 @@ If you're stuck have a look at the answer below.
 ```{r}
 df.Africa <- df[which(df$region == "Africa"), ]
 ```
+
 ## Piping
 
 Okay, the above code is pretty horrible to look at, so we're going to explore an alternative using the package `dplyr` which is from the `tidyverse`. But before we can use `dplyr` we have to learn how to 'pipe'.
@@ -390,7 +414,10 @@ All pipes do is enable us to 'pass' a data frame (or another object) to a new fu
 Here's how we would subset the data frame using piping:
 
 ```{r}
-df %>% filter(region == "Africa") -> df.Africa
+
+df.Africa <- filter(df, region == "Africa") # This is the version without piping
+
+df.Africa %>% filter(region == "Africa") -> df.Africa # This is the version with piping. It looks longer, but we can chain multiple functions together!
 ```
 
 Note that to create a new data frame, we need a solid arrow at the end. If we don't include that solid arrow, the results are shown in the console, but no new data frame is created. This is an incredibly useful feature of pipes. You can `try before you buy`!
@@ -452,6 +479,15 @@ Loops and if-then statements are useful programming tools which have the same st
 
 ## Loops
 
+![](https://media.giphy.com/media/MDXomrcGshGso/giphy.gif)
+
+```{r}
+for(i in 1:10){
+  print(as.character(i))
+}
+```
+
+
 To demonstrate a loop we're going to look at the WHR data set. We're going to ask the question 'for different regions of the world, what is the relationship between GDP per capita nd happiness?
 
 Here's how we would do it
@@ -512,7 +548,7 @@ Here is a much easier way to create the same variable
 
 df <- read_csv("WHR_2017.csv")
 
-df$happiness_above_mean2 <- as.numeric(df$happiness_score > mean(df$happiness_score))
+df$happiness_above_mean <- as.numeric(df$happiness_score > mean(df$happiness_score))
 ```
 So how does this work? The statement in brackets evaluates to TRUE / FALSE. We then turn this into a number using `as.numeric`. TRUE evaluates to 1, while FALSE evaluates to 0.
 
@@ -578,7 +614,7 @@ It is useful to be able to refer to subcomponents of an object so that we can in
 
 Once you get stuck have a look at the first code chunk below. This contains the solution but with pesky errors added! See if you can sort out the errors.
 
-```{r with errors, eval = FALSE, message = FALSE}
+```{r with errors, eval = FALSE, message = FALSE, error=TRUE}
 
 whr <- read_csv("WHR_2017.csv")
 
