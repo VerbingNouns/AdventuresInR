@@ -28,7 +28,7 @@ The links and content therein for each day may be changed and updated between no
 
 ### Day 1:
 
-**Morning:** [Introduction to R and RStudio](docs/Session_1-Introduction.nb.html) (Download the [Rmarkdown file](docs/Session_1-Introduction.Rmd) for this session, and the data files: [.csv format](data/WHR_2017.csv), [SPSS format](data/WHR_2017.sav), [Excel format](data/WHR_2017.xlsx))  
+**Morning:** [Introduction to R and RStudio](docs/Session_1-Introduction.nb.html) (Download the [Rmarkdown file](docs/Session_1-Introduction.Rmd) for this session, and the main WHO data files: [.csv format](data/WHR_2017.csv), [SPSS format](data/WHR_2017.sav), [Excel format](data/WHR_2017.xlsx), and the [life expectancy](data/WHO_life_expectancy.csv) data file)  
 **Afternoon:** Q&A Session with Nick Riches
 
 ### Day 2:

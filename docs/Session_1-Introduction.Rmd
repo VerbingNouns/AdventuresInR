@@ -37,6 +37,8 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 Try executing this chunk by clicking the *Run* button within the chunk or by
 placing your cursor inside it and pressing *Ctrl+Shift+Enter*.
 
+
+
 ```{r}
 plot(cars)
 ```
@@ -46,6 +48,13 @@ pressing *Ctrl+Alt+I*.
 
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to
 preview the HTML file).
+
+
+```{r}
+one <- 1
+one
+```
+
 
 # RStudio breakdown
 
@@ -64,6 +73,43 @@ RStudio shows you four panes:
 You can arrange these in any order using Tools > Global Options.
 
 ![](images/panes.png)
+
+```{r}
+
+
+```
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
 
 ## Autocomplete
 
@@ -115,13 +161,15 @@ We can use the console for general arithmetic
 1 + 3 + 5
 (2 + 9) / 7
 
+1 + 2+ 3
+
 ```
 
 We can also create variables, e.g.
 
 ```{r}
 
-x <- 10
+x <- 10 # This is a comment
 x = 10 # Does the same thing!!
 y <- 21
 x*y
@@ -146,7 +194,7 @@ _function(argument(s))_. Here are some functions
 
 sqrt(10)
 
-seq(1,10,2)
+seq(1, 10, 2)
 
 rep(5, 10)
 
@@ -234,6 +282,8 @@ Most of the functions loaded in a package should work 'out of the box'. However 
 A variable is a type of 'object' which R stores in memory. R is capable of creating and storing a wide range of objects. To see what type of object we have created, we use the function `class()`, e.g.
 
 ```{r}
+
+x <- 1
 
 class(x)
 
@@ -377,6 +427,18 @@ df <- read_csv("WHR_2017.csv") # Read from a .csv file
 df <- read_csv("https://verbingnouns.github.io/AdventuresInR/docs/WHR_2017.csv")
 
 ```
+
+
+```{r}
+
+
+require(devtools)
+
+install_version("tidyverse", version = "1.3.0", repos = "http://cran.us.r-project.org")
+
+```
+
+
 
 Possibly the best data format to work in is the .csv data format (Comma-Separated Value). This is good because it is readable in Excel, small, simple, and not easily-corrupted.
 
