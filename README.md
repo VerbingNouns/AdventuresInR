@@ -33,7 +33,7 @@ The links and content therein for each day may be changed and updated between no
 
 ### Day 2:
 
-**Morning:** [Visualisation and data manipulation](docs/Session_2-tidyverse.nb.html) (Download the [.Rmd file](docs/Session_2-tidyverse.Rmd) for this session)  
+**Morning:** [Visualisation and data manipulation](docs/Session_2-tidyverse.html) (Download the [.Rmd file](docs/Session_2-tidyverse.Rmd) for this session)  
 **Afternoon:** Q&A Session with Lauren Ackerman
 
 ### Day 3:
