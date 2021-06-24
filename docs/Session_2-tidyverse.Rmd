@@ -10,7 +10,7 @@ output:
       collapsed: false
 ---
 
-[Return to main page](../README.md)
+[Return to main page](https://verbingnouns.github.io/AdventuresInR/)
 
 # Tidyverse functionality
 
