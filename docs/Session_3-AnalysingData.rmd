@@ -719,7 +719,7 @@ TN/(FP+TN) # True Negative Rate or Sensitivity
 # When subject responds "yes" how many times is (s)he correct?
 TP/(TP+FP) # precision
 
-# getting dprime (or the sensetivity index); beta (bias criterion, 0-1, lower=increase in "yes"); Aprime (estimate of discriminability, 0-1, 1=good discrimination; 0 at chance); bppd (b prime prime d, -1 to 1; 0 = no bias, negative = tendency to respond "yes", positive = tendency to respond "no"); c (index of bias, equals to SD)
+# getting dprime (or the sensitivity index); beta (bias criterion, 0-1, lower=increase in "yes"); Aprime (estimate of discriminability, 0-1, 1=good discrimination; 0 at chance); bppd (b prime prime d, -1 to 1; 0 = no bias, negative = tendency to respond "yes", positive = tendency to respond "no"); c (index of bias, equals to SD)
 #(see also https://www.r-bloggers.com/compute-signal-detection-theory-indices-with-r/amp/) 
 psycho::dprime(TP, FP, FN, TN, 
                n_targets = TP+FN, 
@@ -1074,7 +1074,7 @@ The code below gives you an idea of how to specify these models
 ## lme4::glmer(outcome~predictor(s)+(1|subject)+(1|items)..., data=data, family=poisson)
 
 ## Multinomial family
-## a bit complicated as tehre is a need to use Bayesian approaches, see e.g., 
+## a bit complicated as there is a need to use Bayesian approaches, see e.g., 
 ## glmmADMB
 ## mixcat
 ## MCMCglmm
@@ -1086,4 +1086,12 @@ The code below gives you an idea of how to specify these models
 
 ## Remember to test for random effects and whether slopes are needed.
 
+```
+
+
+
+# session info
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+sessionInfo()
 ```
