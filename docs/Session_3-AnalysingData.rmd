@@ -13,9 +13,10 @@ output:
 
 
 # Loading packages 
+
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 ## Use the code below to check if you have all required packages installed. If some are not installed already, the code below will install these. If you have all packages installed, then you could load them with the second code.
-requiredPackages = c('tidyverse', 'ordinal', 'broom', 'emmeans', 'knitr', 'Hmisc', 'corrplot', 'psycho', 'PresenceAbsence', 'lme4', 'lmerTest')
+requiredPackages = c('tidyverse', 'ordinal', 'broom', 'emmeans', 'knitr', 'Hmisc', 'corrplot', 'psycho', 'PresenceAbsence', 'lme4', 'lmerTest', 'ggsignif')
 for(p in requiredPackages){
   if(!require(p,character.only = TRUE)) install.packages(p)
   library(p,character.only = TRUE)
@@ -558,12 +559,36 @@ summary(mdl.lm)
 
 
 ```{r}
-mdl.lm %>% emmeans(pairwise ~ Species, adjust = "fdr")
+mdl.lm %>% emmeans(pairwise ~ Species, adjust = "fdr") -> mdl.emmeans
+mdl.emmeans
 ```
 
 How to interpret the output? Discuss with your neighbour and share with the group.
 
 Hint... Look at the emmeans values for each level of our factor "Species" and the contrasts. 
+
+#### Add significance levels on a plot?
+
+We can use the p values generated from either our linear model or the pairwise comparison to add significance levels on a plot. We use the code from above and add the significance level
+
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+iris %>% 
+  ggplot(aes(x = Species, y = Sepal.Length))+
+  geom_boxplot()+
+  geom_boxplot(aes(x = Species, y = predict(mdl.lm)), color = "blue") +
+  labs(x = "Species", y = "Length", title = "Boxplot raw data, predicted means (in blue) and trend line", subtitle = "with ggplot2") + 
+  theme_bw() + theme(text = element_text(size = 15))+
+  geom_smooth(aes(x = as.numeric(Species), y = predict(mdl.lm)), method = "lm", color = "blue") + 
+  geom_signif(comparison = list(c("setosa", "versicolor")), 
+              map_signif_level = TRUE, test = function(a, b) {
+                list(p.value = summary(mdl.emmeans)$contrasts[1, 6])}) + 
+  geom_signif(comparison = list(c("versicolor", "virginica")), 
+              map_signif_level = TRUE, test = function(a, b) {
+                list(p.value = summary(mdl.emmeans)$contrasts[3, 6])})
+```
+
+
 
 ## Other outcomes?
 
