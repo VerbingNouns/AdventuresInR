@@ -6,7 +6,7 @@ This workshop has been funded by the Faculty of Humanities Arts and Social Scien
 
 ## Information:
 
-**When:** 18 June, 28 June, 18 July 2021; Synchronously 10:00-12:00, 16:00-17:00, and asynchronously  
+**When:** 18 June, 28 June, 2 July 2021; Synchronously 10:00-12:00, 16:00-17:00, and asynchronously  
 **Session Plan:**
 
 | Session | Time |
