@@ -1,5 +1,5 @@
 ---
-title: "Session 2: Tidyverse"
+title: "Adventures in R Session 2: Tidyverse"
 output:
   html_document:
     toc: yes
@@ -21,16 +21,13 @@ Tidyverse is a package, or a set of add-on tools, that you can optionally use in
 #install.packages(c("tidyverse","palmerpenguins"))
 library(tidyverse) # Rstudio should prompt you if a package is required to run a notebook but isn't installed.
 library(palmerpenguins)
-options(dplyr.summarise.inform = FALSE,
-        message = FALSE,
-        warning = FALSE)
 ```
 
-## Quick recap
+## Quick summary
 
-- `%>%` is called a "pipe"  
-- It passes the previous line into the `data` argument of the next line  
-- It **does not save any changes** after output  
+- `%>%` and `|>` are each a type of "pipe"  
+- They each pass the previous line into the `data` argument of the next line  
+- They **do not save any changes** after output  
 
 For our examples for now, we'll use built-in datasets called `penguins` and `penguins_raw`.
 
@@ -72,7 +69,7 @@ class(1==1)
 
 ## Filter
 
-If we only want to look at measures taken between 2008-11-01 and 2008-11-09 from `penguins_raw`, we can filter the dataset (which is like subsetting):
+If we only want to look at measures taken between 2008-11-01 and 2008-11-09 from `penguins_raw`, we can filter the dataset (which is like subsetting). Think of the function `filter` as saying "create a filter that allows these things through":
 ```{r filter}
 penguins_raw %>% 
   filter(`Date Egg` >= "2008-11-01", # list in a logical (&) order
@@ -83,7 +80,7 @@ penguins_raw %>%
 
 How can you make a new column?
 ```{r new_column}
-# `mutate` just means "create"
+# `mutate` just means "create", the way a mutated frog might have a "new" third leg
 penguins %>% 
   # formula for area of a triangle is: base * height / 2
   mutate(bill_area_mm2 = bill_depth_mm * bill_length_mm / 2) 
@@ -99,9 +96,9 @@ Pipe the dataset `penguins` into a `mutate` function that creates a new column c
 
 ## Case when
 
-Tidyverse reduces the need for "for loops". Instead of going line by line through a dataset to determine what contingent behaviour to perform, `case_when` simplifies this. The for-loop behaviour is time and energy intensive on large datasets. That's why `case_when` is so simple and yet so powerful.
+The function `case_when()` is simple and powerful because it allows you to go through the dataset line by line and apply ordered rules to each line without having to create a loop in your code. This saves time and computational energy, compared to how we had to do this in the past.
 
-Here's an example of how one might create a column that translates the values in `body_mass_g` in `penguins` to a word:
+Here's an example of how one might create a column that translates the values in `body_mass_g` in `penguins` to a word, which turns our numeric data into categorical data:
 ```{r case_when_example}
 penguins %>% 
   mutate(birdsize = case_when(body_mass_g <  3500 ~ "small", # choose first category to label
@@ -139,9 +136,9 @@ What if we want a fourth category, so that we end up with "short", "medium-short
 
 What if we want to get aggregate values from our dataset, rather than looking at it as a whole?
 
-**`group_by`** is a function that flags certain columns for operations applied by category. **`summarise`** checks which columns are flagged and performs operations based on the combination of values in those columns.
+**`group_by()`** is a function that flags certain columns for operations applied by category. **`summarise()`** checks which columns are flagged and performs operations based on the combination of values in those columns.
 
-Nothing appears to happen when we use `group_by` by itself:
+Nothing appears to change when we use `group_by` by itself:
 ```{r group_by}
 # look at each step of the code by itself to understand what it is doing
 penguins %>% 
@@ -154,7 +151,8 @@ How many observations are there per "species" and "year"? What are the mean body
 # using `summarise()`
 penguins %>% 
   group_by(species, year) %>% 
-  summarise(counts = n(),
+  summarise(.groups = "drop", # this is optional, but 'dropping' groups simplifies the output
+            counts = n(),
             massPerYear = mean(body_mass_g, na.rm=TRUE))
 ```
 
@@ -207,7 +205,8 @@ survey # to view the table below
 Combine the two datasets using the column they have in common:
 ```{r full_join}
 # save it as `mySurvey`
-full_join(demographics, survey, by = "participant") -> mySurvey
+full_join(demographics, survey, 
+          by = "participant") -> mySurvey
 
 mySurvey # to view the table below
 ```
@@ -324,7 +323,7 @@ penguins %>%
              y = bill_depth_mm)) + 
   theme_bw() +
   geom_point(aes(colour = species)) + # colour by species for points only
-  geom_smooth(method = "lm") + # line of best fit regardless of species
+  geom_smooth(colour = "black", method = "lm") + # line of best fit regardless of species
   geom_smooth(aes(colour = species), method = "lm") + # line of best fit contingent on species
   NULL
 ```
@@ -343,7 +342,7 @@ We have used `geom_point()` and `geom_smooth()` to plot data. R does most of the
 
 # Challenge activities
 
-**Work on these activities on your own or in small groups this afternoon and we will go over possible solutions together at 16:00.**
+**Work on these activities on your own or in small groups this afternoon to practice what we've learned here.**
 
 Putting together the data wrangling and data visualisation sections of this lesson, we can create a bar plot. Bar plots are different from other types of plots because they require some calculation to happen between the raw data set and the plot. We can do this calculation ourselves very easily, and then specify to R that we've already done it and we just want R to plot it using the values provided. Here's how to do that:
 
@@ -373,7 +372,8 @@ Below is code for a really useful type of plot called an interaction plot. There
 penguins %>% 
   filter(!is.na(sex)) %>% 
   group_by(species, sex) %>% 
-  summarise(count = n(),
+  summarise(.groups = "drop",
+            count = n(),
             mean_mass = mean(body_mass_g),
             sd_mass = sd(body_mass_g),
             standard_error = sd_mass / sqrt(count)) %>% 
