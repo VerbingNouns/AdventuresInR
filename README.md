@@ -30,11 +30,11 @@ The links and content therein for each day may be changed and updated between no
 
 **Morning:** [Introduction to R and RStudio](docs/Session_1-Introduction.nb.html) (Download the [Rmarkdown file](docs/Session_1-Introduction.Rmd) for this session, and the main WHO data files: [.csv format](data/WHR_2017.csv), [SPSS format](data/WHR_2017.sav), [Excel format](data/WHR_2017.xlsx), and the [life expectancy](data/WHO_life_expectancy.csv) data file)  
 
-**Afternoon:** [Intro to tidyverse and data wrangling]() (Download the [.Rmd file]() for this session)  
+**Afternoon:** [Intro to tidyverse and data wrangling](docs/Session_2-tidyverse.html) (Download the [.Rmd file](docs/Session_2-tidyverse.Rmd) for this session)  
 
 ### Day 2:
 
-**Morning:** [Visualisation and visual interpretation]() (Download the [.Rmd file]() for this session)  
+**Morning:** [Visualisation and visual interpretation](docs/Session_3-dataviz.html) (Download the [.Rmd file](docs/Session_3-dataviz.Rmd) for this session)  
 
 **Afternoon:** [Intro to Statistical analysis]() (Download the [.Rmd file]() for this session)  
 
@@ -51,12 +51,13 @@ If you already have R and RStudio installed, we recommend you update to the late
 
 ### Notes:
 
-2 May 2023: Please install the latest version of R (version 4.3.0 Already Tomorrow), a recent version of R Studio (at least from 2023) and the following packages, which we will use during our workshop:  
+12 May 2023: Please install the latest version of R (version 4.3.0 Already Tomorrow), a recent version of R Studio (at least from 2023) and the following packages, which we will use during our workshop:  
 
 ```
 tidyverse
 palmerpenguins
 knitr
+viridis
 emmeans
 Hmisc
 lme4
