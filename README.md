@@ -30,13 +30,13 @@ The links and content therein for each day may be changed and updated between no
 
 **Morning:** [Introduction to R and RStudio](docs/Session_1-Introduction.nb.html) (Download the [Rmarkdown file](docs/Session_1-Introduction.Rmd) for this session, and the main WHO data files: [.csv format](data/WHR_2017.csv), [SPSS format](data/WHR_2017.sav), [Excel format](data/WHR_2017.xlsx), and the [life expectancy](data/WHO_life_expectancy.csv) data file)  
 
-**Afternoon:** [Intro to tidyverse and data visualisation]() (Download the [.Rmd file]() for this session)  
+**Afternoon:** [Intro to tidyverse and data wrangling]() (Download the [.Rmd file]() for this session)  
 
 ### Day 2:
 
 **Morning:** [Visualisation and visual interpretation]() (Download the [.Rmd file]() for this session)  
 
-**Afternoon:** Q&A Session with Lauren Ackerman
+**Afternoon:** [Intro to Statistical analysis]() (Download the [.Rmd file]() for this session)  
 
 
 
