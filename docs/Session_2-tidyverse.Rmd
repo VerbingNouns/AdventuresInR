@@ -42,7 +42,7 @@ penguins %>% str() # tidy R code
 How would you write the base R function `head(penguins_raw)` using `tidyverse`?
 
 ```{r quick_response}
-# Check it here, then type your answer into the chat!
+# Check it here, then raise your hand when you know it works!
 
 ```
 
@@ -153,7 +153,8 @@ penguins %>%
   group_by(species, year) %>% 
   summarise(.groups = "drop", # this is optional, but 'dropping' groups simplifies the output
             counts = n(),
-            massPerYear = mean(body_mass_g, na.rm=TRUE))
+            massPerYear = mean(body_mass_g, 
+                               na.rm=TRUE)) # what does the `na.rm=TRUE` argument do?
 ```
 
 ### Activity on your own
@@ -223,7 +224,7 @@ mySurvey %>%
 mySurvey_long
 ```
 
-Why would you want to do this? It's not as easy for human eyes to read, but it's much easier to graph.
+Why would you want to do this? It's not as easy for human eyes to read, but it's much easier to graph, as we'll see tomorrow.
 
 We can also reverse the operation, if you receive long data and you prefer wide data.
 
@@ -267,21 +268,29 @@ Below is code for a really useful type of plot called an interaction plot. There
 penguins %>% 
   filter(!is.na(sex)) %>% 
   group_by(species, sex) %>% 
-  summarise(.groups = "drop",
+  summarise(
+            .groups = "drop",
             count = n(),
             mean_mass = mean(body_mass_g),
             sd_mass = sd(body_mass_g),
-            standard_error = sd_mass / sqrt(count)) %>% 
-  ggplot(aes(x = sex,
+            standard_error = sd_mass / sqrt(count)
+            ) %>% 
+  ggplot(aes(
+             x = sex,
              y = mean_mass,
              colour = species,
-             group = species)) +
+             group = species
+             )
+         ) +
   theme_bw() +
   geom_point() +
   geom_path() +
-  geom_errorbar(aes( ymin = mean_mass - standard_error,
-                     ymax = mean_mass + standard_error),
-                width = .1) +
+  geom_errorbar(aes(
+                    ymin = mean_mass - standard_error,
+                    ymax = mean_mass + standard_error
+                    ),
+                width = .1
+                ) +
   ggtitle("Interaction of species and sex for aggregate body mass in grams") +
   ylab("mean body mass (g)") +
   NULL
@@ -289,19 +298,11 @@ penguins %>%
 ```
 
 
-# Further resources
+# Additional resources
 
-1. Another lesson on [Dataviz as analysis](https://verbingnouns.github.io/notebooks/reading/notebooks/20210610-dataviz.html) that I gave at a summer school recently.
+1. [Data Wrangling Cheatsheet PDF](https://rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
 
-2. How to link dataviz to statistical analysis, specifically linear models: [(Types of) Linear Models](https://verbingnouns.github.io/notebooks/reading/notebooks/20210615-linearmodels.html), another lesson I gave at the same summer school. This will be extremely useful to prepare for Friday, if you are new to linear models or would like to understand more about how to visualise different types of data and their lines of best fit.
-
-3. [R for Data Science (R4DS)](https://r4ds.had.co.nz/) is a free book about using R and `tidyverse` to do all types of data science.
+2. [R for Data Science (R4DS)](https://r4ds.had.co.nz/) is a free book about using R and `tidyverse` to do all types of data science.
 
     - [Data transformation chapter](https://r4ds.had.co.nz/transform.html)  
     - [Data visualisation chapter](https://r4ds.had.co.nz/data-visualisation.html)
-
-4. [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/) is a free book about using `ggplot2` to create concise, informative, and beautiful graphics to communicate your data easily.
-
-5. [Dataviz Cheatsheet PDF](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf)
-
-6. [Data Wrangling Cheatsheet PDF](https://rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)

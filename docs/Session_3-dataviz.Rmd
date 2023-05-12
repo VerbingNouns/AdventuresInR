@@ -25,9 +25,9 @@ library(palmerpenguins)
 
 If you don't know the shape of your data, you might not draw appropriate conclusions about the statistical tests you perform.
 
-Check out the [Datasaurus Dozen](https://www.autodeskresearch.com/publications/samestats), which all have the same x/y means and standard deviations, sometimes called the Simpson Paradox.
+Check out the [Datasaurus Dozen](https://blog.revolutionanalytics.com/2017/05/the-datasaurus-dozen.html), which all have the same x/y means and standard deviations, sometimes called the Simpson Paradox.
 
-![](../images/datasaurus.gif)
+![](./images/datasaurus.gif)
 
 Dataviz is also engaging, communicative, creative, efficient, and fun.
 
@@ -35,23 +35,40 @@ Dataviz is also engaging, communicative, creative, efficient, and fun.
 
 There are some ways to create plots quickly, and it's good to know a little about that before we get too far.
 
-```{r}
+```{r baseR_plot}
 plot(penguins$bill_length_mm, penguins$bill_depth_mm)
 ```
 
-We will talk more about what to do with these plots later, but I want to show you a Quantile-Quantile plot (QQ plot) output so you can see how easy it is to make even before we discuss why you'd want to make it.
 
-```{r}
-qqplot(penguins$bill_length_mm, penguins$bill_depth_mm)
+You can learn more about what to do with these plots later, but I want to show you a Normal Quantile-Quantile plot (QQ plot) output so you can see how easy it is to make even before you learn why you'd want to make it. In short: it helps you determine if your data are sufficiently normally distributed to perform statistical tests that assume you are using normally distributed data. If the points (mostly) fall along the line, you're in luck!
 
+```{r qq_penguins}
 qqnorm(penguins$bill_length_mm)
 qqline(penguins$bill_length_mm)
 ```
 
 
+These data are not *perfectly* normally distributed, but they're close enough and where they deviate, they don't deviate drastically. Very rarely will you find data that is perfect!
+
+As an example of data that is *not* normally distributed, we can look at longitude coordinates or depth value from the `quakes` dataset (another dataset that is built into R automatically).
+
+```{r qq_quakes_not_normal}
+# longitude (`long`) is not normal because data was gathered from two islands, so it is bimodal
+qqnorm(quakes$long)
+qqline(quakes$long)
+
+# depth is not normal because the highest and lowest values deviate extremely from the
+#   theoretical Q-Q line
+qqnorm(quakes$depth)
+qqline(quakes$depth)
+```
+
+
+You will become a better (visual) judge with practice and exposure.
+
 # Visual grammar
 
-In the `tidyverse`, the package for making elegant plots is called `ggplot2`. It works a lot like how pipes work by building up graphics in layers, but since it was originally designed as a separate package, it uses `+` instead of `%>%`. This might seem to be a bit of a faff at first, but it ends up being powerful (and easy once you know how the components work).
+In the `tidyverse`, the package for making elegant plots is called `ggplot2`. It works a lot like how pipes work by building up graphics in layers. This might seem to be a bit of a faff at first, but it ends up being powerful (and easy once you know how the components work). But since it was originally designed as a separate package, it uses `+` instead of `%>%`. 
 
 To begin, we need to specify what data we're using.
 
@@ -60,8 +77,10 @@ To begin, we need to specify what data we're using.
 penguins %>% 
   ggplot() + 
   theme_bw() + # this line makes it easy to print and more accessible for visual disabilities
-  NULL # this line allows us to end each preceding content line with a + regardless of order or comments
+  NULL # this line allows us to end each preceding content line with a + regardless of order or comments (#)
+       # ending with NULL is completely optional. it's just a nice trick for troubleshooting later on.
 ```
+
 
 This is the background of the plot -- a check to see that `penguins` is something that can be plotted from.
 
@@ -91,11 +110,13 @@ penguins %>%
   NULL
 ```
 
-You can get rid of the message at the top (which we don't care about) by adding `, warning = FALSE` after the code chunk identifier:
+You can get rid of the message at the top by adding `, warning = FALSE` after the code chunk identifier:
 
 `{r, warning = FALSE}`
 
-You can do a lot of other neat stuff here, but you'll have to look that up on your own time.
+We don't care about the warning because it's just saying we have some empty cells in our dataset. R knows how to deal with empty cells, so there's really no reason for us to worry.
+
+You can do a lot of other fancy stuff in the `{r}` space, but you'll have to look that up on your own time.
 
 ## Lines of best fit
 
@@ -108,7 +129,8 @@ penguins %>%
              y = bill_depth_mm)) +
   theme_bw() +
   geom_point() +
-  geom_smooth(method = "lm", formula = "y ~ x") + # line of best fit based on the lm() method
+  geom_smooth(method = "lm", 
+              formula = "y ~ x") + # line of best fit based on the lm() method
   NULL
 ```
 
@@ -165,19 +187,19 @@ These lines of best fit give us insight into what our statistical models will be
 
 Let's take a look at what's needed to make a histogram or density plot.
 
-```{r, warning = FALSE}
+```{r histogram_density, warning = FALSE}
 ggplot(penguins, 
        aes(x = bill_length_mm,
            fill = species)) +
   theme_bw() +
-  #geom_histogram(bins = 40) +
-  #geom_density(alpha = .5) +
+  #geom_histogram(bins = 40) + # stacked histogram
+  #geom_density(alpha = .5) + # smooth density (probability) distribution
   NULL
 ```
 
 Another common and useful type of plot is the box and whisker plot.
 
-```{r, warning = FALSE}
+```{r boxplot, warning = FALSE}
 ggplot(penguins, 
        aes(x = island,
            y = flipper_length_mm,
@@ -188,7 +210,7 @@ ggplot(penguins,
 
 Bar plots are sometimes controversial, but they can also be very useful. They take slightly different arguments than other types of plots because of how the bar height is 'calculated'.
 
-```{r, message=FALSE}
+```{r barchart, message=FALSE}
 penguins %>% 
   filter(!is.na(flipper_length_mm)) %>% 
   group_by(species) %>% 
@@ -208,35 +230,45 @@ penguins %>%
 
 You may also want to explore fancier types of plots, or combine types we've already encountered. This is easy with `ggplot()`'s modular construction and visual grammar.
 
-```{r, warning=FALSE}
+```{r combinationplot, warning=FALSE}
 ggplot(penguins, 
        aes(x = island,
            y = flipper_length_mm,
-           fill = species)) +
+           fill = species,
+           shape = species)) + 
   theme_bw() +
   geom_violin() +
   geom_boxplot(position = position_dodge(.9),
                alpha = .3) +
-  geom_point(position = position_jitterdodge(.9),
-             shape = 21,
-             alpha = .75) +
+  geom_point(position = position_jitterdodge(jitter.width = .3, 
+                                             dodge.width = .9, 
+                                             jitter.height = 0),
+             alpha = .5) +
+  scale_fill_manual(values = c("cadetblue", "salmon", "goldenrod1")) +
   NULL
 ```
+
+Notes:
+
+- `shape` is the shape of the point (see more [here](http://www.sthda.com/english/wiki/r-plot-pch-symbols-the-different-point-shapes-available-in-r))
+    - You can set the shapes you want by using `scale_shape_manual()`
+- `scale_fill_manual()` allows you to choose your own colours (see more [here](https://rstudio-pubs-static.s3.amazonaws.com/3486_79191ad32cf74955b4502b8530aad627.html))
+    - You can choose your own, or use pre-set color palettes, e.g. with the [`viridis` package](https://rpubs.com/mjvoss/psc_viridis)
 
 
 # Visual analysis
 
-Statistics is (like) dangerous dark magic: if you know what you're doing, it means you've dedicated your life (soul) to it and have no time or capacity to do other things. If you don't know what you're doing, it can hurt you or people around you. If you're somewhere in the middle, it is best to go slow, hedge your bets, and use it judiciously.
+Statistics is (like) dark magic: if you have mastered it, it means you've dedicated your life (soul) to it and have no time or capacity to do other things. If you don't know what you're doing at all but try to do it anyway, it can hurt you or people around you. If you're somewhere in the middle, it is best to go slow, hedge your bets, use it judiciously, and ask for help often.
 
 Why is statistics something to be wary of?
 
-- It's unintuitive. Human brains were not designed to understand proper statistics. 
+- It's unintuitive. Human brains were not designed to understand statistics intuitively. 
 - Human brains are too good at detecting patterns -- even if none exist.
 - Human brains like attributing causality to things regardless of underlying mechanisms.
 - Developing your expertise in your field or subfield of choice is a major undertaking, and statistics is an entirely independent area to develop expertise in as well.
 - Be honest with yourself: how comfortable are you teaching yourself complex maths?
 - Statistics is a tool for: 
-    a. telling us what we already know
+    a. telling us what we already know, *and/or*
     b. telling us that our squishy human brains are only human (and wrong about what we think we know)
 
 ## Continuous data
@@ -244,7 +276,7 @@ Why is statistics something to be wary of?
 Let's create our own toy dataset:
 
 ```{r}
-set.seed(18) # 15 16
+set.seed(15) # set the "randomness" so we all get the same "random" numbers
 x = rnorm(50) # 50 random numbers from a normal distribution
 y = 2 * x + 5 # for each x, multiply by 2 (slope) and add 5 (intercept)
 ```
@@ -283,13 +315,13 @@ tbl1 %>% # using this dataset
 Is the red line still the best way to approximate this data?
 
 ```{r}
-model1 <- lm(y2 ~ x) # calculate slope and intercept automatically
+model <- lm(y2 ~ x) # calculate slope and intercept automatically
 ```
 
 What are the calculated slope and intercept?
 
 ```{r}
-coef(model1) # `coef` stands for coefficients
+coef(model) # `coef` stands for coefficients
 ```
 
 Plot the data with the intended shape of the data (red) and the calculated shape (green):
@@ -298,32 +330,48 @@ Plot the data with the intended shape of the data (red) and the calculated shape
 tbl1 %>% # using the toy dataset
   ggplot(aes(x=x, y=y2)) + # establish the base of the plot
   geom_point() + # draw the data as points
-  geom_vline(xintercept=0, colour="blue") + # add a vertical blue line at the "intercept" (y axis)
+  geom_vline(xintercept=0, colour="black") + # add a vertical black line at the "intercept" (y axis)
   geom_abline(intercept = 5, slope = 2, colour="red") + # add the intended shape of the data (red)
-  geom_abline(intercept = coef(model1)[1], slope = coef(model1)[2], colour="green3") + # add the calculated shape (green)
+  geom_abline(intercept = coef(model)[1], slope = coef(model)[2], colour="green3") + # add the calculated shape (green)
   theme_bw() # make it pretty
 ```
 
-How do the intended shape and calculated shape differ? Why?
-
-We can actually extract this numbers (and more!) in a fancy looking output summary:
-
-```{r}
-summary(model1)
-```
+How do the intended shape and calculated shape differ? Why might this be?
 
 Moreover, there's actually a way to do this calculation *within* a plot:
 
-```{r, message=FALSE}
+```{r}
 tbl1 %>% 
   ggplot(aes(x=x, y=y2)) +
   geom_point() +
-  geom_smooth(method="lm") + # here is where the calculation happens within the plot
-  geom_vline(xintercept=0, colour="blue") +
+  geom_smooth(method="lm",
+              formula = 'y ~ x') + # here is where the calculation happens within the plot
+  geom_vline(xintercept=0, colour="black") +
   geom_abline(intercept = 5, slope = 2, colour="red") +
-  geom_abline(intercept = coef(model1)[1], slope = coef(model1)[2], colour="green3") +
+  geom_abline(intercept = coef(model)[1], slope = coef(model)[2], colour="green3") +
   theme_bw()
 ```
+
+But what happens if we add a LOT more noise?
+
+```{r}
+set.seed(2) # set the randomizer 'seed' so we all have the same 'random' values
+y3 = 2 * x + 5 + rnorm(50)*15 # add 15 times as much noise to the y values
+model.noise = lm(y3 ~ x)
+
+tibble(x, y3)  %>% 
+  ggplot(aes(x=x, y=y3)) +
+  geom_point() +
+  geom_smooth(method="lm",
+              formula = 'y ~ x',
+              colour = "green4") + 
+  geom_vline(xintercept=0, colour="black") +
+  geom_abline(intercept = 5, slope = 2, colour="red") +
+  geom_abline(intercept = coef(model.noise)[1], slope = coef(model.noise)[2], colour="green3") +
+  theme_bw()
+```
+
+If you have enough noise in your data, you can still predict where the true slope+intercept could be, but not with enough confidence to know where it truly is. This is why the red line (the true value) is within the greyed out area, or our "confidence interval". However, the confidence interval also includes the possibility for a slope going in the opposite direction. Thus if we didn't already know what the true value was supposed to be, we wouldn't even be able to say whether the slope was positive or negative!
 
 # Workshop activities
 
@@ -334,3 +382,10 @@ We have used `geom_point()` and `geom_smooth()` to plot data. R does most of the
 
 ```
 
+# Additional resources:
+
+1. How to link dataviz to statistical analysis, specifically linear models: [(Types of) Linear Models](https://verbingnouns.github.io/notebooks/reading/notebooks/20210615-linearmodels.html), another lesson I gave at the same summer school. This will be extremely useful to prepare for the following sessions, if you are new to linear models or would like to understand more about how to visualise different types of data and their lines of best fit.
+
+3. [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/) is a free book about using `ggplot2` to create concise, informative, and beautiful graphics to communicate your data easily.
+
+4. [Dataviz Cheatsheet PDF](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf)
