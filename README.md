@@ -36,7 +36,7 @@ The links and content therein for each day may be changed and updated between no
 
 **Morning:** [Visualisation and visual interpretation](docs/Session_3-dataviz.html) (Download the [.Rmd file](docs/Session_3-dataviz.Rmd) for this session)  
 
-**Afternoon:** [Intro to Statistical analysis]() (Download the [.Rmd file]() for this session)  
+**Afternoon:** [Intro to Statistical analysis](docs/Session_4-AnalysingData.nb.html) (Download the [.Rmd file](docs/Session_4-AnalysingData.rmd) for this session)  NB 🚧 UNDER CONSTRUCTION 🚧
 
 
 
