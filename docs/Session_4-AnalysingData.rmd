@@ -34,6 +34,63 @@ library(pacman)
 3. Transparency of code. The code resembles the underlying mathematical model.
 4. Statistical models are stored in memory and are open to exploration/interrogation. For example, it is easy to inspect the residuals of our model.
 
+# Correlations
+
+## Simple pairwise correlation
+
+Main function for a pairwise correlation is `cor.test`. Have a look at the example. Note that we have used the `apa` library to turn this into a nice output.
+
+```{r}
+
+df = read_csv("WHR_2017.csv")
+
+cor = cor.test(df$gdp_per_capita, df$happiness_score)
+
+library(apa)
+
+cor_apa(cor)
+
+```
+
+Or report inline like this: The correlation between GDP per capita and happiness scores is `r cor_apa(cor)`.
+
+Note that there is an option to choose the method: `method = c("pearson", "kendall", "spearman")`
+
+## Multiple pairwise comparisons
+
+This is a bit more tricky. The best approach is to create a dataframe containing only those variables that you wish to conduct the pairwise correlations on.
+
+```{r}
+
+df %>% 
+  select(happiness_score, gdp_per_capita, life_expectancy, family, freedom, generosity, trust_in_government) ->
+  df.cor
+
+cor(df.cor)
+
+library(corrtable)
+
+cm =   correlation_matrix(
+          df.cor,
+          type = "pearson",
+          digits = 2,
+          decimal.mark = ".",
+          use = "all",
+          show_significance = TRUE,
+          replace_diagonal = FALSE,
+          replacement = ""
+)
+
+cm
+
+library(corrplot)
+
+corrplot(cor(df.cor))
+
+```
+
+
+
 # Running a model
 
 ## Basic syntax of a regression model

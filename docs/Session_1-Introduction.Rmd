@@ -55,11 +55,15 @@ Add a new chunk by clicking
 1. CLicking Code -> Insert on toolbar.
 
 ![](images/add_code_block_via_menu.png)
-2. Press *Ctrl+Alt+I*
-3. Just type out the formatting, e.g. three back ticks, curly brackets containing `r`, and three more back ticks to finish the block
+2. Add chunk via the command palette
+
+![](images/insert_chunk_via_command_palette.png)
+
+3. Press *Ctrl+Alt+I*
+4. Just type out the formatting, e.g. three back ticks, curly brackets containing `r`, and three more back ticks to finish the block
 
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to    
 preview the HTML file).
 
 ```{r assign values to a variable}
@@ -126,7 +130,7 @@ However this is a big problem with this approach. If you send your file to someo
 
 ### The difficult way (2) (but by far the best way!)
 
-By far the best way to set the working directory is create and "R Project" in RStudio. When you do this, the RProject stores keeps track of the directory where the files are stored, so there is no need to set the working directory.
+By far the best way to set the working directory is create an "R Project" in RStudio. When you do this, the RProject keeps track of the directory where the files are stored, so there is no need to set the working directory.
 
 In addition, if you set up a project you can use it to store all the datasets and other data objects which were opened in the last session. This is quite convenient but it can take up a lot of memory, and you also run the risk that you will lose track of how the variables were created, which is a threat to reproducibility.
 
@@ -446,7 +450,7 @@ To read .csv files we use the `read.csv()` function from base R, or `read_csv()`
 
 ## Subsetting with base R
 
-We're going to *subset* the WHR dataset (i.e. choose only those cases/observations which fulfil a specific criterion). To do this we're going to use the `which()` function. When you apply `which` to a variable in a dataset, it will produce indices (indexes) of the rows which fulfil a certain criterio, e.g. `which(df$var_name == 2)` will give you the indices of all rows where the value of the variable is 2.
+We're going to *subset* the WHR dataset (i.e. choose only those cases/observations which fulfil a specific criterion). To do this we're going to use the `which()` function. When you apply `which` to a variable in a dataset, it will produce indices (indexes) of the rows which fulfil a certain criterion, e.g. `which(df$var_name == 2)` will give you the indices of all rows where the value of the variable is 2.
 
 ## EX4: Subsetting using base R
 
@@ -557,7 +561,9 @@ To demonstrate if-then statements, we are going to create a new variable which s
 df$happiness_above_mean <- 0 # Set variable to 0
 mean_happiness <- mean(df$happiness_score) # Calculate mean mpg
 for (i in 1:nrow(df)){
-  if(df$happiness_score[i] > mean_happiness){df$happiness_above_mean[i] <- 1}
+  if(df$happiness_score[i] > mean_happiness){
+    df$happiness_above_mean[i] <- 1
+    }
 }
 ```
 
