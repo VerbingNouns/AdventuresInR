@@ -2,27 +2,22 @@
 title: "Session 1 - Introduction.Rmd"
 output:
   html_document:
-    df_print: paged
-    toc: yes
-    toc_depth: '2'
-  word_document:
-    toc: yes
-    toc_depth: '2'
-  html_notebook:
-    df_print: paged
     number_sections: yes
     toc: yes
-    toc_depth: 2
+    toc_depth: '2'
+    df_print: paged
     toc_float:
-      collapsed: no
+      collapsed: yes
 ---
 
 
-```{r settings}
+
+```{r setup}
 library(tidyverse)
 library(broom)
 library(graphics)
 library(pacman)
+theme_set(theme_bw()) # Set the standard black and white theme
 ```
 
 # Advantages of R for data analysis
@@ -38,7 +33,7 @@ library(pacman)
 
 Main function for a pairwise correlation is `cor.test`. Have a look at the example. Note that we have used the `apa` library to turn this into a nice output.
 
-```{r}
+```{r reading in data and running a pairwise correlation}
 
 df = read_csv("WHR_2017.csv")
 
@@ -53,7 +48,7 @@ cor
 Okay, we have reported this, but it doesn't look very "publication-ready". R has a range of packages which convert the results of analyses into publication-ready formats.
 
 
-```{r}
+```{r reporting correlation results "in-line"}
 
 library(apa) # APA-style reporting of statistical tests
 
@@ -66,13 +61,22 @@ Often, you will need to report your results "in-line" (i.e. in the body of your 
 For example... the correlation between GDP per capita and happiness scores is `r cor_apa(cor)`.
 
 
-EXERCISE - EXPLORE SOME OTHER CORRELATIONS IN THE DATA
+## EXERCISE - EXPLORING CORRELATIONS
+
+Explore other correlations in the data!!
+
+```{r GO EXPLORE!}
+
+
+
+```
+
 
 ## Multiple pairwise comparisons
 
-This is a bit more tricky. The best approach is to create a dataframe containing only those variables that you wish to conduct the pairwise correlations on. The `cor` function from base R creates a correlation matrix. But results are not very publication-read. They can be tidied up via the `kable` package (in `knitr`). There is also the fantastic `corrplot` which will give you a great graphical representation.
+This is a bit more tricky. The best approach is to create a dataframe containing only those variables that you wish to conduct the pairwise correlations on. The `cor` function from base R creates a correlation matrix. But results are not very publication-ready. They can be tidied up via the `kable` package (in `knitr`). There is also the fantastic `corrplot` which will give you a great graphical representation.
 
-```{r}
+```{r creating correlation tables}
 
 df %>% 
   select(happiness_score, gdp_per_capita, life_expectancy, family, freedom, generosity, trust_in_government) ->
@@ -111,11 +115,11 @@ corrplot(cor(df.cor))
 
 ![R regression syntax](images/regression_syntax.png)
 
-```{r}
+```{r running and reporting a linear model}
 
 df = read_csv("WHR_2017.csv")
 
-mod_hs_gdp = lm(happiness_score ~ gdp_per_capita, data = df)
+mod_hs_gdp <- lm(happiness_score ~ gdp_per_capita, data = df)
 
 # "mod" = model.
 # "hs_gdp" = hs is predicted by gdp
@@ -125,6 +129,10 @@ mod_hs_gdp # This shows you the key statistics, but it's not very informative
 summary(mod_hs_gdp) # This is much more informative but it's not pretty to look at
 
 tidy(summary(mod_hs_gdp)) # `tidy` from the `broom` package makes it into a very nice table
+
+# or to make this a bit more "publication-ready"
+
+knitr::kable(tidy(summary(mod_hs_gdp)))
 
 ```
 
@@ -151,7 +159,7 @@ NB the code to create the function is tricky. It took me 20 minutes to write wit
 
 But is it a good model for the data. Let's do a plot to find out.
 
-```{r}
+```{r plotting the data}
 
 g = ggplot(data = df, aes(x = gdp_per_capita, y = happiness_score))
 g = g + geom_point()
@@ -161,7 +169,7 @@ g
 ```
 
 
-```{r}
+```{r plotting the residuals}
 residuals = resid(mod_hs_gdp)
 
 hist(residuals, breaks = 20)
@@ -188,7 +196,7 @@ Residuals are close to normally distributed, according to both the histograms an
 
 ![](images/residuals_plot.png)
 
-## EX1 - Over to you!
+## EXERCISE - IMPACT OF GDP ON LIFE EXPECTANCY
 
 Now switch the dependent variable to life expectancy. Do you think that the relationship will be linear? Why? Why not?
 
@@ -199,9 +207,19 @@ Test your assumptions by
 
 You can use the above code as a crib, but try to refer to it as little as possible. The answer is below, but try not to look at it when doing this exercise.
 
+```{r OVER TO YOU!!!}
+
+
+
+
+
+
+```
+
+
 ![](images/no_peeking.png)
 
-```{r}
+```{r }
 
 df = read_csv("WHR_2017.csv")
 
@@ -239,7 +257,38 @@ g
 
 ```
 
+```{r}
+
+g = ggplot(data = df, aes(x = gdp_per_capita, y = life_expectancy, label = country))
+g = g + geom_point(colour = "light blue")
+g = g + geom_smooth(se = FALSE)
+g = g + geom_text(size = 2.5, nudge_y = -0.02, alpha = 0.6)
+
+g
+
+```
+
+
 So, the relationship is fairly linear, but there are a couple of issues. First of all there is a natural ceiling to life expectancy so that it does not improve beyond a certain GDP. Secondly, there are some countries where life expectancy is much lower than their GDP would predict. Can you guess which countries fall into this category?
+
+## Piping within models / ggplot
+
+You can add piping within models / plots, e.g.
+
+```{r piping within models and plots}
+
+
+g = ggplot(data = df %>% filter(region != "Europe"),
+           aes(x = gdp_per_capita, y = life_expectancy))
+g = g + geom_point()
+g = g + geom_smooth()
+g
+
+mod_le_gdp_no_europe = lm(life_expectancy ~ gdp_per_capita,
+                          data = df %>% filter(region != "Europe"))
+
+```
+
 
 # Generalised linear model
 
@@ -251,11 +300,14 @@ A variety of models which are designed for data where distributions depart radic
 
 We're going to look at logistic regression.
 
+![Picture of sigmoid from Wikipedia](images/sigmoid.png)
+Therefore we need to use a special mathematical transformation to turn it into a straight line. This transformation is "built into" the model.
+
 ## Dichotomising a variable
 
 We're going to turn one of our variables into a dichotomous variable using a "median-split"
 
-```{r}
+```{r creating a median split}
 
 df$happiness_score_ms = as.numeric(df$happiness_score >= median(df$happiness_score))
 
@@ -263,7 +315,19 @@ df$happiness_score_ms = as.numeric(df$happiness_score >= median(df$happiness_sco
 
 Now we're going to run our regression model. We're going to look at whether GDP influences whether happiness is above or below the mdedian.
 
-EXERCISE - Use Google to try to figure out how to run this!
+## EXERCISE - USING GOOGLE TO RUN A LOGISTIC REGRESSION
+
+
+```{r FIGURE OUT HOW TO RUN A LOGISTIC REGRESSION!}
+
+
+
+
+
+```
+
+
+![](images/no_peeking.png)
 
 ```{r}
 
@@ -285,9 +349,18 @@ exp(mod$coefficients)
 
 ```
 
-NB this odds ratio is far too large, so something has gone wrong with the model.
+NB This odds ratio is far too large. A possible issue is that we have not "scaled" our independent variable. Scaling will give a mean of zero and a standard deviation of plus or minus one.
 
 
+```{r}
+
+mod = glm(happiness_score_ms ~ scale(gdp_per_capita), data = df, family = "binomial")
+
+exp(coef(mod))
+
+```
+
+This is a more "sensible" odds ratio.
 
 
 

@@ -2,12 +2,9 @@
 title: "Session 1 - Introduction.Rmd"
 output:
   html_document:
+    toc: yes
+    toc_depth: '2'
     df_print: paged
-    toc: yes
-    toc_depth: '2'
-  word_document:
-    toc: yes
-    toc_depth: '2'
   html_notebook:
     df_print: paged
     number_sections: yes
