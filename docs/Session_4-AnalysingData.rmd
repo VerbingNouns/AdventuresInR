@@ -25,14 +25,12 @@ library(graphics)
 library(pacman)
 ```
 
-![](images/work_in_progress.png)
-
 # Advantages of R for data analysis
 
-1. Cutting edge analyses. In psychology R is the standard package to run mixed effects models
-2. Range of statistical modules. It's huge and much larger than commercial packages, e.g. SPSS
-3. Transparency of code. The code resembles the underlying mathematical model.
-4. Statistical models are stored in memory and are open to exploration/interrogation. For example, it is easy to inspect the residuals of our model.
+1. *Cutting edge* analyses. In psychology R is the standard package to run _mixed effects models_. It also interfaces with _Stan_ (Bayesian Analysis), via a package called _brms_
+2. *Variety* of statistical methods. It's huge and much larger than commercial packages, e.g. SPSS
+3. *Transparency* of code. The code resembles the underlying mathematical model.
+4. Statistical models are *stored in memory *and are open to exploration/interrogation. For example, it is easy to inspect the residuals of our model.
 
 # Correlations
 
@@ -46,19 +44,33 @@ df = read_csv("WHR_2017.csv")
 
 cor = cor.test(df$gdp_per_capita, df$happiness_score)
 
-library(apa)
+# Note that there is an option to choose the method: `method = c("pearson", "kendall", "spearman")`
+
+cor
+
+```
+
+Okay, we have reported this, but it doesn't look very "publication-ready". R has a range of packages which convert the results of analyses into publication-ready formats.
+
+
+```{r}
+
+library(apa) # APA-style reporting of statistical tests
 
 cor_apa(cor)
 
 ```
 
-Or report inline like this: The correlation between GDP per capita and happiness scores is `r cor_apa(cor)`.
+Often, you will need to report your results "in-line" (i.e. in the body of your text). To do this in R you use backticks. There are 3 backticks for a block, but only 1 for in-line code (and no curly brackets).
 
-Note that there is an option to choose the method: `method = c("pearson", "kendall", "spearman")`
+For example... the correlation between GDP per capita and happiness scores is `r cor_apa(cor)`.
+
+
+EXERCISE - EXPLORE SOME OTHER CORRELATIONS IN THE DATA
 
 ## Multiple pairwise comparisons
 
-This is a bit more tricky. The best approach is to create a dataframe containing only those variables that you wish to conduct the pairwise correlations on.
+This is a bit more tricky. The best approach is to create a dataframe containing only those variables that you wish to conduct the pairwise correlations on. The `cor` function from base R creates a correlation matrix. But results are not very publication-read. They can be tidied up via the `kable` package (in `knitr`). There is also the fantastic `corrplot` which will give you a great graphical representation.
 
 ```{r}
 
@@ -77,11 +89,13 @@ cm =   correlation_matrix(
           decimal.mark = ".",
           use = "all",
           show_significance = TRUE,
-          replace_diagonal = FALSE,
+          replace_diagonal = TRUE,
           replacement = ""
 )
 
 cm
+
+knitr::kable(cm, "html")
 
 library(corrplot)
 
@@ -114,6 +128,24 @@ tidy(summary(mod_hs_gdp)) # `tidy` from the `broom` package makes it into a very
 
 ```
 
+The table looks nice, but often, at least in Psychology, results are reported in-line. A good way to do this is to create your own function.
+
+```{r create function to report terms in model}
+
+report_coef = function(mod){
+  sm = summary(mod)
+  results_vector = rep("", length(mod$coefficients))
+  for (i in 1:length(mod$coefficients)){
+    results_vector[i] = paste0("β = ", round(sm$coefficients[i, 1], 2), ", t = ", round(sm$coefficients[i, 3], 2), ", p = ", sprintf("%.3f", round(sm$coefficients[i, 4], 3)))
+  }
+  return(results_vector)
+}
+  
+```
+
+There was a significant effect of GDP per capita: `r report_coef(mod_hs_gdp)[1]`
+
+NB the code to create the function is tricky. It took me 20 minutes to write with a lot of googling. A newbie would spend much longer. However, if you are writing a thesis which involves the in-line reporting of the results of a large number of linear models, this could save you a lot of time in the long run.
 
 ## Model diagnostics
 
@@ -134,11 +166,21 @@ residuals = resid(mod_hs_gdp)
 
 hist(residuals, breaks = 20)
 
+# NB residuals can also be obtained by peeking inside the stored model.
+
+hist(mod_hs_gdp$residuals, breaks = 20)
+
 plot(fitted(mod_hs_gdp), residuals)
 abline(0,0)
 
-qqnorm(residuals)
-qqline(residuals)
+# Note that both lines need to be run at the same time.
+# To do this, you can use a semi-colon.
+
+plot(fitted(mod_hs_gdp), residuals); abline(0,0)
+
+# And here is a qq-plot. It plots the actual residuals against "theoretical" residuals based on the assumption that they are normally distributed.
+
+qqnorm(residuals); qqline(residuals)
 
 ```
 
@@ -181,11 +223,9 @@ residuals = resid(mod_le_gdp)
 
 hist(residuals, breaks = 20)
 
-plot(fitted(mod_le_gdp), residuals)
-abline(0,0)
+plot(fitted(mod_le_gdp), residuals); abline(0,0)
 
-qqnorm(residuals)
-qqline(residuals)
+qqnorm(residuals); qqline(residuals)
 
 ```
 
@@ -199,7 +239,54 @@ g
 
 ```
 
-So, the relationship is fairly linear, but there are a couple of issues. First of all there is a natural ceiling to life expectancy so that it does not improve beyond a certain GDP. Secondly, there are some countries shoe life expectancy is much lower than their GDP would predict. Can you guess which countries fall into this category?
+So, the relationship is fairly linear, but there are a couple of issues. First of all there is a natural ceiling to life expectancy so that it does not improve beyond a certain GDP. Secondly, there are some countries where life expectancy is much lower than their GDP would predict. Can you guess which countries fall into this category?
+
+# Generalised linear model
+
+A variety of models which are designed for data where distributions depart radically from the normal distribution.
+
+1. *Logistic regression* for dichotomous (binary) data
+2. *Poisson regression* for count data (which tends to have a right skew)
+3. *Negative binonmial* for poisson-type data where rightward skew is extremely severe
+
+We're going to look at logistic regression.
+
+## Dichotomising a variable
+
+We're going to turn one of our variables into a dichotomous variable using a "median-split"
+
+```{r}
+
+df$happiness_score_ms = as.numeric(df$happiness_score >= median(df$happiness_score))
+
+```
+
+Now we're going to run our regression model. We're going to look at whether GDP influences whether happiness is above or below the mdedian.
+
+EXERCISE - Use Google to try to figure out how to run this!
+
+```{r}
+
+mod = glm(happiness_score_ms ~ gdp_per_capita, data = df, family = "binomial")
+
+mod
+
+summary(mod)
+
+```
+
+Because the coefficient is hard to interpret, we need to convert it into odds ratios. This value will be 1 if there is no relationship, > 1 if there is a positive relationship and < 1 if there is a negative relationship. We used the `exp` function to do this.
+
+```{r}
+
+exp(coef(mod))
+
+exp(mod$coefficients)
+
+```
+
+NB this odds ratio is far too large, so something has gone wrong with the model.
+
 
 
 
